@@ -1,159 +1,36 @@
 "use client"
 
-import * as React from "react"
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  UsersRound,
-  LayoutDashboard, 
-} from "lucide-react"
+import { usePathname } from 'next/navigation';
+import { MODULES_CONFIG } from '@/lib/config/modules';
+import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter } from '@/components/ui/sidebar';
+import { NavMain } from './nav-main';
+import { TeamSwitcher } from './team-switcher';
+import { UserNav } from './user-nav';
 
-import { NavMain } from "@/components/nav-main"
-import { NavDash } from "@/components/nav-dashboard"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar"
+export const AppSidebar = () => {
+  const pathname = usePathname();
+  const moduleKey = pathname.split('/')[1];
+  const moduleConfig = MODULES_CONFIG[moduleKey];
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navDash: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-      isActive: true,
-    },
-  ],
-  navMain: [
-    {
-      title: "Human Resources",
-      url: "#",
-      icon: UsersRound,
-      isActive: true,
-      items: [
-        {
-          title: "Employee Management",
-          url: "/rrhh",
-        },
-      ],
-    },
-    {
-      title: "Logistics",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Sub module of Logistics",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Sales",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Sub module of Sales",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Customers",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Sub module of Customers",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Planning",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Sub module of Planning",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
+  if (!moduleConfig) return null;
 
-export function AppSidebar({
-  ...props
-}) {
   return (
-    (<Sidebar collapsible="icon" {...props}>
+    <Sidebar className="w-64 border-r">
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher 
+          teams={[{ 
+            name: moduleConfig.name, 
+            logo: moduleConfig.icon, 
+            plan: "Active" 
+          }]} 
+        />
       </SidebarHeader>
       <SidebarContent>
-        <NavDash items={data.navDash} />
-        <NavMain items={data.navMain} />
-        {/*<NavProjects projects={data.projects} />*/}
+        <NavMain items={moduleConfig.navItems} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <UserNav />
       </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>)
+    </Sidebar>
   );
-}
+};
