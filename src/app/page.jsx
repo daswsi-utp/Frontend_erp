@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { UsersRound, Forklift, BadgeDollarSign, BookUser, NotebookPen } from 'lucide-react';
+import { UsersRound, Forklift, BadgeDollarSign, BookUser, NotebookPen, Factory  } from 'lucide-react';
 import { UserNav } from '@/components/user-nav';
+import { ModeToggle } from '@/components/mode-toogle';
 
 const modules = [
     { title: 'RRHH', icon: <UsersRound size={32} />, link: '/rrhh' },
@@ -8,6 +9,7 @@ const modules = [
     { title: 'Ventas', icon: <BadgeDollarSign size={32} />, link: '/sales' },
     { title: 'Clientes', icon: <BookUser size={32} />, link: '/customers' },
     { title: 'Planeación', icon: <NotebookPen size={32} />, link: '/planning' },
+    { title: 'Manufactura', icon: <Factory size={32} />, link: '/manufacture' },
 ];
 
 export default function Home() {
@@ -15,7 +17,12 @@ export default function Home() {
         <div className="min-h-screen bg-white dark:bg-gray-950">
             <header className="border-b border-gray-200 dark:border-gray-800">
                 <div className="flex h-16 items-center px-4 justify-between">
-                    <Link href="/" className="text-lg font-semibold">ERP System</Link>
+                    <div className="flex items-center gap-4">
+                        <Link href="/" className="flex items-center gap-2">
+                            <h1 className="text-xl font-semibold">ERP System</h1>
+                        </Link>
+                        <ModeToggle />
+                    </div>
                     <div className="flex items-center space-x-4">
                         <UserNav />
                     </div>
