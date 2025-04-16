@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   UsersRound,
   Forklift,
@@ -5,6 +6,7 @@ import {
   BookUser,
   NotebookPen,
   LayoutDashboard,
+  Calendar,
 } from "lucide-react";
 
 export const MODULES_CONFIG = {
@@ -69,4 +71,22 @@ export const MODULES_CONFIG = {
       },
     ],
   },
+  planning: {
+    name: "Planning",
+    path: "/planning",
+    icon: BadgeDollarSign,
+    navItems: [
+      {
+        title: "All Plannings",
+        icon: LayoutDashboard,
+        path: "/planning",
+        exact: true,
+      },
+      {
+        title: "Create project",
+        icon: Calendar,
+        path: "/planning/project",
+      },
+    ]
+  }
 };
