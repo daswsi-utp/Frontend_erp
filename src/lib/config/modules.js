@@ -56,6 +56,21 @@ export const MODULES_CONFIG = {
       },
     ],
   },
+
+  sales: {
+    name: "Ventas",
+    path: "/sales",
+    icon: BadgeDollarSign,
+    navItems: [
+      {
+        title: "Cotizaciones",
+        icon: BadgeDollarSign,
+        path: "/sales/orders",
+        subItems: [{ title: "Nueva Corización", path: "/sales/orders/new" }],
+      },
+    ],
+  },
+
   customers: {
     name: "Logistic",
     path: "/logistics",
