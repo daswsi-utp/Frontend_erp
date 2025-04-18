@@ -75,9 +75,9 @@ export const MODULES_CONFIG = {
         icon: BadgeDollarSign,
         path: "/crm/dashboard",
         subItems: [
-          { title: "Nuevo", path: "/sales/orders/new" },
-          { title: "Nuevo", path: "/sales/orders/new" },
-          { title: "Nuevo", path: "/sales/orders/new" },
+          { title: "Nuevo", path: "/crm/orders/new" },
+          { title: "Nuevo", path: "/crm/orders/new" },
+          { title: "Nuevo", path: "/crm/orders/new" },
           { title: "Nuevo", path: "/sales/orders/new" },
           { title: "Nuevo", path: "/sales/orders/new" },
         ],
