@@ -67,7 +67,7 @@ export const MODULES_CONFIG = {
   },
   crm: {
     name: "CRM",
-    path: "/crm",
+    path: "/crmj",
     icon: BadgeDollarSign,
     navItems: [
       {
