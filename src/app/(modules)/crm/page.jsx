@@ -1,13 +1,19 @@
+
+import { Dashboard } from "./dashboard/dashboard";
+
 export default function CrmPage() {
-    return (
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-            <h1 className="text-2xl font-bold mb-6">Dashboard CRM</h1>
-            <div className="grid grid-cols-3 gap-4">
-                <div className="border p-4 rounded-lg">
-                    <h3>Clientes Activos</h3>
-                    <p className="text-2xl">124</p>
-                </div>
-            </div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Resumen de tus actividades comerciales
+          </p>
         </div>
-    );
+      </div>
+      
+      <Dashboard />
+    </div>
+  );
 }
