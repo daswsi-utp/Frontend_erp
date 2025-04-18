@@ -20,7 +20,7 @@ const NewModal=({ type })=> {
 
   const handleSave = () => {
     console.log("Datos guardados:", formData);
-    onOpenChange(false); // Cierra el modal
+    onOpenChange(false);
   };
 
   const managers = [
