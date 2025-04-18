@@ -67,14 +67,20 @@ export const MODULES_CONFIG = {
   },
   crm: {
     name: "CRM",
-    path: "/crm",
+    path: "/crmj",
     icon: BadgeDollarSign,
     navItems: [
       {
-        title: "pruebsa",
+        title: "pruebas",
         icon: BadgeDollarSign,
-        path: "/sales/orders",
-        subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
+        path: "/crm/dashboard",
+        subItems: [
+          { title: "Nuevo", path: "/crm/orders/new" },
+          { title: "Nuevo", path: "/crm/orders/new" },
+          { title: "Nuevo", path: "/crm/orders/new" },
+          { title: "Nuevo", path: "/sales/orders/new" },
+          { title: "Nuevo", path: "/sales/orders/new" },
+        ],
       },
     ],
   },

@@ -10,6 +10,8 @@ const modules = [
     { title: 'Clientes', icon: <BookUser size={32} />, link: '/customers' },
     { title: 'Planeación', icon: <NotebookPen size={32} />, link: '/planning' },
     { title: 'Manufactura', icon: <Factory size={32} />, link: '/manufacture' },
+    { title: 'CRM', icon: <Factory size={32} />, link: '/crm' },
+
 ];
 
 export default function Home() {
