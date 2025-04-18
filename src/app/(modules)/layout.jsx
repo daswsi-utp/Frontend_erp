@@ -2,21 +2,24 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { UserNav } from '@/components/user-nav';
 import Link from 'next/link';
+import { ModeToggle } from "@/components/mode-toogle";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function ModulesLayout({ children }) {
     return (
-        <div className="flex flex-1 h-full">
-            {/* Sidebar Fixed */}
-            <div className="fixed inset-y-0 left-0 z-50 w-64 h-full">
-                <AppSidebar />
-            </div>
-
+        <div className="flex h-full w-full">
+            {/* Sidebar does not Fixed :) */}
+            <AppSidebar />
             {/* Main Content */}
-            <div className="flex-1 flex flex-col ml-64 h-full">
+            <div className="flex-1 flex flex-col h-full">
                 <header className="sticky top-0 z-40 border-b h-16 flex items-center justify-between px-4 bg-background">
-                    <Link href="/" className="flex items-center gap-2">
-                        <h1 className="text-xl font-semibold">ERP System</h1>
-                    </Link>
+                    <div className="flex items-center gap-4">
+                        <SidebarTrigger />
+                        <Link href="/" className="flex items-center gap-2">
+                            <h1 className="text-xl font-semibold">ERP System</h1>
+                        </Link>
+                        <ModeToggle />
+                    </div>
                     <UserNav />
                 </header>
 

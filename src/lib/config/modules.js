@@ -5,6 +5,8 @@ import {
   BookUser,
   NotebookPen,
   LayoutDashboard,
+  Contact,
+  TicketsPlane,
 } from "lucide-react";
 
 export const MODULES_CONFIG = {
@@ -20,12 +22,32 @@ export const MODULES_CONFIG = {
         exact: true,
       },
       {
-        title: "Empleados",
+        title: "Gestión de Empleados",
         icon: UsersRound,
         path: "/rrhh/employees",
         subItems: [
-          { title: "Nuevo", path: "/rrhh/employees/new" },
-          { title: "Listado", path: "/rrhh/employees" },
+          { title: "Empleados", path: "/rrhh/employees" },
+          { title: "Contratos", path: "/rrhh/contrats" },
+          { title: "Cargos y Departamentos", path: "/rrhh/departments" },
+        ],
+      },
+      {
+        title: "Asistencia",
+        icon: Contact,
+        path: "/rrhh/attendance",
+        subItems: [
+          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
+          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+        ],
+      },
+      {
+        title: "Vacaciones y Permisos",
+        icon: TicketsPlane,
+        path: "/rrhh/vacations",
+        subItems: [
+          { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
+          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
+          { title: "Registrar permisos", path: "/rrhh/permissions" },
         ],
       },
     ],

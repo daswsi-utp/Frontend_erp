@@ -35,13 +35,21 @@ function DialogOverlay({
   ...props
 }) {
   return (
+<<<<<<< HEAD
     <DialogPrimitive.Overlay
+=======
+    (<DialogPrimitive.Overlay
+>>>>>>> master
       data-slot="dialog-overlay"
       className={cn(
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
         className
       )}
+<<<<<<< HEAD
       {...props} />
+=======
+      {...props} />)
+>>>>>>> master
   );
 }
 
@@ -51,7 +59,11 @@ function DialogContent({
   ...props
 }) {
   return (
+<<<<<<< HEAD
     <DialogPortal data-slot="dialog-portal">
+=======
+    (<DialogPortal data-slot="dialog-portal">
+>>>>>>> master
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
@@ -67,7 +79,11 @@ function DialogContent({
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
+<<<<<<< HEAD
     </DialogPortal>
+=======
+    </DialogPortal>)
+>>>>>>> master
   );
 }
 
@@ -76,10 +92,17 @@ function DialogHeader({
   ...props
 }) {
   return (
+<<<<<<< HEAD
     <div
       data-slot="dialog-header"
       className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
       {...props} />
+=======
+    (<div
+      data-slot="dialog-header"
+      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      {...props} />)
+>>>>>>> master
   );
 }
 
@@ -88,10 +111,17 @@ function DialogFooter({
   ...props
 }) {
   return (
+<<<<<<< HEAD
     <div
       data-slot="dialog-footer"
       className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
       {...props} />
+=======
+    (<div
+      data-slot="dialog-footer"
+      className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      {...props} />)
+>>>>>>> master
   );
 }
 
@@ -100,10 +130,17 @@ function DialogTitle({
   ...props
 }) {
   return (
+<<<<<<< HEAD
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn("text-lg leading-none font-semibold", className)}
       {...props} />
+=======
+    (<DialogPrimitive.Title
+      data-slot="dialog-title"
+      className={cn("text-lg leading-none font-semibold", className)}
+      {...props} />)
+>>>>>>> master
   );
 }
 
@@ -112,10 +149,17 @@ function DialogDescription({
   ...props
 }) {
   return (
+<<<<<<< HEAD
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn("text-muted-foreground text-sm", className)}
       {...props} />
+=======
+    (<DialogPrimitive.Description
+      data-slot="dialog-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props} />)
+>>>>>>> master
   );
 }
 

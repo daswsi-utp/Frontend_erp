@@ -4,7 +4,7 @@ export default function CrmPage() {
             <h1 className="text-2xl font-bold mb-6">Dashboard clientes</h1>
             <div className="grid grid-cols-3 gap-4">
                 <div className="border p-4 rounded-lg">
-                    <h3>Clientes Activos</h3>
+                    <h3>Clientes Activos mñn con fe</h3>
                     <p className="text-2xl">124</p>
                 </div>
             </div>

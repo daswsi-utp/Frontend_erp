@@ -29,7 +29,6 @@ export const AppSidebar = () => {
         <NavMain items={moduleConfig.navItems} />
       </SidebarContent>
       <SidebarFooter>
-        <UserNav />
       </SidebarFooter>
     </Sidebar>
   );
