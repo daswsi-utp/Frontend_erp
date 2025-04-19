@@ -92,7 +92,6 @@ export const MODULES_CONFIG = {
           { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
           { title: "Insertar Mnualmente", path: "/crm/administrador/leads/insert" },
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
-
         ],
       },
       {
