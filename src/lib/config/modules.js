@@ -67,19 +67,40 @@ export const MODULES_CONFIG = {
   },
   crm: {
     name: "CRM",
-    path: "/crmj",
+    path: "/crm",
     icon: BadgeDollarSign,
     navItems: [
       {
-        title: "pruebas",
-        icon: BadgeDollarSign,
-        path: "/crm/dashboard",
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/crm",
+        exact: true,
+      },
+      {
+        title: "Seguimineto",
+        icon: UsersRound,
+        path: "/crm/administrador/tracking",
         subItems: [
-          { title: "Nuevo", path: "/crm/orders/new" },
-          { title: "Nuevo", path: "/crm/orders/new" },
-          { title: "Nuevo", path: "/crm/orders/new" },
-          { title: "Nuevo", path: "/sales/orders/new" },
-          { title: "Nuevo", path: "/sales/orders/new" },
+          { title: "Por Asesor", path: "/crm/administrador/tracking" },
+        ],
+      },
+      {
+        title: "Asistencia",
+        icon: Contact,
+        path: "/rrhh/attendance",
+        subItems: [
+          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
+          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+        ],
+      },
+      {
+        title: "Vacaciones y Permisos",
+        icon: TicketsPlane,
+        path: "/rrhh/vacations",
+        subItems: [
+          { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
+          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
+          { title: "Registrar permisos", path: "/rrhh/permissions" },
         ],
       },
     ],
