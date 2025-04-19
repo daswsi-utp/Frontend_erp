@@ -1,4 +1,4 @@
-
+'use client'
 import { Dashboard } from "./dashboard/dashboard";
 
 export default function CrmPage() {
@@ -14,6 +14,7 @@ export default function CrmPage() {
       </div>
       
       <Dashboard />
+
     </div>
   );
 }
