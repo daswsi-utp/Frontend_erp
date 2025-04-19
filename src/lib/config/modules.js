@@ -77,7 +77,7 @@ export const MODULES_CONFIG = {
         exact: true,
       },
       {
-        title: "Seguimineto",
+        title: "Seguimiento",
         icon: UsersRound,
         path: "/crm/administrador/tracking",
         subItems: [
@@ -85,12 +85,14 @@ export const MODULES_CONFIG = {
         ],
       },
       {
-        title: "Asistencia",
+        title: "Lead",
         icon: Contact,
-        path: "/rrhh/attendance",
+        path: "/crm/administrador/leads",
         subItems: [
-          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
-          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+          { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
+          { title: "Insertar Mnualmente", path: "/crm/administrador/leads/insert" },
+          { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
+
         ],
       },
       {
