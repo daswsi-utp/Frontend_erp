@@ -1,0 +1,61 @@
+.ck.ck-editor__main {
+  background-color: #000000;
+  color: #000000; 
+  min-height: 150px; 
+}
+
+.ck.ck-content {
+  background-color: #000000;
+  color: #000000; /* Texto blanco */
+  min-height: 150px; /* Altura mínima del contenido */
+}
+
+.ck.ck-editor__main .ck-focused {
+  border-color: #4A5568;
+}
+
+.ck.ck-button .ck-button__label {
+  color: #ffffff;
+}
+
+.ck.ck-toolbar {
+  background-color: #000000;
+  border-bottom-color: #000000;
+}
+
+.ck.ck-toolbar .ck-button {
+  color: #ffffff;
+  margin-right: 10px; /* Aumentar espacio entre los botones */
+}
+
+.ck.ck-toolbar .ck-button.ck-off .ck-button__label {
+  color: #ffffff;
+}
+
+.ck.ck-toolbar .ck-button.ck-off:hover .ck-button__label,
+.ck.ck-toolbar .ck-button.ck-off:focus .ck-button__label {
+  color: #232323;
+}
+
+.ck.ck-toolbar .ck-dropdown__panel {
+  background-color: #1a202c;
+  color: #ffffff;
+}
+
+.ck-dropdown__panel .ck-list__item {
+  background-color: #1a202c; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+}
+
+.ck-dropdown__panel .ck-list__item:hover {
+  background-color: #2d3748; 
+}
+
+.ck-dropdown__panel .ck-list__item_selected {
+  background-color: #2d3748; /* Fondo para el ítem seleccionado */
+  color: #ffffff; /* Texto blanco */
+}
+
+.ck-placeholder {
+  color: #a0aec0; /* Placeholder color */
+}
