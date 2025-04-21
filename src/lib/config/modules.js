@@ -113,10 +113,22 @@ export const MODULES_CONFIG = {
     icon: BadgeDollarSign,
     navItems: [
       {
-        title: "Cotizaciones",
+        title: "Gestion de Cotizaciones",
         icon: BadgeDollarSign,
         path: "/sales/orders",
-        subItems: [{ title: "Nueva Corización", path: "/sales/orders/new" }],
+        subItems: [
+          { title: "Cotizaciones", path: "/sales/quotes" },
+          { title: "Nueva Corización", path: "/sales/newQuote" },
+        ],
+      },
+      
+      {
+        title: "Registro de Pedido de Venta",
+        icon: BadgeDollarSign,
+        path: "/sales/orders",
+        subItems: [
+          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/enterorders" },
+        ],
       },
     ],
   },
