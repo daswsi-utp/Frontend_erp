@@ -7,6 +7,8 @@ import {
   NotebookPen,
   LayoutDashboard,
   Calendar,
+  Contact,
+  TicketsPlane,
 } from "lucide-react";
 
 export const MODULES_CONFIG = {
@@ -22,12 +24,32 @@ export const MODULES_CONFIG = {
         exact: true,
       },
       {
-        title: "Empleados",
+        title: "Gestión de Empleados",
         icon: UsersRound,
         path: "/rrhh/employees",
         subItems: [
-          { title: "Nuevo", path: "/rrhh/employees/new" },
-          { title: "Listado", path: "/rrhh/employees" },
+          { title: "Empleados", path: "/rrhh/employees" },
+          { title: "Contratos", path: "/rrhh/contrats" },
+          { title: "Cargos y Departamentos", path: "/rrhh/departments" },
+        ],
+      },
+      {
+        title: "Asistencia",
+        icon: Contact,
+        path: "/rrhh/attendance",
+        subItems: [
+          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
+          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+        ],
+      },
+      {
+        title: "Vacaciones y Permisos",
+        icon: TicketsPlane,
+        path: "/rrhh/vacations",
+        subItems: [
+          { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
+          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
+          { title: "Registrar permisos", path: "/rrhh/permissions" },
         ],
       },
     ],
@@ -51,13 +73,68 @@ export const MODULES_CONFIG = {
     icon: BadgeDollarSign,
     navItems: [
       {
-        title: "pruebsa",
-        icon: BadgeDollarSign,
-        path: "/sales/orders",
-        subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/crm",
+        exact: true,
+      },
+      {
+        title: "Seguimiento",
+        icon: UsersRound,
+        path: "/crm/administrador/tracking",
+        subItems: [
+          { title: "Por Asesor", path: "/crm/administrador/tracking" },
+        ],
+      },
+      {
+        title: "Lead",
+        icon: Contact,
+        path: "/crm/administrador/leads",
+        subItems: [
+          { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
+          { title: "Insertar Mnualmente", path: "/crm/administrador/leads/insert" },
+          { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
+        ],
+      },
+      {
+        title: "Vacaciones y Permisos",
+        icon: TicketsPlane,
+        path: "/rrhh/vacations",
+        subItems: [
+          { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
+          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
+          { title: "Registrar permisos", path: "/rrhh/permissions" },
+        ],
       },
     ],
   },
+
+  sales: {
+    name: "Ventas",
+    path: "/sales",
+    icon: BadgeDollarSign,
+    navItems: [
+      {
+        title: "Gestion de Cotizaciones",
+        icon: BadgeDollarSign,
+        path: "/sales/orders",
+        subItems: [
+          { title: "Cotizaciones", path: "/sales/quotes" },
+          { title: "Nueva Corización", path: "/sales/newQuote" },
+        ],
+      },
+      
+      {
+        title: "Registro de Pedido de Venta",
+        icon: BadgeDollarSign,
+        path: "/sales/orders",
+        subItems: [
+          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/enterorders" },
+        ],
+      },
+    ],
+  },
+
   customers: {
     name: "Logistic",
     path: "/logistics",

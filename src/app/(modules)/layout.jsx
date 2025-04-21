@@ -8,9 +8,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 export default function ModulesLayout({ children }) {
     return (
         <div className="flex h-full w-full">
-            {/* Sidebar does not Fixed :) */}
             <AppSidebar />
-            {/* Main Content */}
             <div className="flex-1 flex flex-col h-full">
                 <header className="sticky top-0 z-40 border-b h-16 flex items-center justify-between px-4 bg-background">
                     <div className="flex items-center gap-4">
@@ -22,7 +20,6 @@ export default function ModulesLayout({ children }) {
                     </div>
                     <UserNav />
                 </header>
-
                 <main className="flex-1 overflow-auto p-6">
                     {children}
                 </main>
