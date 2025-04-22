@@ -352,7 +352,7 @@ export const getBadgeNotificationStatus = (state) => {
             <Badge variant="success"> Sin ver aún </Badge>
           </TooltipTrigger>
           <TooltipContent>
-            <p>El recordatorio no fue marcado como visto.</p>
+            <p>El recordatorio no fue marcado como visto</p>
           </TooltipContent>
         </Tooltip>
       );
