@@ -1,9 +1,9 @@
-// src/modules/sales/order/MetodoPagoSelector.tsx
+
 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const paymentmethod = () => {
+const Paymentmethod = () => {
   return (
     <div className="space-y-2">
       <Label>Método de Pago</Label>
@@ -20,4 +20,4 @@ const paymentmethod = () => {
   );
 };
 
-export default paymentmethod;
+export default Paymentmethod;
