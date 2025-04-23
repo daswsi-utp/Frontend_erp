@@ -117,7 +117,7 @@ export const MODULES_CONFIG = {
       {
         title: "Gestion de Cotizaciones",
         icon: BadgeDollarSign,
-        path: "/sales/orders",
+        path: "/sales/quotationManagement",
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
@@ -127,9 +127,9 @@ export const MODULES_CONFIG = {
       {
         title: "Registro de Pedido de Venta",
         icon: BadgeDollarSign,
-        path: "/sales/orders",
+        path: "/sales/registrationrequest",
         subItems: [
-          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/enterorders" },
+          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/registrationrequest"},
         ],
       },
     ],
