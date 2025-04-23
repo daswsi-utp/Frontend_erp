@@ -38,8 +38,7 @@ export const MODULES_CONFIG = {
         icon: Contact,
         path: "/rrhh/attendance",
         subItems: [
-          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
-          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+          { title: "Registrar Asistencia", path: "/rrhh/departmentAttendance" },
         ],
       },
       {
