@@ -1,7 +1,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { FaCheckCircle } from "react-icons/fa";
 import { FaQuestionCircle } from "react-icons/fa";
@@ -378,7 +377,7 @@ export const getBadgePersonalRecordAdminStatus = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaQuestionCircle} size="xl" style={{ color: "#000080" }} />
+            <FaQuestionCircle size="xl" style={{ color: "#000080" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La ficha no fue evaluada aun por el área administrativa.</p>
@@ -389,7 +388,7 @@ export const getBadgePersonalRecordAdminStatus = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaCheckCircle} size="xl" style={{ color: "#4BB543" }} />
+            <FaCheckCircle size="xl" style={{ color: "#4BB543" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La ficha fue aprobada por el área administrativa y enviada al aula virtual.</p>
@@ -400,7 +399,7 @@ export const getBadgePersonalRecordAdminStatus = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaCircleXmark} size="xl" style={{ color: "#FF9494" }} />
+            <FaCircleXmark size="xl" style={{ color: "#FF9494" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La ficha fue rechazada por el área administrativa.</p>
@@ -416,7 +415,7 @@ export const getBadgePersonalRecordComercialStatus = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaQuestionCircle} size="xl" style={{ color: "#000080" }} />
+            <FaQuestionCircle size="xl" style={{ color: "#000080" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La ficha no fue evaluada aun por el área comercial.</p>
@@ -427,7 +426,7 @@ export const getBadgePersonalRecordComercialStatus = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaCheckCircle} size="xl" style={{ color: "#4BB543" }} />
+            <FaCheckCircle size="xl" style={{ color: "#4BB543" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La ficha fue aprobada por el área comercial.</p>
@@ -438,7 +437,7 @@ export const getBadgePersonalRecordComercialStatus = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaCheckCircle} size="xl" style={{ color: "#FF9494" }} />
+            <FaCheckCircle size="xl" style={{ color: "#FF9494" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La ficha fue rechazada por el área comercial.</p>
@@ -454,7 +453,7 @@ export const getStatusPaymentSchedule = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaClock} size="xl" style={{ color: "#83d4e1" }} />
+            <FaClock size="xl" style={{ color: "#83d4e1" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>La cuota esta pendiente.</p>
@@ -465,7 +464,7 @@ export const getStatusPaymentSchedule = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaCheckCircle} size="xl" style={{ color: "#52cd7b" }} />
+            <FaCheckCircle size="xl" style={{ color: "#52cd7b" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>El pago de la cuota ya fue realizado.</p>
@@ -476,7 +475,7 @@ export const getStatusPaymentSchedule = (state) => {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <FontAwesomeIcon icon={FaCircleXmark} size="xl" style={{ color: "#FF9494" }} />
+            <FaCircleXmark size="xl" style={{ color: "#FF9494" }} />
           </TooltipTrigger>
           <TooltipContent>
             <p>El pago se dio de baja, el alumno no continuo pagando.</p>
