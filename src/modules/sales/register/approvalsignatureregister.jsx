@@ -1,9 +1,9 @@
-// src/modules/sales/register/approvalsignatureregister.tsx
+
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-const FirmaAprobacion = () => {
+const signatureApproval = () => {
   return (
     <div className="flex items-center space-x-2">
       <Checkbox id="aprobacion" />
@@ -12,4 +12,4 @@ const FirmaAprobacion = () => {
   );
 };
 
-export default FirmaAprobacion;
+export default signatureApproval;
