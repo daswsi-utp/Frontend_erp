@@ -47,8 +47,7 @@ export const MODULES_CONFIG = {
         path: "/rrhh/vacations",
         subItems: [
           { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
-          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
-          { title: "Registrar permisos", path: "/rrhh/permissions" },
+          { title: "Registrar Permisos", path: "/rrhh/permissions" },
         ],
       },
     ],
