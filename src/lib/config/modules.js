@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   UsersRound,
   Forklift,
@@ -5,6 +6,7 @@ import {
   BookUser,
   NotebookPen,
   LayoutDashboard,
+  Calendar,
   Contact,
   TicketsPlane,
 } from "lucide-react";
@@ -113,10 +115,22 @@ export const MODULES_CONFIG = {
     icon: BadgeDollarSign,
     navItems: [
       {
-        title: "Cotizaciones",
+        title: "Gestion de Cotizaciones",
         icon: BadgeDollarSign,
         path: "/sales/orders",
-        subItems: [{ title: "Nueva Corización", path: "/sales/orders/new" }],
+        subItems: [
+          { title: "Cotizaciones", path: "/sales/quotes" },
+          { title: "Nueva Corización", path: "/sales/newQuote" },
+        ],
+      },
+      
+      {
+        title: "Registro de Pedido de Venta",
+        icon: BadgeDollarSign,
+        path: "/sales/orders",
+        subItems: [
+          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/enterorders" },
+        ],
       },
     ],
   },
@@ -134,4 +148,22 @@ export const MODULES_CONFIG = {
       },
     ],
   },
+  planning: {
+    name: "Planning",
+    path: "/planning",
+    icon: BadgeDollarSign,
+    navItems: [
+      {
+        title: "All Plannings",
+        icon: LayoutDashboard,
+        path: "/planning",
+        exact: true,
+      },
+      {
+        title: "Create project",
+        icon: Calendar,
+        path: "/planning/project",
+      },
+    ]
+  }
 };
