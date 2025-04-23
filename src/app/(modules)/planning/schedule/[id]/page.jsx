@@ -1,3 +1,7 @@
+"use client"
+
+import CalendarSchedule from "@/components/calendar-schedule-planning";
+import FormSchedule from "@/components/form-schedule";
 import React from "react";
 
 const Schedule = ({ params }) => {
@@ -33,15 +37,18 @@ const Schedule = ({ params }) => {
     };
 
     return (
-        <div className="p-8 max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold mb-6">{planning.name}</h1>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-gray-700 mb-4">{planning.description}</p>
-                <p className="text-gray-500">Periodo: {planning.dates}</p>
-                <p className="mt-4 text-sm text-gray-400">ID: {id}</p>
+        <div>
+            <h1 className="">{planning.name}</h1>
+            <div className="flex gap-4">
+                <section className="w-[25%]">
+                    <FormSchedule></FormSchedule>
+                </section>
+                <section className="w-[75%]">
+                    <CalendarSchedule></CalendarSchedule>
+                </section>
             </div>
         </div>
-    );
+    )
 }
 
 export default Schedule
