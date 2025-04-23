@@ -5,7 +5,7 @@ import { ModeToggle } from '@/components/mode-toogle';
 
 const modules = [
     { title: 'RRHH', icon: <UsersRound size={32} />, link: '/rrhh' },
-    { title: 'Logística', icon: <Forklift size={32} />, link: '/logistics' },
+    { title: 'Logística', icon: <Forklift size={32} />, link: '/Logistic' },
     { title: 'Ventas', icon: <BadgeDollarSign size={32} />, link: '/sales' },
     { title: 'Clientes', icon: <BookUser size={32} />, link: '/customers' },
     { title: 'Planeación', icon: <NotebookPen size={32} />, link: '/planning' },
