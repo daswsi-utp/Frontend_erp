@@ -10,6 +10,9 @@ import {
   Select,
   Input
 } from "@/components/ui"
+import Papa from 'papaparse'
+import LeadsImportTable from "@/modules/crm/leads/tables/LeadsImportTable"
+
 
 const pageImport = () => {
   return (
