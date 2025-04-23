@@ -37,7 +37,7 @@ export function SimpleDropDown() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreVertical className="h-4 w-4" /> {/* Ícono elegante */}
+            <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -51,43 +51,43 @@ export function SimpleDropDown() {
       </DropdownMenu>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogContent>
-        <DialogHeader>
+        <DialogContent>
+          <DialogHeader>
             <DialogTitle>Editar Registro</DialogTitle>
-        </DialogHeader>
-        <form className="space-y-4">
+          </DialogHeader>
+          <form className="space-y-4">
             <div>
-            <label className="block text-sm font-medium mb-1">Nombre Plan</label>
-            <input
+              <label className="block text-sm font-medium mb-1">Nombre Plan</label>
+              <input
                 type="text"
                 className="w-full p-2 border rounded"
-            />
+              />
             </div>
             <div>
-            <label className="block text-sm font-medium mb-1">Descripcion</label>
-            <input
+              <label className="block text-sm font-medium mb-1">Descripcion</label>
+              <input
                 type="text"
                 className="w-full p-2 border rounded"
-            />
+              />
             </div>
             <div>
-            <label className="block text-sm font-medium mb-1">Fecha Inicio</label>
-            <input
+              <label className="block text-sm font-medium mb-1">Fecha Inicio</label>
+              <input
                 type="date"
                 className="w-full p-2 border rounded"
-            />
+              />
             </div>
             <div>
-            <label className="block text-sm font-medium mb-1">Fecha Fin</label>
-            <input
+              <label className="block text-sm font-medium mb-1">Fecha Fin</label>
+              <input
                 type="date"
                 className="w-full p-2 border rounded"
-            />
+              />
             </div>
             <Button type="submit" className="mt-2">
-            Guardar
+              Guardar
             </Button>
-        </form>
+          </form>
         </DialogContent>
       </Dialog>
 
