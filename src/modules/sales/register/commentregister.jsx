@@ -1,9 +1,9 @@
-// src/modules/sales/register/commentregister.tsx
+
 
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-const Comentarios = () => {
+const commentregister = () => {
   return (
     <div className="space-y-2">
       <Label htmlFor="comentarios">Comentarios o motivo de rechazo</Label>
@@ -12,4 +12,4 @@ const Comentarios = () => {
   );
 };
 
-export default Comentarios;
+export default commentregister;

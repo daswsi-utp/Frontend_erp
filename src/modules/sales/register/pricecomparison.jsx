@@ -1,8 +1,8 @@
-// src/modules/sales/register/pricecomparison.tsx
+
 
 import { Input } from "@/components/ui/input";
 
-const ComparacionPrecios = () => {
+const pricecomparison = () => {
   return (
     <div className="space-y-2">
       <label className="font-medium">Comparación de Precios Históricos</label>
@@ -15,4 +15,4 @@ const ComparacionPrecios = () => {
   );
 };
 
-export default ComparacionPrecios;
+export default pricecomparison;
