@@ -130,6 +130,7 @@ export const MODULES_CONFIG = {
         path: "/sales/registrationrequest",
         subItems: [
           { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/registrationrequest"},
+          { title: "Aprobación de Cotizaciones", path: "/sales/approvalofquotations"},
         ],
       },
     ],
