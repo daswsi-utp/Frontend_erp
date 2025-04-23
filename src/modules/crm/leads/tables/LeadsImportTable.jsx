@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Row,
-  Col,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Select,
-  Switch,
-  Tooltip,
-} from "@/components/ui"; 
+import { FormProvider, useForm } from "react-hook-form"; 
+import Spinner from "@/components/shared/Spinner"; 
+import { Button } from "@/components/shared/button";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
 import GeneralTooltip from "@/components/shared/generalTooltip";
-import { useCrud } from "@/hooks/useCrud";
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import useCrud from "@/hooks/useCrud";
 import {
   capitalize,
   lettersOnly,
   regionNames,
-} from "@/lib/auxiliarFunctions"
+} from "@/lib/auxiliarFunctions";
 import lookup from "country-code-lookup";
-
-const LeadsImportTable  = (props) => {
+import Switch from "react-switch"; 
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectLabel } from "@/components/ui/select"; 
+const LeadsImportTable = (props) => {
   const { data, coursesAvailable } = props;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +29,8 @@ const LeadsImportTable  = (props) => {
   const [validated, setValidated] = useState(false);
   const [qualityLead, setQualityLead] = useState(false);
   const { insertModel: insertLeads } = useCrud("");
+
+  const methods = useForm();
 
   const layoutCallback = () => {
     setValidated(false);
@@ -43,15 +43,8 @@ const LeadsImportTable  = (props) => {
   };
 
   const handleInsertLeads = async () => {
-    const finalDataPost = {
-      data: finalData,
-    };
-    await insertLeads(
-      finalDataPost,
-      "/api/v1/marketing/leads/insert_leads",
-      layoutCallback
-    );
-    // console.log(finalDataPost)
+    const finalDataPost = { data: finalData };
+    await insertLeads(finalDataPost, "/api/v1/crm/leads/insert_leads", layoutCallback);
   };
 
   const middlewareInsertLeads = async (event) => {
@@ -73,9 +66,7 @@ const LeadsImportTable  = (props) => {
     } else if (_client.country.length > 2) {
       return {
         name: capitalize(_client.country),
-        code:
-          lookup.byCountry(_client.country) &&
-          lookup.byCountry(_client.country).iso2,
+        code: lookup.byCountry(_client.country) && lookup.byCountry(_client.country).iso2,
       };
     } else {
       return {
@@ -228,71 +219,70 @@ const LeadsImportTable  = (props) => {
   }, [qualityLead]);
 
   return (
-    <>
-      <Row>
-        <Col xs>
+   
+    <FormProvider {...methods}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center space-x-3">
           <Button
-            size="small"
-            color="success"
-            className="ms-3"
+            size="sm"
+            variant="success"
             onClick={(e) => middlewareInsertLeads(e)}
+            className="font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
           >
-            Insertar los datos procesados{" "}
-            <CIcon icon={cilSave} className="ms-1" />
+            Insertar los datos procesados
           </Button>
-          <Tooltip content="Marca esta casilla si estos leads son de calidad.">
+          <GeneralTooltip content="Marca esta casilla si estos leads son de calidad.">
             <Switch
-              size="large"
+              size="lg"
               id="qualityLead"
               label="Lead de calidad?"
-              className="ms-3 float-end"
+              className="ml-3"
               checked={qualityLead}
               onChange={() => setQualityLead(!qualityLead)}
             />
-          </Tooltip>
-        </Col>
-        <Col xs>
-          <form
-            className="row g-3 needs-validation"
-            noValidate
-            validated={validated}
-            onSubmit={middlewareInsertLeads}
-          >
-            <Select
-              size="small"
-              className="mb-3"
-              aria-describedby="validationCustom04Feedback"
-              feedbackInvalid="Debes escoger un curso o en su defecto escoger la opcion Sin Asignar."
-              id="validationCustom04"
-              name="course_id"
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione una opcion</option>
-              {coursesAvailable.map((course, index) => (
-                <option key={index} value={course.id}>
-                  {course.name}
-                </option>
-              ))}
-            </Select>
-          </form>
-        </Col>
-      </Row>
+          </GeneralTooltip>
+        </div>
 
+        {/* Formulario para seleccionar curso */}
+        <div>
+          <form onSubmit={middlewareInsertLeads} className="space-y-4">
+            <FormItem>
+              <FormLabel htmlFor="course_id" className="font-bold">
+                Curso de Interés
+              </FormLabel>
+              <FormControl>
+                <Select
+                  id="course_id"
+                  name="course_id"
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccione una opción</option>
+                  {coursesAvailable.map((course, index) => (
+                    <SelectItem key={index} value={course.id}>
+                      {course.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormMessage className="font-bold text-red-500">
+                Selecciona un curso para continuar.
+              </FormMessage>
+            </FormItem>
+          </form>
+        </div>
+      </div>
+
+      {/* Tabla de datos */}
       {isLoading ? (
         <Spinner color="primary" variant="grow" />
       ) : (
-        <Table className="mt-4" hover responsive>
+        <Table className="mt-4">
           <TableHead>
             <TableRow>
-              {data._header.map(
-                (header, index) =>
-                  index < data._header.length - 1 && (
-                    <TableCell key={index} scope="col">
-                      {header.label}
-                    </TableCell>
-                  )
-              )}
+              {data._header.map((header, index) => (
+                <TableCell key={index}>{header.label}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -313,8 +303,8 @@ const LeadsImportTable  = (props) => {
           </TableBody>
         </Table>
       )}
-    </>
-  )
-}
+    </FormProvider>
+  );
+};
 
-export default LeadsImportTable
+export default LeadsImportTable;
