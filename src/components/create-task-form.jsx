@@ -1,27 +1,21 @@
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog";
+import ScrollAreaUsers from "./scroll-area-users"
+import { Button } from "./shared/button"
+import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogContent } from "./ui/dialog"
 
-import { Button } from "@/components/ui/button";
-import ScrollAreaUsers from "./scroll-area-users";
+const CreateTaskForm = () => {
 
-const SimpleFormPlanning = () => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">Crear Plan +</Button>
+                <Button variant="outline">Crear Tarea +</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Editar Registro</DialogTitle>
+                    <DialogTitle>Crear Tarea</DialogTitle>
                 </DialogHeader>
                 <form className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Nombre Plan</label>
+                        <label className="block text-sm font-medium mb-1">Nombre Tarea</label>
                         <input
                             type="text"
                             className="w-full p-2 border rounded"
@@ -36,7 +30,7 @@ const SimpleFormPlanning = () => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Agrega empleados</label>
-                        <ScrollAreaUsers className="h-30 rounded-md border"/>
+                        <ScrollAreaUsers />
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Fecha Inicio</label>
@@ -59,6 +53,7 @@ const SimpleFormPlanning = () => {
             </DialogContent>
         </Dialog>
     )
+
 }
 
-export default SimpleFormPlanning
+export default CreateTaskForm

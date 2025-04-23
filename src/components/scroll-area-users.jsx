@@ -19,12 +19,29 @@ const ScrollAreaUsers = () => {
         },
         {
             id: 4,
-            nombre: "pinwino",
+            nombre: "pinwino2",
+        },
+        {
+            id: 5,
+            nombre: "pinwino chambeador",
+        },
+        {
+            id: 6,
+            nombre: "pinwino vago",
+        },
+        {
+            id: 7,
+            nombre: "pinwino experto en redes",
+        }
+        ,
+        {
+            id: 8,
+            nombre: "Pinwino gnomo de ironforge",
         }
     ]
 
     return (
-        <ScrollArea className="h-30 rounded-md border">
+        <ScrollArea className="h-55 rounded-md border">
             <div className="p-4">
                 <h4 className="mb-4 text-sm font-medium leading-none">Empleados</h4>
                 {empleados.map((empleado) => (
