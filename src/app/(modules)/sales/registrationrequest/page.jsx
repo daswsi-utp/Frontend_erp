@@ -1,5 +1,3 @@
-// pages/ventas/registrationrequest.jsx
-
 "use client";
 
 import { useState } from "react";
