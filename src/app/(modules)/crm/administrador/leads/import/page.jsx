@@ -8,7 +8,6 @@ import AppDropzone from "@/components/Dropzones/AppDropzone";
 import { uniqBy } from "@/lib/auxiliarFunctions";
 import useCrud from "@/hooks/useCrud";
 
-
 const acceptParams = {
   'text/csv': ['.csv']
 }

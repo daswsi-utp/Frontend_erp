@@ -38,6 +38,8 @@
     "@schedule-x/react": "^2.28.0",
     "@schedule-x/theme-shadcn": "^2.28.0",
     "@tabler/icons-react": "^3.31.0",
+    "@tailwindcss/oxide": "^4.1.4",
+    "autoprefixer": "^10.4.21",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -49,6 +51,7 @@
     "next": "15.2.4",
     "next-themes": "^0.4.6",
     "papaparse": "^5.5.2",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-day-picker": "^9.6.7",
     "react-dom": "^19.0.0",
@@ -65,6 +68,6 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4.1.4"
   }
 }
