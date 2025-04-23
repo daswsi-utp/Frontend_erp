@@ -38,8 +38,7 @@ export const MODULES_CONFIG = {
         icon: Contact,
         path: "/rrhh/attendance",
         subItems: [
-          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
-          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+          { title: "Registrar Asistencia", path: "/rrhh/departmentAttendance" },
         ],
       },
       {
@@ -121,6 +120,7 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
+          { title: "Aprobación de Cotizaciones", path: "/sales/approvalofquotations"},
         ],
       },
       
@@ -130,6 +130,7 @@ export const MODULES_CONFIG = {
         path: "/sales/registrationrequest",
         subItems: [
           { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/registrationrequest"},
+          
         ],
       },
     ],
