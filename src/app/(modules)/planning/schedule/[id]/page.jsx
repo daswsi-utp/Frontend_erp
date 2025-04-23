@@ -1,7 +1,9 @@
 "use client"
 
 import CalendarSchedule from "@/components/calendar-schedule-planning";
-import FormSchedule from "@/components/form-schedule";
+import CreateTaskForm from "@/components/create-task-form";
+import ManageParticipants from "@/components/manage-participants-planningDialog";
+import { Separator } from "@/components/ui/separator";
 import React from "react";
 
 const Schedule = ({ params }) => {
@@ -38,10 +40,12 @@ const Schedule = ({ params }) => {
 
     return (
         <div>
-            <h1 className="">{planning.name}</h1>
-            <div className="flex gap-4">
-                <section className="w-[25%]">
-                    <FormSchedule></FormSchedule>
+            <div className="flex gap-4 align-top">
+                <section className="w-[25%] flex flex-col gap-2">
+                    <h1 className="text-[20px]">{planning.name}</h1>
+                    <Separator></Separator>
+                    <CreateTaskForm></CreateTaskForm>
+                    <ManageParticipants></ManageParticipants>
                 </section>
                 <section className="w-[75%]">
                     <CalendarSchedule></CalendarSchedule>
