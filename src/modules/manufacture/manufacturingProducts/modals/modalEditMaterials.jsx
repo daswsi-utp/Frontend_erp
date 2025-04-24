@@ -20,9 +20,11 @@ const EditMaterialModal = ({ open, onOpenChange, item }) => {
 
   const handleSave = () => {
     console.log("Material editado:", formData);
-    // Aquí deberías llamar tu función para guardar los cambios en el backend o estado global
+    // Faltaria a;adir funcion para guardar cambios en backend
     onOpenChange(false);
   };
+
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -30,7 +32,7 @@ const EditMaterialModal = ({ open, onOpenChange, item }) => {
         <DialogHeader>
           <DialogTitle>Editar Material</DialogTitle>
         </DialogHeader>
-
+  
         <div className="space-y-4">
           <div className="flex flex-col gap-1">
             <label className="text-sm">Nombre</label>
@@ -39,24 +41,31 @@ const EditMaterialModal = ({ open, onOpenChange, item }) => {
               onChange={(e) => handleChange("name", e.target.value)}
             />
           </div>
-
+  
           <div className="flex flex-col gap-1">
-            <label className="text-sm">Cantidad</label>
+            <label className="text-sm">Categoría</label>
             <Input
-              type="number"
-              defaultValue={item.quantity}
-              onChange={(e) => handleChange("quantity", e.target.value)}
+              defaultValue={item.category}
+              onChange={(e) => handleChange("category", e.target.value)}
             />
           </div>
-
+  
           <div className="flex flex-col gap-1">
-            <label className="text-sm">Unidad</label>
+            <label className="text-sm">Unidades</label>
             <Input
               defaultValue={item.unit}
               onChange={(e) => handleChange("unit", e.target.value)}
             />
           </div>
-
+  
+          <div className="flex flex-col gap-1">
+            <label className="text-sm">Código</label>
+            <Input
+              defaultValue={item.code}
+              onChange={(e) => handleChange("code", e.target.value)}
+            />
+          </div>
+  
           <div className="flex flex-col gap-1">
             <label className="text-sm">Estado</label>
             <Select
@@ -73,13 +82,14 @@ const EditMaterialModal = ({ open, onOpenChange, item }) => {
             </Select>
           </div>
         </div>
-
+  
         <DialogFooter>
           <Button onClick={handleSave} variant="default">Guardar cambios</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
+  
 };
 
 export default EditMaterialModal;

@@ -84,12 +84,20 @@ const FinishedProductsTable = ({ data, setSelectedProduct, setOpenEdit, setOpenD
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
-                          <Link href={`/materialList/${encodeURIComponent(product.code)}`}>
+                          
+                          {/*<Link href={`/manufacture/masterData/materialList/${encodeURIComponent(product.code)}`}>
+                            <Boxes size={16} className="mx-3" />
+                          </Link>*/}
+
+                          <Link href="/manufacture/masterData/materialList">
                             <Boxes size={16} className="mx-3" />
                           </Link>
+
+                                
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Ver materiales</p>
+                          
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>

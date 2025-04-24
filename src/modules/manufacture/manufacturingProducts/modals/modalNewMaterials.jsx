@@ -37,12 +37,12 @@ const NewMaterialModal = () => {
 
   const handleSave = () => {
     console.log("Nuevo material guardado:", formData);
-    // Aquí puedes llamar a una función para guardar el material en la base de datos
-    // Y luego cerrar el modal si manejas el estado de apertura externamente
+    // llamar a una función para guardar el material en la BD
+    
   };
 
   const categories = ["Oficina", "Limpieza", "Tecnología", "Otros"];
-  const units = ["Unidad", "Caja", "Paquete", "Litro", "Metro"];
+  /*const units = ["Unidad", "Caja", "Paquete", "Litro", "Metro"];*/
 
   return (
     <Dialog>
@@ -83,32 +83,29 @@ const NewMaterialModal = () => {
 
           <div className="flex flex-col gap-1">
             <label className="text-sm">Unidad</label>
-            <Select onValueChange={(value) => handleChange("unit", value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona una unidad" />
-              </SelectTrigger>
-              <SelectContent>
+            <Input onChange={(e) => handleChange("code", e.target.value)} />
+              {/*<SelectContent>
                 {units.map((u, index) => (
                   <SelectItem key={index} value={u}>
                     {u}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
+              </SelectContent>*/}
+            
           </div>
 
           <div className="flex flex-col gap-1">
             <label className="text-sm">Estado</label>
             <Select
-              defaultValue="Activo"
+              defaultValue="Disponible"
               onValueChange={(value) => handleChange("state", value)}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecciona el estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Activo">Activo</SelectItem>
-                <SelectItem value="Inactivo">Inactivo</SelectItem>
+                <SelectItem value="Disponible">Disponible</SelectItem>
+                <SelectItem value="No disponible">No disponible</SelectItem>
               </SelectContent>
             </Select>
           </div>

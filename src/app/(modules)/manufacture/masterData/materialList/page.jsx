@@ -12,23 +12,26 @@ const MaterialsExamples = [
   {
     id: 1,
     name: "Madera Pino",
-    quantity: "5",
-    unit: "Tablas",
+    unit: "5",
+    category: "Tablas",
     state: "Disponible",
+    code: "MT001",
   },
   {
     id: 2,
     name: "Clavos de acero",
-    quantity: "30",
-    unit: "Unidades",
+    unit: "30",
+    category: "Clavos y alambres",
     state: "Disponible",
+    code: "MT002",
   },
   {
     id: 3,
     name: "Barniz",
-    quantity: "1",
-    unit: "Litro",
+    unit: "55",
+    category: "Liquido",
     state: "Disponible",
+    code: "MT003",
   },
 ];
 

@@ -14,7 +14,7 @@ const finishedProducts = [
     category: "Limpieza",
     unitMeasure: "Litros",
     unit: 2,
-    state: "listo",
+    state: "Disponible",
 
     quantity: 100,
     cost: 5.0,
@@ -26,7 +26,7 @@ const finishedProducts = [
     name: "Producto B",
     category: "Higiene",
     unit: 2,
-    state: "listo",
+    state: "Disponible",
 
     unitMeasure: "Unidades",
     quantity: 200,
@@ -39,7 +39,7 @@ const finishedProducts = [
     name: "Producto C",
     category: "Alimentos",
     unit: 2,
-    state: "listo",
+    state: "Disponible",
 
     unitMeasure: "Kg",
     quantity: 75,

@@ -9,6 +9,14 @@ import {
   Calendar,
   Contact,
   TicketsPlane,
+  FileAxis3d,
+  FileChartLine,
+  FileClock,
+  CalendarClock,
+  BookCopy,
+  
+  
+  
 } from "lucide-react";
 
 export const MODULES_CONFIG = {
@@ -183,12 +191,39 @@ export const MODULES_CONFIG = {
       
       {
         title: "Datos Maestros",
-        icon: UsersRound,
+        icon: FileChartLine,
         path: "/manufacture/masterData",
         subItems: [
           { title: "Productos", path: "/manufacture/masterData/manufacturingProducts" },
         ],
       },
+
+      {
+        title: "Control de Fabricación",
+        icon: FileClock,
+        path: "/manufacture/manufactoringControl",
+        subItems: [
+          { title: "Orden de producción", path: "/manufacture/manufactoringControl/productionOrder" },
+        ],
+      },
+
+      {
+        title: "Planificacion de la produccion",
+        icon: CalendarClock,
+        path: "/manufacture/productionPlanning",
+        subItems: [
+          { title: "MRP", path: "/manufacture/productionPlanning/MRP" },
+        ],
+      },
+
+      {
+        title: "KANBAN - Estado de la Producción",
+        icon: BookCopy,
+        path: "/manufacture/kanban",
+        
+      },
+
+
       
     ],
   }

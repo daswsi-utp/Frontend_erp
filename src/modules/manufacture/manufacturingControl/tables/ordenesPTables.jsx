@@ -18,7 +18,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete }) => {
+const OrdenesProduccionTable = ({
+  data,
+  setSelectedOrden,
+  setOpenEdit,
+  setOpenDelete
+}) => {
   return (
     <div className="relative w-full max-w-[100vw] overflow-hidden">
       <ScrollArea className="w-full">
@@ -27,23 +32,25 @@ const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete 
             <TableHeader className="bg-gray-200 dark:bg-gray-900">
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Categoría</TableHead>
-                <TableHead>Unidades</TableHead>
-                <TableHead>Código</TableHead>
+                <TableHead>Producto</TableHead>
+                <TableHead>Cantidad</TableHead>
+                <TableHead>Inicio</TableHead>
+                <TableHead>Fin</TableHead>
+                <TableHead>Responsable</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Opciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.map((material) => (
-                <TableRow key={material.id}>
-                  <TableCell>{material.id}</TableCell>
-                  <TableCell>{material.name}</TableCell>
-                  <TableCell>{material.category}</TableCell>
-                  <TableCell>{material.unit}</TableCell>
-                  <TableCell>{material.code}</TableCell>
-                  <TableCell>{material.state}</TableCell>
+              {data?.map((orden) => (
+                <TableRow key={orden.id}>
+                  <TableCell>{orden.id}</TableCell>
+                  <TableCell>{orden.nombreProducto}</TableCell>
+                  <TableCell>{orden.cantidad}</TableCell>
+                  <TableCell>{orden.fechaInicio}</TableCell>
+                  <TableCell>{orden.fechaFin}</TableCell>
+                  <TableCell>{orden.responsable}</TableCell>
+                  <TableCell>{orden.estado}</TableCell>
                   <TableCell className="w-32">
                     <TooltipProvider>
                       <Tooltip>
@@ -51,7 +58,7 @@ const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete 
                           <Button
                             variant="link"
                             onClick={() => {
-                              setSelectedMaterial(material);
+                              setSelectedOrden(orden);
                               setOpenEdit(true);
                             }}
                           >
@@ -59,7 +66,7 @@ const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete 
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Editar material</p>
+                          <p>Editar orden</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -70,7 +77,7 @@ const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete 
                           <Button
                             variant="destructive"
                             onClick={() => {
-                              setSelectedMaterial(material);
+                              setSelectedOrden(orden);
                               setOpenDelete(true);
                             }}
                           >
@@ -78,7 +85,7 @@ const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete 
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Eliminar material</p>
+                          <p>Eliminar orden</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -94,4 +101,4 @@ const MaterialsTable = ({ data, setSelectedMaterial, setOpenEdit, setOpenDelete 
   );
 };
 
-export default MaterialsTable;
+export default OrdenesProduccionTable;
