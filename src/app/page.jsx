@@ -1,13 +1,15 @@
+"use client"
+
 import Link from 'next/link';
 import { UsersRound, Forklift, BadgeDollarSign, BookUser, NotebookPen, Factory  } from 'lucide-react';
 import { UserNav } from '@/components/user-nav';
 import { ModeToggle } from '@/components/mode-toogle';
+import LandbotFloating from '@/components/landbot-floating';
 
 const modules = [
     { title: 'RRHH', icon: <UsersRound size={32} />, link: '/rrhh' },
-    { title: 'Logística', icon: <Forklift size={32} />, link: '/logistics' },
+    { title: 'Logística', icon: <Forklift size={32} />, link: '/Logistic' },
     { title: 'Ventas', icon: <BadgeDollarSign size={32} />, link: '/sales' },
-    { title: 'Clientes', icon: <BookUser size={32} />, link: '/customers' },
     { title: 'Planeación', icon: <NotebookPen size={32} />, link: '/planning' },
     { title: 'Manufactura', icon: <Factory size={32} />, link: '/manufacture' },
     { title: 'CRM', icon: <Factory size={32} />, link: '/crm' },
@@ -53,6 +55,7 @@ export default function Home() {
                         </Link>
                     ))}
                 </div>
+                <LandbotFloating></LandbotFloating>
             </main>
         </div>
     );

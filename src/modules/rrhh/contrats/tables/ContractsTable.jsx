@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Trash2, Users } from 'lucide-react';
+import { Eye, Trash2, Users, SquarePen } from 'lucide-react';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 const ContractsTable = ({ contracts, setSelectedContract, setSelectedFile, setOpenEdit, setOpenDelete, setOpenContract }) => {
@@ -71,6 +71,10 @@ const ContractsTable = ({ contracts, setSelectedContract, setSelectedFile, setOp
                                     setSelectedContract(contract);
                                     setOpenDelete(true);
                                 }}><Trash2 size={16}/></Button>
+                                <Button variant="link" onClick={() => {
+                                    setSelectedContract(contract);
+                                    setOpenEdit(true);
+                                }}><SquarePen size={16}/></Button>
                             </TableCell>
                         </TableRow>
                         ))

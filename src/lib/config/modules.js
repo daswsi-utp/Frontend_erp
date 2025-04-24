@@ -60,19 +60,6 @@ export const MODULES_CONFIG = {
       },
     ],
   },
-  customers: {
-    name: "Clientes",
-    path: "/customers",
-    icon: BadgeDollarSign,
-    navItems: [
-      {
-        title: "Pedidos",
-        icon: BadgeDollarSign,
-        path: "/sales/orders",
-        subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
-      },
-    ],
-  },
   crm: {
     name: "CRM",
     path: "/crm",
@@ -93,25 +80,25 @@ export const MODULES_CONFIG = {
         ],
       },
       {
-        title: "Lead",
+        title: "Leads",
         icon: Contact,
         path: "/crm/administrador/leads",
         subItems: [
           { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
-          { title: "Insertar Mnualmente", path: "/crm/administrador/leads/insert" },
+          { title: "Insertar Manualmente", path: "/crm/administrador/leads/insert" },
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
         ],
       },
-      {
-        title: "Vacaciones y Permisos",
-        icon: TicketsPlane,
-        path: "/rrhh/vacations",
-        subItems: [
-          { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
-          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
-          { title: "Registrar permisos", path: "/rrhh/permissions" },
-        ],
-      },
+      // {
+      //   title: "Vacaciones y Permisos",
+      //   icon: TicketsPlane,
+      //   path: "/rrhh/vacations",
+      //   subItems: [
+      //     { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
+      //     { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
+      //     { title: "Registrar permisos", path: "/rrhh/permissions" },
+      //   ],
+      // },
     ],
   },
 
@@ -149,14 +136,14 @@ export const MODULES_CONFIG = {
     name: "Logistic",
     path: "/logistics",
     icon: BadgeDollarSign,
-    navItems: [
-      {
-        title: "Pedidos",
-        icon: BadgeDollarSign,
-        path: "/sales/orders",
-        subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
-      },
-    ],
+    // navItems: [
+    //   {
+    //     title: "Pedidos",
+    //     icon: BadgeDollarSign,
+    //     path: "/sales/orders",
+    //     subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
+    //   },
+    // ],
   },
   planning: {
     name: "Planning",
