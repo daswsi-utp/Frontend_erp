@@ -184,7 +184,7 @@ export const MODULES_CONFIG = {
       {
         title: "Datos Maestros",
         icon: UsersRound,
-        //path: "/manufacture/administrador/tracking",
+        path: "/manufacture/masterData",
         subItems: [
           { title: "Productos", path: "/manufacture/masterData/manufacturingProducts" },
         ],
