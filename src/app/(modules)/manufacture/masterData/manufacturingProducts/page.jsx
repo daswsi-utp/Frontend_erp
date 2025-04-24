@@ -64,7 +64,8 @@ const FinishedProducts = () => {
       <EditMaterialsModal
         open={openEdit}
         onOpenChange={setOpenEdit}
-        product={selectedProduct}
+        //product={selectedProduct}
+        item={selectedProduct}
         onProductChange={setSelectedProduct}
       />
 
