@@ -1,6 +1,6 @@
 'use client'
 import { Badge } from '@/components/ui/badge'
-import UsersTable from '@/components/GeneralComponents/Tables/UsersTable'
+import UsersTable from './UsersTable'
 
 const columns = [
  { key: 'index', label: '#', className: 'w-10' },
