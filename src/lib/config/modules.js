@@ -38,8 +38,7 @@ export const MODULES_CONFIG = {
         icon: Contact,
         path: "/rrhh/attendance",
         subItems: [
-          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
-          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+          { title: "Registrar Asistencia", path: "/rrhh/departmentAttendance" },
         ],
       },
       {
@@ -48,8 +47,7 @@ export const MODULES_CONFIG = {
         path: "/rrhh/vacations",
         subItems: [
           { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
-          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
-          { title: "Registrar permisos", path: "/rrhh/permissions" },
+          { title: "Registrar Permisos", path: "/rrhh/permissions" },
         ],
       },
     ],
@@ -121,6 +119,7 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
+          { title: "Aprobación de Cotizaciones", path: "/sales/approvalofquotations"},
         ],
       },
       
@@ -129,7 +128,10 @@ export const MODULES_CONFIG = {
         icon: BadgeDollarSign,
         path: "/sales/registrationrequest",
         subItems: [
-          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/registrationrequest"},
+          { title: "Ingresar órdenes de clientes", path: "/sales/registrationrequest"},
+          { title: "Convetir a Órden", path: "/sales/convertorders"},
+          { title: "Tabla de Pedidos", path: "/sales/Tableorders"},
+          
         ],
       },
     ],

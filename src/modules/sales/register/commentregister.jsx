@@ -1,10 +1,13 @@
-import { Textarea } from "@/components/ui/textarea";
 
-const Comentarios = () => {
+
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+
+const commentregister = () => {
   return (
     <div className="space-y-2">
-      <label className="font-medium">Comentarios o motivo de rechazo</label>
-      <Textarea placeholder="Ingrese sus comentarios aquí..." />
+      <Label htmlFor="comentarios">Comentarios o motivo de rechazo</Label>
+      <Textarea id="comentarios" placeholder="Ingrese sus comentarios aquí..." />
     </div>
   );
 };
