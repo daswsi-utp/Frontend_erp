@@ -1,23 +1,26 @@
-'use client';
-import { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Eye, Phone, Users, Search } from 'lucide-react';
+'use client'
+import { useState, useMemo } from 'react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Eye, Phone, Users, Search, BarChart2 } from 'lucide-react'
+import StatsModal from '../modals/StatsModal'
 
 const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedSeller, setSelectedSeller] = useState(null)
+  const [statsModalOpen, setStatsModalOpen] = useState(false)
 
   const filteredSellers = useMemo(() => {
-    if (!searchTerm) return sellersActive;
+    if (!searchTerm) return sellersActive
     return sellersActive.filter(seller =>
       seller.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       seller.phone.includes(searchTerm) ||
-      seller.team.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.country.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [sellersActive, searchTerm]);
+      seller.team?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      seller.country?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [sellersActive, searchTerm])
 
   const columns = [
     { key: 'index', label: '#', className: 'w-10' },
@@ -27,13 +30,18 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
     { key: 'created_at', label: 'Fecha de Registro' },
     { key: 'team', label: 'Equipo' },
     { key: 'actions', label: 'Acciones', className: 'text-right' }
-  ];
+  ]
 
   const typeColorVariants = {
     green: 'bg-green-100 text-green-800',
     orange: 'bg-orange-100 text-orange-800',
     red: 'bg-red-100 text-red-800'
-  };
+  }
+
+  const handleOpenStats = (seller) => {
+    setSelectedSeller(seller)
+    setStatsModalOpen(true)
+  }
 
   return (
     <div className="space-y-4">
@@ -86,10 +94,17 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
                       {seller.team}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
+                  <TableCell className="text-right space-x-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleOpenStats(seller)}
+                    >
+                      <BarChart2 className="h-4 w-4" />
                     </Button>
+                    {/* <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button> */}
                   </TableCell>
                 </TableRow>
               ))
@@ -103,8 +118,14 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
           </TableBody>
         </Table>
       </div>
-    </div>
-  );
-};
 
-export default SellersTable;
+      <StatsModal
+        seller={selectedSeller}
+        open={statsModalOpen}
+        onOpenChange={setStatsModalOpen}
+      />
+    </div>
+  )
+}
+
+export default SellersTable
