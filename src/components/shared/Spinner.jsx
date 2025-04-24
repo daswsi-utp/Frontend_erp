@@ -1,4 +1,3 @@
-// src/components/shared/Spinner.js
 import React from 'react';
 
 const Spinner = ({ color = 'text-primary', size = 'h-8 w-8' }) => {
