@@ -1,11 +1,11 @@
 "use client"
 import React, { useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/shared/button";
-import { Spinner } from "@/components/shared/Spinner";
+import Spinner  from "@/components/shared/Spinner";
+import { uniqBy } from "@/lib/auxiliarFunctions";
 import Papa from 'papaparse';
 import LeadsImportTable from "@/modules/crm/leads/import/tables/LeadsImportTable";
 import AppDropzone from "@/components/Dropzones/AppDropzone";
-import { uniqBy } from "@/lib/auxiliarFunctions";
 import useCrud1 from "@/hooks/useCrud1";
 
 const acceptParams = {

@@ -80,12 +80,12 @@ export const MODULES_CONFIG = {
         ],
       },
       {
-        title: "Lead",
+        title: "Leads",
         icon: Contact,
         path: "/crm/administrador/leads",
         subItems: [
           { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
-          { title: "Insertar Mnualmente", path: "/crm/administrador/leads/insert" },
+          { title: "Insertar Manualmente", path: "/crm/administrador/leads/insert" },
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
         ],
       },

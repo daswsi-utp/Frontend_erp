@@ -1,6 +1,6 @@
 import React from "react";
 import { useConfirm } from "@/components/shared/alert";
-import { LuAlertOctagon } from "react-icons/lu";
+import { FiAlertOctagon } from "react-icons/fi";
 
 const useCrud1 = (endpoint) => {
   const confirm = useConfirm();
@@ -34,7 +34,7 @@ const useCrud1 = (endpoint) => {
       body: "¿Estás seguro de que quieres eliminar este registro? No podrás recuperarlo una vez eliminado.",
       cancelButton: "Cancelar",
       actionButton: "Eliminar!",
-      icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+      icon: <FiAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     });
 
     if (confirmation) {
@@ -52,7 +52,7 @@ const useCrud1 = (endpoint) => {
       body: "¿Estás seguro de que quieres ingresar este registro?",
       cancelButton: "Cancelar",
       actionButton: "Registrar",
-      icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+      icon: <FiAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     });
 
     if (confirmation) {
@@ -87,7 +87,7 @@ const useCrud1 = (endpoint) => {
       body: "¿Estás seguro de que quieres actualizar este registro?",
       cancelButton: "Cancelar",
       actionButton: "Actualizar",
-      icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+      icon: <FiAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     });
 
     if (confirmation) {
