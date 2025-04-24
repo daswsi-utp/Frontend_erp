@@ -3,7 +3,7 @@ import axios from "axios"
 import { useConfirm } from "@/components/shared/alert"
 import { LuAlertOctagon } from "react-icons/lu";
 
-const backend_host =  'http://127.0.0.1:3800';
+const backend_host = process.env.NEXT_BACKEND_HOST || 'http://localhost:5000';
 
 const useCrud = (endpoint) => {
   const confirm = useConfirm()
@@ -27,7 +27,7 @@ const useCrud = (endpoint) => {
       icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     })
     if (confirmation) {
-      
+
       try {
         const response = await axios.delete(`${backend_host}${_endpoint}`)
         return response.data
@@ -63,7 +63,7 @@ const useCrud = (endpoint) => {
       }
     }
   }
-  
+
 
 
   const updateModel = async (_data, _endpoint = endpoint) => {
@@ -91,12 +91,25 @@ const useCrud = (endpoint) => {
     }
   }
 
+  const insertModelWithCallback = async (data, _endpoint = endpoint) => {
+    try {
+      const response = await axios.post(_endpoint, data);
+      if (response.status === 200) {
+        setToast(response);
+        return response;
+      }
+    } catch (error) {
+      setToast(error.response.data);
+    }
+  };
+
 
   return {
     getModel,
     insertModel,
     deleteModel,
     updateModel,
+    insertModelWithCallback
   }
 }
 

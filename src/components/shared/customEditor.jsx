@@ -16,7 +16,6 @@ const CKEditorComponent = ({ data, onChange }) => {
               'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
               'undo', 'redo'
             ],
-            // shouldNotGroupWhenFull: true
           },
           placeholder: 'Escribe aquí...',
           language: 'es'

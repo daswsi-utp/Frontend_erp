@@ -3,10 +3,10 @@ import React, { useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/shared/button";
 import { Spinner } from "@/components/shared/Spinner";
 import Papa from 'papaparse';
-import LeadsImportTable from "@/modules/crm/leads/tables/LeadsImportTable";
+import LeadsImportTable from "@/modules/crm/leads/import/tables/LeadsImportTable";
 import AppDropzone from "@/components/Dropzones/AppDropzone";
 import { uniqBy } from "@/lib/auxiliarFunctions";
-import useCrud from "@/hooks/useCrud";
+import useCrud1 from "@/hooks/useCrud1";
 
 const acceptParams = {
   'text/csv': ['.csv']
@@ -32,14 +32,13 @@ const dataTable = {
   _data: []
 }
 
-
 const LeadsManualImport = () => {
   const [realFiles, setRealFiles] = useState(null)
   const [parsedCsvData, setParsedCsvData] = useState([])
   const [showTable, setShowTable] = useState(false)
-  const [coursesAvailable, setCoursesAvailable] = useState([])
+  const [productsAvailable, setProductsAvailable] = useState([])
 
-  const { getModelData: getCourses } = useCrud("/api/v1/general/courses/active")
+  const { getModel } = useCrud1()
 
   const parseFiles = (_files) => {
     const filesData = []
@@ -48,7 +47,7 @@ const LeadsManualImport = () => {
       new Promise((resolve, reject) =>
         Papa.parse(file, {
           header: true,
-          complete: resolve,  // Resolve each promise
+          complete: resolve,  
           error: reject,
         }),
       )),
@@ -75,53 +74,55 @@ const LeadsManualImport = () => {
   }
 
   const loadData = async () => {
-    const courses = await getCourses()
-    setCoursesAvailable(courses.courses)
+    try {
+      const response = await getModel("/api/v1/general/products/active")
+      setProductsAvailable(response.products || [])
+    } catch (error) {
+      console.error("Error loading products:", error)
+      setProductsAvailable([])
+    }
   }
 
   useEffect(() => {
     loadData()
   }, [])
 
-
   return (
-    <>
-      <div className="container mx-auto p-4">
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-          <div className="flex justify-between items-center py-4">
-            <h2 className="text-xl font-semibold">Importar Leads</h2>
-            <p className="text-gray-500 dark:text-gray-300">Ingrese solo archivos ".csv"</p>
-          </div>
-          <div className="py-4">
-            <AppDropzone
-              setRealFiles={setRealFiles}
-              realFiles={realFiles}
-              acceptParams={acceptParams}
-            />
+    <div className="container mx-auto p-4">
+      <div className="bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:text-white dark:border-gray-600">
+        <div className="flex justify-between items-center py-4">
+          <h2 className="text-xl font-semibold">Importar Leads</h2>
+          <p className="text-gray-500 dark:text-gray-300">Ingrese solo archivos ".csv"</p>
+        </div>
+        <div className="py-4">
+          <AppDropzone
+            setRealFiles={setRealFiles}
+            realFiles={realFiles}
+            acceptParams={acceptParams}
+          />
 
-            {realFiles && realFiles.length && (
-              <Button
-                size="sm"
-                variant="primary"
-                className="float-right mt-4"
-                onClick={() => processData()}
-              >
-                Procesar Datos
-              </Button>
+          {realFiles && realFiles.length > 0 && (
+            <Button
+              size="sm"
+              variant="primary"
+              className="float-right mt-4"
+              onClick={() => processData()}
+            >
+              Procesar Datos
+            </Button>
+          )}
+
+          <Suspense fallback={<Spinner color="primary" variant="grow" />}>
+            {showTable && dataTable._data.length > 0 && productsAvailable.length > 0 && (
+              <LeadsImportTable
+                data={dataTable}
+                productsAvailable={productsAvailable}
+              />
             )}
-
-            <Suspense fallback={<Spinner color="primary" variant="grow" />}>
-              {/* {showTable && dataTable._data.length > 0 && coursesAvailable.length > 0 && ( */}
-                <LeadsImportTable
-                  data={dataTable}
-                  coursesAvailable={coursesAvailable}
-                />
-              {/* )} */}
-            </Suspense>
-          </div>
+          </Suspense>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
