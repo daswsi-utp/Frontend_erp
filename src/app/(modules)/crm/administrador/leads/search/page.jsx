@@ -86,7 +86,7 @@ const Search = () => {
                 />
                 <Label htmlFor="whatsapp">Por Whatsapp</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="job_tittle" 
                   checked={checkboxValues.job_tittle}
@@ -101,7 +101,7 @@ const Search = () => {
                   onCheckedChange={() => handleCheckboxChange('company_position')}
                 />
                 <Label htmlFor="company_position">Por Cargo</Label>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -109,7 +109,7 @@ const Search = () => {
             <Input
               type="text"
               value={searchParams}
-              placeholder="Buscar por celular y/o nombre de cliente"
+              placeholder="Buscar por celular y/o nombre de cliente probar 999888777"
               onKeyDown={handleKeySearching}
               onChange={e => setSearchParams(e.target.value)}
               className="flex-1"

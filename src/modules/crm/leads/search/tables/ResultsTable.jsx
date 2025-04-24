@@ -32,8 +32,8 @@ const columns = [
 
 const ResultsTable = ({ leads }) => {
   const { getModel: getHistoryLead } = useCrud1("")
-  const currentUser = JSON.parse(localStorage.getItem('current_user' ))
-
+  const currentUser = JSON.parse(localStorage.getItem('current_user')) || { id: null }
+  
   const [dataHistory, setDataHistory] = useState({})
   const [showModalHistory, setShowModalHistory] = useState(false)
   const [showModalReassign, setShowModalReassign] = useState(false)

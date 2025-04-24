@@ -60,19 +60,6 @@ export const MODULES_CONFIG = {
       },
     ],
   },
-  customers: {
-    name: "Clientes",
-    path: "/customers",
-    icon: BadgeDollarSign,
-    navItems: [
-      {
-        title: "Pedidos",
-        icon: BadgeDollarSign,
-        path: "/sales/orders",
-        subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
-      },
-    ],
-  },
   crm: {
     name: "CRM",
     path: "/crm",
