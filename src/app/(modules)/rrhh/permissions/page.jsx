@@ -1,11 +1,16 @@
-import VacationsTable from "@/modules/rrhh/vacations/tables/VacationsTable";
+"use client"
+
+import { useState } from "react";
 import PermisionsTable from "@/modules/rrhh/permisions/tables/PermisionsTable";
+import PermisionNew from "@/modules/rrhh/permisions/modals/NewPermision";
+import PermisionEdit from "@/modules/rrhh/permisions/modals/EditPermision";
+import DeletePermisionModal from "@/modules/rrhh/permisions/modals/DeletePermision";
 
 const permisions = [
   {
     id: 1,
     employee: {
-      id: 2,
+      id: 1,
       firstName: "Daniel",
       lastName: "Cabrera"
     },
@@ -33,7 +38,7 @@ const permisions = [
   {
     id: 3,
     employee: {
-      id: 2,
+      id: 1,
       firstName: "Daniel",
       lastName: "Cabrera"
     },
@@ -47,13 +52,32 @@ const permisions = [
 ];
 
 const Permisions = () => {
+
+    const [selectedPermision, setSelectedPermision] = useState(null);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+
     return (
       <>
         <div className="w-full flex justify-between items-center mb-2">
           <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Registrar Permisos</h1>
+          <PermisionNew/>
         </div>
         <PermisionsTable
           permisions={permisions}
+          setSelectedPermision={setSelectedPermision}
+          setOpenDelete={setOpenDelete}
+          setOpenEdit={setOpenEdit}
+        />
+        <PermisionEdit
+          open={openEdit}
+          onOpenChange={setOpenEdit}
+          permision={selectedPermision}
+        />
+        <DeletePermisionModal
+          open={openDelete}
+          onOpenChange={setOpenDelete}
+          permision={selectedPermision}
         />
       </>
     );

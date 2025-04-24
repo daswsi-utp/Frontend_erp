@@ -5,6 +5,7 @@ import ContractsTable from "@/modules/rrhh/contrats/tables/ContractsTable";
 import ShowContractModal from "@/modules/rrhh/contrats/modals/ContractModal";
 import DeleteContractModal from "@/modules/rrhh/contrats/modals/ContractDelete";
 import ContractNew from "@/modules/rrhh/contrats/modals/ContractNew";
+import ContractEdit from "@/modules/rrhh/contrats/modals/ContractEdit";
 
 const contracts = [
   {
@@ -80,6 +81,7 @@ const Contracts = () => {
        setSelectedFile={setSelectedFile}
        setOpenContract={setOpenContract}
        setOpenDelete={setOpenDelete}
+       setOpenEdit={setOpenEdit}
       />
       <ShowContractModal
         open={openContract}
@@ -90,6 +92,11 @@ const Contracts = () => {
       <DeleteContractModal
         open={openDelete}
         onOpenChange={setOpenDelete}
+        contract={selectedContract}
+      />
+      <ContractEdit
+        open={openEdit}
+        onOpenChange={setOpenEdit}
         contract={selectedContract}
       />
     </>
