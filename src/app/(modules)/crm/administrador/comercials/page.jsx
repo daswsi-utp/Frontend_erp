@@ -5,8 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import useCrud1 from '@/hooks/useCrud1'
 
-import ActiveTable from './extras/ActiveTable'
-import InactiveTable from './extras/InactiveTable'
+import ActiveTable from '@/modules/crm/comercials/tables/ActiveTable'
+import InactiveTable from '@/modules/crm/comercials/tables/InactiveTable'
 
 const EjecutivosComerciales = () => {
   const [activeComercial, setActiveComercial] = useState([])
@@ -15,7 +15,6 @@ const EjecutivosComerciales = () => {
 
   const main_route = "/api/v1/admin/comercials"
 
-  // Datos simulados
   const mockComercials = [
     {
       id: 1,
@@ -50,10 +49,7 @@ const EjecutivosComerciales = () => {
   ]
 
   const loadData = async () => {
-    // Simulamos la carga de datos
     const getData = await getComercials(main_route)
-    
-    // Usamos datos mock si no hay respuesta
     const data = getData.data?.length ? getData.data : mockComercials
     
     setActiveComercial(

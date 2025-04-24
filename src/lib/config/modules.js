@@ -89,6 +89,14 @@ export const MODULES_CONFIG = {
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
         ],
       },
+      {
+        title: "Ejecutivos de Ventas",
+        icon: Contact,
+        path: "/crm/administrador/comercials",
+        subItems: [
+          { title: "Ejecutivos de ventas", path: "/crm/administrador/comercials" },
+        ],
+      },
       
     ],
   },

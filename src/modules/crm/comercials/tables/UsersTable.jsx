@@ -1,168 +1,184 @@
 'use client'
 import { useState } from 'react'
 import {
- Table,
- TableBody,
- TableCell,
- TableHead,
- TableHeader,
- TableRow
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import {
- Eye,
- UserCog,
- UserX,
- UserCheck,
- UserPlus
-} from 'lucide-react'
+import { Eye, Pencil, Power, PowerOff, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import ReactCountryFlag from 'react-country-flag'
 
-import ShowUserModal from '../Modals/Users/Show'
-import NewUserModal from '../Modals/Users/New'
-import UpdateUserModal from '../Modals/Users/Update'
+import ShowUserModal from '../modals/ShowUserModal'
+import NewUserModal from '../modals/NewUserModal'
+import UpdateUserModal from '../modals/UpdateUserModal'
 import useCrud1 from '@/hooks/useCrud1'
 
 const UsersTable = ({
- data,
- columns,
- loadData,
- showButtonNew,
- mainRoute,
- titleHeader = "Usuario"
+  data = [],
+  columns = [],
+  loadData,
+  showButtonNew = false,
+  mainRoute,
+  titleHeader = "Usuario"
 }) => {
- const [userSelected, setUserSelected] = useState(null)
- const [showModal, setShowModal] = useState({
-  show: false,
-  new: false,
-  update: false
- })
- const { updateModel } = useCrud1(mainRoute)
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [modalState, setModalState] = useState({
+    show: false,
+    new: false,
+    edit: false
+  })
+  
+  const { updateModel } = useCrud1(mainRoute)
 
- const handleAccessChange = async (userId, action) => {
-  const endpoint = `${mainRoute}/${userId}/${action}_access`
-  await updateModel({}, endpoint)
-  loadData()
- }
+  const toggleUserStatus = async (userId, action) => {
+    try {
+      await updateModel({}, `${mainRoute}/${userId}/${action}_access`)
+      loadData()
+    } catch (error) {
+      console.error("Error changing user status:", error)
+    }
+  }
 
- return (
-  <>
-   <div className="space-y-4">
-    {showButtonNew && (
-     <Button
-      className="float-right"
-      onClick={() => setShowModal({ ...showModal, new: true })}
-     >
-      <UserPlus className="mr-2 h-4 w-4" />
-      Nuevo {titleHeader}
-     </Button>
-    )}
+  const handleOpenModal = (type, user = null) => {
+    setSelectedUser(user)
+    setModalState(prev => ({
+      ...prev,
+      [type]: true
+    }))
+  }
 
-    <div className="rounded-md border">
-     <Table>
-      <TableHeader>
-       <TableRow>
-        {columns.map((column) => (
-         <TableHead key={column.key} className={column.className}>
-          {column.label}
-         </TableHead>
-        ))}
-       </TableRow>
-      </TableHeader>
-      <TableBody>
-       {data.map((item) => (
-        <TableRow key={item.id}>
-         <TableCell>{item.index}</TableCell>
-         <TableCell>{item.full_name}</TableCell>
-         <TableCell>{item.document_number}</TableCell>
-         <TableCell>{item.phone}</TableCell>
-         <TableCell>
-          <div className="flex items-center gap-2">
-           <ReactCountryFlag
-            countryCode={item.country_code}
-            svg
-            style={{ width: '1.5em', height: '1.5em' }}
-           />
-           {item.country}
-          </div>
-         </TableCell>
-         <TableCell className="text-right space-x-2">
-          <Button
-           variant="ghost"
-           size="sm"
-           onClick={() => {
-            setUserSelected(item)
-            setShowModal({ ...showModal, show: true })
-           }}
-          >
-           <Eye className="h-4 w-4" />
+  const handleCloseModal = (type) => {
+    setModalState(prev => ({
+      ...prev,
+      [type]: false
+    }))
+    setSelectedUser(null)
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Header with add button */}
+      <div className="flex justify-end">
+        {showButtonNew && (
+          <Button onClick={() => handleOpenModal('new')}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo {titleHeader}
           </Button>
+        )}
+      </div>
 
-          <Button
-           variant="ghost"
-           size="sm"
-           onClick={() => {
-            setUserSelected(item)
-            setShowModal({ ...showModal, update: true })
-           }}
-          >
-           <UserCog className="h-4 w-4" />
-          </Button>
+      {/* Users Table */}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead 
+                  key={column.key} 
+                  className={column.className || ''}
+                >
+                  {column.label}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.length > 0 ? (
+              data.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>{user.index}</TableCell>
+                  <TableCell className="font-medium">{user.full_name}</TableCell>
+                  <TableCell>{user.document_number}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <ReactCountryFlag
+                        countryCode={user.country_code}
+                        svg
+                        style={{ width: '1.5em', height: '1.5em' }}
+                      />
+                      {user.country}
+                    </div>
+                  </TableCell>
+                  <TableCell className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleOpenModal('show', user)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
 
-          {item.user_status === "active" ? (
-           <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-600"
-            onClick={() => handleAccessChange(item.id, 'remove')}
-           >
-            <UserX className="h-4 w-4" />
-           </Button>
-          ) : (
-           <Button
-            variant="ghost"
-            size="sm"
-            className="text-green-600"
-            onClick={() => handleAccessChange(item.id, 'set')}
-           >
-            <UserCheck className="h-4 w-4" />
-           </Button>
-          )}
-         </TableCell>
-        </TableRow>
-       ))}
-      </TableBody>
-     </Table>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleOpenModal('edit', user)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={user.user_status === "active" 
+                        ? "text-red-600 hover:text-red-700" 
+                        : "text-green-600 hover:text-green-700"}
+                      onClick={() => toggleUserStatus(
+                        user.id, 
+                        user.user_status === "active" ? 'remove' : 'set'
+                      )}
+                    >
+                      {user.user_status === "active" ? (
+                        <PowerOff className="h-4 w-4" />
+                      ) : (
+                        <Power className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No se encontraron resultados
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* User Modals */}
+      <ShowUserModal
+        open={modalState.show}
+        onOpenChange={(open) => handleCloseModal('show')}
+        user={selectedUser}
+        titleHeader={titleHeader}
+      />
+
+      <NewUserModal
+        open={modalState.new}
+        onOpenChange={(open) => handleCloseModal('new')}
+        refreshData={loadData}
+        titleHeader={titleHeader}
+        mainRoute={mainRoute}
+      />
+
+      <UpdateUserModal
+        open={modalState.edit}
+        onOpenChange={(open) => handleCloseModal('edit')}
+        user={selectedUser}
+        refreshData={loadData}
+        titleHeader={titleHeader}
+        mainRoute={mainRoute}
+      />
     </div>
-   </div>
-
-   {/* Modals */}
-   <ShowUserModal
-    open={showModal.show}
-    onOpenChange={(open) => setShowModal({ ...showModal, show: open })}
-    user={userSelected}
-    titleHeader={titleHeader}
-   />
-
-   <NewUserModal
-    open={showModal.new}
-    onOpenChange={(open) => setShowModal({ ...showModal, new: open })}
-    refreshData={loadData}
-    titleHeader={titleHeader}
-    mainRoute={mainRoute}
-   />
-
-   <UpdateUserModal
-    open={showModal.update}
-    onOpenChange={(open) => setShowModal({ ...showModal, update: open })}
-    user={userSelected}
-    refreshData={loadData}
-    titleHeader={titleHeader}
-    mainRoute={mainRoute}
-   />
-  </>
- )
+  )
 }
 
 export default UsersTable
