@@ -1,10 +1,16 @@
+"use client"
+
+import { useState } from "react";
 import VacationsTable from "@/modules/rrhh/vacations/tables/VacationsTable";
+import VacationNew from "@/modules/rrhh/vacations/modals/NewVacationModal";
+import VacationEdit from "@/modules/rrhh/vacations/modals/EditVacationModal";
+import DeleteVacationModal from "@/modules/rrhh/vacations/modals/DeleteVacationModal";
 
 const vacations = [
   {
     id: 1,
     employee: {
-      id: 2,
+      id: 1,
       firstName: "Daniel",
       lastName: "Cabrera"
     },
@@ -17,7 +23,7 @@ const vacations = [
   {
     id: 2,
     employee: {
-      id: 2,
+      id: 1,
       firstName: "Daniel",
       lastName: "Cabrera"
     },
@@ -30,7 +36,7 @@ const vacations = [
   {
     id: 3,
     employee: {
-      id: 2,
+      id: 1,
       firstName: "Daniel",
       lastName: "Cabrera"
     },
@@ -43,13 +49,32 @@ const vacations = [
 ];
 
 const Vacations = () => {
+
+  const [selectedVacation, setSelectedVacation] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+
     return (
       <>
         <div className="w-full flex justify-between items-center mb-2">
           <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Vacaciones Registradas</h1>
+          <VacationNew/>
         </div>
         <VacationsTable
           vacations={vacations}
+          setSelectedVacation={setSelectedVacation}
+          setOpenDelete={setOpenDelete}
+          setOpenEdit={setOpenEdit}
+        />
+        <VacationEdit
+          open={openEdit}
+          onOpenChange={setOpenEdit}
+          vacation={selectedVacation}
+        />
+        <DeleteVacationModal
+          open={openDelete}
+          onOpenChange={setOpenDelete}
+          vacation={selectedVacation}
         />
       </>
     );

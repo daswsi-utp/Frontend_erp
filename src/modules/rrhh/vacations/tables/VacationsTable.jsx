@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Phone, Users } from 'lucide-react';
+import { Eye, Trash2, SquarePen } from 'lucide-react';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 const VacationsTable = ({ vacations, setSelectedVacation, setOpenEdit, setOpenDelete }) => {
@@ -63,8 +63,15 @@ const VacationsTable = ({ vacations, setSelectedVacation, setOpenEdit, setOpenDe
                                 {new Date(vacation.requestedAt).toLocaleDateString()}
                             </TableCell>
                             <TableCell>
-                            <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => {
+                                    setSelectedVacation(vacation);
+                                    setOpenEdit(true);
+                                }}><SquarePen className="h-4 w-4" />
+                            </Button>
+                            <Button variant="destructive" size="sm" onClick={() => {
+                                    setSelectedVacation(vacation);
+                                    setOpenDelete(true);
+                                }}><Trash2 className="h-4 w-4" />
                             </Button>
                             </TableCell>
                         </TableRow>

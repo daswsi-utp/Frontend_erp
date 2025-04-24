@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Phone, Users } from 'lucide-react';
+import { Eye, Trash2, SquarePen } from 'lucide-react';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-const PermisionsTable = ({ permisions, setSelectedVacation, setOpenEdit, setOpenDelete }) => {
+const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit, setOpenDelete }) => {
 
   const columns = [
     { key: 'index', label: 'Id', className: 'w-10' },
@@ -67,8 +67,15 @@ const PermisionsTable = ({ permisions, setSelectedVacation, setOpenEdit, setOpen
                                 {permision.type}
                             </TableCell>
                             <TableCell>
-                            <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => {
+                                    setSelectedPermision(permision);
+                                    setOpenEdit(true);
+                                }}><SquarePen className="h-4 w-4" />
+                            </Button>
+                            <Button variant="destructive" size="sm" onClick={() => {
+                                    setSelectedPermision(permision);
+                                    setOpenDelete(true);
+                                }}><Trash2 className="h-4 w-4" />
                             </Button>
                             </TableCell>
                         </TableRow>
