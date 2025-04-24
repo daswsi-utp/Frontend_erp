@@ -89,16 +89,7 @@ export const MODULES_CONFIG = {
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
         ],
       },
-      // {
-      //   title: "Vacaciones y Permisos",
-      //   icon: TicketsPlane,
-      //   path: "/rrhh/vacations",
-      //   subItems: [
-      //     { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
-      //     { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
-      //     { title: "Registrar permisos", path: "/rrhh/permissions" },
-      //   ],
-      // },
+      
     ],
   },
 
@@ -134,7 +125,7 @@ export const MODULES_CONFIG = {
 
   customers: {
     name: "Logistic",
-    path: "/logistics",
+    path: "/Logistics",
     icon: BadgeDollarSign,
     // navItems: [
     //   {
@@ -194,21 +185,21 @@ export const MODULES_CONFIG = {
         ],
       },
 
-      {
-        title: "Planificacion de la produccion",
-        icon: CalendarClock,
-        path: "/manufacture/productionPlanning",
-        subItems: [
-          { title: "MRP", path: "/manufacture/productionPlanning/MRP" },
-        ],
-      },
+      // {
+      //   title: "Planificacion de la produccion",
+      //   icon: CalendarClock,
+      //   path: "/manufacture/productionPlanning",
+      //   subItems: [
+      //     { title: "MRP", path: "/manufacture/productionPlanning/MRP" },
+      //   ],
+      // },
 
-      {
-        title: "KANBAN - Estado de la Producción",
-        icon: BookCopy,
-        path: "/manufacture/kanban",
+      // {
+      //   title: "KANBAN - Estado de la Producción",
+      //   icon: BookCopy,
+      //   path: "/manufacture/kanban",
         
-      },
+      // },
 
 
       
