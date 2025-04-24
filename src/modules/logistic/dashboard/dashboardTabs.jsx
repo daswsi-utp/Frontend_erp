@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/tabs";
 
 import MetricsPanel from "./metricsPanel";
-import InventoryPanel from "../inventory/inventoryPanel";
-import ProductFormPanel from "../inventory/productsFormPanel";
-import ProductEditPanel from "../inventory/productEditPanel";
+import InventoryPanel from "../Inventory/inventoryPanel";
+import ProductFormPanel from "../Inventory/productsFormPanel";
+import ProductEditPanel from "../Inventory/productEditPanel";
 
 export default function DashboardTabs() {
     return (

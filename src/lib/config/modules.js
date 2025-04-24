@@ -89,16 +89,16 @@ export const MODULES_CONFIG = {
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
         ],
       },
-      {
-        title: "Vacaciones y Permisos",
-        icon: TicketsPlane,
-        path: "/rrhh/vacations",
-        subItems: [
-          { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
-          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
-          { title: "Registrar permisos", path: "/rrhh/permissions" },
-        ],
-      },
+      // {
+      //   title: "Vacaciones y Permisos",
+      //   icon: TicketsPlane,
+      //   path: "/rrhh/vacations",
+      //   subItems: [
+      //     { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
+      //     { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
+      //     { title: "Registrar permisos", path: "/rrhh/permissions" },
+      //   ],
+      // },
     ],
   },
 
@@ -136,14 +136,14 @@ export const MODULES_CONFIG = {
     name: "Logistic",
     path: "/logistics",
     icon: BadgeDollarSign,
-    navItems: [
-      {
-        title: "Pedidos",
-        icon: BadgeDollarSign,
-        path: "/sales/orders",
-        subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
-      },
-    ],
+    // navItems: [
+    //   {
+    //     title: "Pedidos",
+    //     icon: BadgeDollarSign,
+    //     path: "/sales/orders",
+    //     subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
+    //   },
+    // ],
   },
   planning: {
     name: "Planning",
