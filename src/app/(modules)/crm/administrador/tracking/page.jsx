@@ -1,7 +1,5 @@
 'use client';
-import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import SellersTable from '@/modules/crm/tracking/tables/SellersTable';
 
 const mockAsesores = [
@@ -41,22 +39,18 @@ const mockAsesores = [
 ];
 
 const PageTracking = () => {
-  const [asesores, setAsesores] = useState(mockAsesores);
-
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Seguimiento de Asesores</CardTitle>
       </CardHeader>
       <CardContent>
         <SellersTable
-          data={asesores}
+          data={mockAsesores}
           typeSeller="Asesores Comerciales"
           color="green"
         />
       </CardContent>
-
-      
     </Card>
   );
 }
