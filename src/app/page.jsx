@@ -1,7 +1,10 @@
+"use client"
+
 import Link from 'next/link';
 import { UsersRound, Forklift, BadgeDollarSign, BookUser, NotebookPen, Factory  } from 'lucide-react';
 import { UserNav } from '@/components/user-nav';
 import { ModeToggle } from '@/components/mode-toogle';
+import LandbotFloating from '@/components/landbot-floating';
 
 const modules = [
     { title: 'RRHH', icon: <UsersRound size={32} />, link: '/rrhh' },
@@ -53,6 +56,7 @@ export default function Home() {
                         </Link>
                     ))}
                 </div>
+                <LandbotFloating></LandbotFloating>
             </main>
         </div>
     );
