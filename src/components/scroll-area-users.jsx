@@ -41,7 +41,7 @@ const ScrollAreaUsers = () => {
     ]
 
     return (
-        <ScrollArea className="h-55 rounded-md border">
+        <ScrollArea className="h-40 rounded-md border">
             <div className="p-4">
                 <h4 className="mb-4 text-sm font-medium leading-none">Empleados</h4>
                 {empleados.map((empleado) => (
