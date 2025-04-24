@@ -18,13 +18,13 @@ const useCrud1 = (endpoint) => {
 
   const getModel = async (_endpoint = endpoint) => {
     console.log(`Mock GET request to: ${_endpoint}`);
-    
+
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     if (_endpoint.includes("/products")) {
       return { products: mockProducts };
     }
-    
+
     return { data: [] };
   };
 
@@ -36,13 +36,13 @@ const useCrud1 = (endpoint) => {
       actionButton: "Eliminar!",
       icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     });
-    
+
     if (confirmation) {
       console.log(`Mock DELETE request to: ${_endpoint}`);
       await new Promise(resolve => setTimeout(resolve, 500));
       return { success: true, message: "Registro eliminado correctamente (simulado)" };
     }
-    
+
     return Promise.reject(new Error('Acción cancelada por el usuario'));
   };
 
@@ -54,18 +54,18 @@ const useCrud1 = (endpoint) => {
       actionButton: "Registrar",
       icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     });
-    
+
     if (confirmation) {
       console.log(`Mock POST request to: ${_endpoint}`, _data);
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       if (_endpoint.includes("/leads")) {
         return mockLeads;
       }
-      
+
       return { success: true, message: "Registro creado correctamente (simulado)" };
     }
-    
+
     return Promise.reject(new Error('Acción cancelada por el usuario'));
   };
 
@@ -73,11 +73,11 @@ const useCrud1 = (endpoint) => {
   const insertModel2 = async (_data, _endpoint = endpoint) => {
     console.log(`Mock POST request to: ${_endpoint}`, _data);
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     if (_endpoint.includes("/leads")) {
       return mockLeads;
     }
-    
+
     return { success: true, message: "Registro creado correctamente (simulado)" };
   };
 
@@ -89,13 +89,13 @@ const useCrud1 = (endpoint) => {
       actionButton: "Actualizar",
       icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     });
-    
+
     if (confirmation) {
       console.log(`Mock PUT request to: ${_endpoint}`, _data);
       await new Promise(resolve => setTimeout(resolve, 500));
       return { success: true, message: "Registro actualizado correctamente (simulado)" };
     }
-    
+
     return Promise.reject(new Error('Acción cancelada por el usuario'));
   };
 
@@ -105,12 +105,12 @@ const useCrud1 = (endpoint) => {
     return { success: true, message: "Registro creado con callback (simulado)" };
   };
 
-const searchModel = async (searchQuery = "", _endpoint = endpoint) => {
-  try {
-    if (!backend_host) {
+
+  const searchModel = async (searchQuery = "", _endpoint = endpoint) => {
+    try {
       console.log(`Mock SEARCH request to: ${_endpoint}?${searchQuery}`);
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+  
       const mockSearchData = [
         {
           id: 1,
@@ -118,7 +118,15 @@ const searchModel = async (searchQuery = "", _endpoint = endpoint) => {
           phone: "999888777",
           whatsapp: "999888777",
           email: "juan@example.com",
-          country: "Perú"
+          country: "Perú",
+          country_code: "pe",
+          comercial: "Ana López",
+          arrival_mean: "web",
+          product_code: "REACT",
+          product_name: "Curso de React",
+          product_status: "active",
+          client_state: "active",
+          user_id: 1
         },
         {
           id: 2,
@@ -126,27 +134,37 @@ const searchModel = async (searchQuery = "", _endpoint = endpoint) => {
           phone: "999111222",
           whatsapp: "999111222",
           email: "maria@example.com",
-          country: "México"
+          country: "México",
+          country_code: "mx",
+          comercial: "Carlos Méndez",
+          arrival_mean: "facebook",
+          product_code: "NEXTJS",
+          product_name: "Curso de Next.js",
+          product_status: "active",
+          client_state: "pending",
+          user_id: 2
         }
       ];
-      
-      const results = searchQuery 
-        ? mockSearchData.filter(item => 
-            item.full_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-            item.phone.includes(searchQuery)
+  
+      const params = new URLSearchParams(searchQuery);
+      const searchParams = params.get('search_params') || '';
+      const searchFilters = params.get('search_filters') || '';
+  
+      const results = searchParams 
+        ? mockSearchData.filter(item =>
+            item.full_name.toLowerCase().includes(searchParams.toLowerCase()) ||
+            item.phone.includes(searchParams) ||
+            (searchFilters.includes('whatsapp') && item.whatsapp.includes(searchParams))
+          )
         : mockSearchData;
-      
+  
       return { results, count: results.length };
+    } catch (error) {
+      console.error("Error searching data:", error);
+      return Promise.reject(error);
     }
-    
-    const response = await axios.get(`${backend_host}${_endpoint}?${searchQuery}`);
-    return response.data;
-    
-  } catch (error) {
-    console.error("Error searching data:", error);
-    return Promise.reject(error.response?.data || error);
   }
-};
+  
 
   return {
     getModel,

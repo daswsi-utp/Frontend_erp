@@ -31,8 +31,8 @@ const columns = [
 ]
 
 const ResultsTable = ({ leads }) => {
-  const { getModelData: getHistoryLead } = useCrud("")
-  const currentUser = JSON.parse(localStorage.getItem('current_user'))
+  const { getModel: getHistoryLead } = useCrud1("")
+  const currentUser = JSON.parse(localStorage.getItem('current_user' ))
 
   const [dataHistory, setDataHistory] = useState({})
   const [showModalHistory, setShowModalHistory] = useState(false)
@@ -44,12 +44,32 @@ const ResultsTable = ({ leads }) => {
     setCurrentClient(lead)
   }
 
-  const handleOpenHistoryModal = async (item) => {
-    const { data } = await getHistoryLead(`/api/v1/coordinator/searchs/${item.phone}/history`)
-    setDataHistory(data)
-    setShowModalHistory(true)
-  }
+  // const handleOpenHistoryModal = async (item) => {
+  //   const { data } = await getHistoryLead(`/api/v1/coordinator/searchs/${item.phone}/history`)
+  //   setDataHistory(data)
+  //   setShowModalHistory(true)
+  // }
 
+  const handleOpenHistoryModal = async (item) => {
+    try {
+      const mockHistoryData = {
+        calls: [
+          {
+            date_call: "2023-05-15 10:30",
+            notes: "Cliente interesado en el curso avanzado",
+            comercial_new: "Ana López"
+          }
+        ],
+        full_name: item.full_name,
+        product: item.product_name
+      };
+
+      setDataHistory([mockHistoryData]);
+      setShowModalHistory(true);
+    } catch (error) {
+      console.error("Error loading history:", error);
+    }
+  };
   return (
     <>
       <div className="rounded-md border">
@@ -93,15 +113,15 @@ const ResultsTable = ({ leads }) => {
                   </Tooltip>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getBadgeClientState(item.client_state).variant}>
-                    {getBadgeClientState(item.client_state).text}
+                  <Badge variant={getBadgeClientState(item.client_state)?.variant || "default"}>
+                    {getBadgeClientState(item.client_state)?.text || "Unknown"}
                   </Badge>
                 </TableCell>
                 <TableCell className="flex gap-1">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button 
-                        size="icon" 
+                      <Button
+                        size="icon"
                         variant="ghost"
                         onClick={() => handleOpenHistoryModal(item)}
                       >
@@ -114,9 +134,9 @@ const ResultsTable = ({ leads }) => {
                   {currentUser.id === item.user_id && (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button 
-                          size="icon" 
-                          variant="ghost" 
+                        <Button
+                          size="icon"
+                          variant="ghost"
                           asChild
                         >
                           <Link to={`/supervision/leads/${item.id}/seguimiento`}>
@@ -130,8 +150,8 @@ const ResultsTable = ({ leads }) => {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button 
-                        size="icon" 
+                      <Button
+                        size="icon"
                         variant="ghost"
                         onClick={() => handleOpenReassignModal(item)}
                       >
@@ -154,7 +174,7 @@ const ResultsTable = ({ leads }) => {
         setDataHistory={setDataHistory}
       />
 
-      <ModalReassignLead 
+      <ModalReassignLead
         open={showModalReassign}
         setOpen={setShowModalReassign}
         lead={currentClient}
