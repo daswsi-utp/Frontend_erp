@@ -43,7 +43,20 @@ const FinishedProductsTable = ({ data, setSelectedProduct, setOpenEdit, setOpenD
                   <TableCell>{product.category}</TableCell>
                   <TableCell>{product.unit}</TableCell>
                   <TableCell>{product.code}</TableCell>
-                  <TableCell>{product.state}</TableCell>
+                  
+                  {/*<TableCell>{product.state}</TableCell>*/}
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm font-medium ${
+                        product.state === "Disponible"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {product.state}
+                    </span>
+                  </TableCell>
+
                   <TableCell className="w-32">
                     <TooltipProvider>
                       <Tooltip>

@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -50,7 +51,51 @@ const OrdenesProduccionTable = ({
                   <TableCell>{orden.fechaInicio}</TableCell>
                   <TableCell>{orden.fechaFin}</TableCell>
                   <TableCell>{orden.responsable}</TableCell>
-                  <TableCell>{orden.estado}</TableCell>
+
+                  {/*<TableCell>{orden.estado}</TableCell>*/}
+                  {/*<TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm font-medium ${
+                        orden.estado === "Finalizada"
+                          ? "bg-green-100 text-green-800"
+                          : orden.estado === "En proceso"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : orden.estado === "Cancelada"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {orden.estado}
+                    </span>
+                  </TableCell>*/}
+
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      {/* Icono según el estado */}
+                      {orden.estado === "Finalizada" && <CheckCircle className="text-green-500" />}
+                      {orden.estado === "En proceso" && <Clock className="text-yellow-500" />}
+                      {orden.estado === "Cancelada" && <XCircle className="text-red-500" />}
+
+                      {/* Texto con el estado y color */}
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm font-medium ${
+                          orden.estado === "Finalizada"
+                            ? "bg-green-100 text-green-800"
+                            : orden.estado === "En proceso"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : orden.estado === "Cancelada"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {orden.estado}
+                      </span>
+                    </div>
+                  </TableCell>
+
+
+
+
                   <TableCell className="w-32">
                     <TooltipProvider>
                       <Tooltip>
