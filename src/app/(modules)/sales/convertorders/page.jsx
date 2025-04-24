@@ -1,5 +1,5 @@
-import Paymentmethod from "@/modules/sales/convert/Paymentmethod";
-import Quotesummary from "@/modules/sales/convert/Quotesummary";
+import Paymentmethod from "@/modules/sales/convert/paymentmethod";
+import Quotesummary from "@/modules/sales/convert/quotesummary";
 import Stockvalidation from "@/modules/sales/convert/Stockvalidation";
 import { Button } from "@/components/ui/button";
 
