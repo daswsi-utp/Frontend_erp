@@ -5,7 +5,7 @@ import SimpleFormPlanning from "@/components/simple-form-planning";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from 'next/navigation'
-
+import LandbotFloating from "@/components/landbot-floating";
 
 const Planning = () => {
   const router = useRouter();
@@ -85,6 +85,7 @@ const Planning = () => {
             </CardDescription>
           </Card>
         ))}
+        <LandbotFloating></LandbotFloating>
       </div>
     </div>
   );
