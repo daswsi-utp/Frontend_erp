@@ -6,7 +6,6 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from 'next/navigation'
 
-
 const Planning = () => {
   const router = useRouter();
 
