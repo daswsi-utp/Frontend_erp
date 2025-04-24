@@ -36,7 +36,7 @@ const SimpleFormPlanning = () => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Agrega empleados</label>
-                        <ScrollAreaUsers/>
+                        <ScrollAreaUsers className="h-30 rounded-md border"/>
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Fecha Inicio</label>

@@ -984,6 +984,7 @@
   optionalDependencies:
     "@img/sharp-libvips-linuxmusl-x64" "1.0.4"
 
+
 "@img/sharp-wasm32@0.33.5":
   version "0.33.5"
   resolved "https://registry.yarnpkg.com/@img/sharp-wasm32/-/sharp-wasm32-0.33.5.tgz#6f44f3283069d935bb5ca5813153572f3e6f61a1"
@@ -1052,10 +1053,12 @@
   resolved "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-15.2.4.tgz"
   integrity sha512-yb5WTRaHdkgOqFOZiu6rHV1fAEK0flVpaIN2HB6kxHVSy/dIajWbThS7qON3W9/SNOH2JWkVCyulgGYekMePuw==
 
-"@next/swc-linux-x64-musl@15.2.4":
+
+"@next/swc-win32-x64-msvc@15.2.4":
+
   version "15.2.4"
-  resolved "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-15.2.4.tgz"
-  integrity sha512-Dcdv/ix6srhkM25fgXiyOieFUkz+fOYkHlydWCtB0xMST6X9XYI3yPDKBZt1xuhOytONsIFJFB08xXYsxUwJLw==
+  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-15.2.4.tgz"
+  integrity sha512-SbnWkJmkS7Xl3kre8SdMF6F/XDh1DTFEhp0jRTj/uB8iPKoU2bb2NDfcu+iifv1+mxQEd1g2vvSxcZbXSKyWiQ==
 
 "@next/swc-win32-arm64-msvc@15.2.4":
   version "15.2.4"
@@ -1092,6 +1095,18 @@
   version "1.0.39"
   resolved "https://registry.npmjs.org/@nolyfill/is-core-module/-/is-core-module-1.0.39.tgz"
   integrity sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==
+
+"@preact/signals-core@^1.7.0":
+  version "1.8.0"
+  resolved "https://registry.npmjs.org/@preact/signals-core/-/signals-core-1.8.0.tgz"
+  integrity sha512-OBvUsRZqNmjzCZXWLxkZfhcgT+Fk8DDcT/8vD6a1xhDemodyy87UJRJfASMuSD8FaAIeGgGm85ydXhm7lr4fyA==
+
+"@preact/signals@^2.0.2":
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@preact/signals/-/signals-2.0.4.tgz"
+  integrity sha512-9241aGnIv7y0IGzaq2vkBMe8/0jGnnmEEUeFmAoTWsaj8q/BW2PVekL8nHVJcy69bBww6rwEy3A1tc6yPE0sJA==
+  dependencies:
+    "@preact/signals-core" "^1.7.0"
 
 "@radix-ui/number@1.1.1":
   version "1.1.1"
@@ -1656,9 +1671,10 @@
   integrity sha512-2VG4DqhGaDSmYIu6C4ua2vSLXnJsb/C9liej7TuSO04NK+JJJgJucDUgmX6sn7Gw3Cs5ZJ9ZLrnI0QRDOjLfNQ==
 
 "@tailwindcss/oxide-linux-x64-musl@4.1.4":
+
   version "4.1.4"
-  resolved "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-musl/-/oxide-linux-x64-musl-4.1.4.tgz"
-  integrity sha512-v+mxVgH2kmur/X5Mdrz9m7TsoVjbdYQT0b4Z+dr+I4RvreCNXyCFELZL/DO0M1RsidZTrm6O1eMnV6zlgEzTMQ==
+  resolved "https://registry.npmjs.org/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.1.4.tgz"
+  integrity sha512-+7S63t5zhYjslUGb8NcgLpFXD+Kq1F/zt5Xv5qTv7HaFTG/DHyHD9GA6ieNAxhgyA4IcKa/zy7Xx4Oad2/wuhw==
 
 "@tailwindcss/oxide-wasm32-wasi@4.1.4":
   version "4.1.4"
@@ -1710,13 +1726,6 @@
     "@tailwindcss/oxide" "4.1.4"
     postcss "^8.4.41"
     tailwindcss "4.1.4"
-
-"@tybys/wasm-util@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.9.0.tgz"
-  integrity sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==
-  dependencies:
-    tslib "^2.4.0"
 
 "@types/color-convert@2.0.4":
   version "2.0.4"
@@ -2483,9 +2492,9 @@ dunder-proto@^1.0.0, dunder-proto@^1.0.1:
     gopd "^1.2.0"
 
 electron-to-chromium@^1.5.73:
-  version "1.5.140"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.140.tgz"
-  integrity sha512-o82Rj+ONp4Ip7Cl1r7lrqx/pXhbp/lh9DpKcMNscFJdh8ebyRofnc7Sh01B4jx403RI0oqTBvlZ7OBIZLMr2+Q==
+  version "1.5.141"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.141.tgz"
+  integrity sha512-qS+qH9oqVYc1ooubTiB9l904WVyM6qNYxtOEEGReoZXw3xlqeYdFr5GclNzbkAufWgwWLEPoDi3d9MoRwwIjGw==
 
 emoji-regex@^9.2.2:
   version "9.2.2"
@@ -3494,24 +3503,15 @@ lightningcss-linux-arm64-musl@1.29.3:
   integrity sha512-dxakOk66pf7KLS7VRYFO7B8WOJLecE5OPL2YOk52eriFd/yeyxt2Km5H0BjLfElokIaR+qWi33gB8MQLrdAY3A==
 
 lightningcss-linux-x64-gnu@1.29.2:
+
   version "1.29.2"
-  resolved "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.29.2.tgz"
-  integrity sha512-0v6idDCPG6epLXtBH/RPkHvYx74CVziHo6TMYga8O2EiQApnUPZsbR9nFNrg2cgBzk1AYqEd95TlrsL7nYABQg==
+  resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.29.2.tgz"
+  integrity sha512-EdIUW3B2vLuHmv7urfzMI/h2fmlnOQBk1xlsDxkN1tCWKjNFjfLhGxYk8C8mzpSfr+A6jFFIi8fU6LbQGsRWjA==
 
-lightningcss-linux-x64-gnu@1.29.3:
+lightningcss-win32-x64-msvc@1.29.3:
   version "1.29.3"
-  resolved "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.29.3.tgz"
-  integrity sha512-ySZTNCpbfbK8rqpKJeJR2S0g/8UqqV3QnzcuWvpI60LWxnFN91nxpSSwCbzfOXkzKfar9j5eOuOplf+klKtINg==
-
-lightningcss-linux-x64-musl@1.29.2:
-  version "1.29.2"
-  resolved "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.29.2.tgz"
-  integrity sha512-rMpz2yawkgGT8RULc5S4WiZopVMOFWjiItBT7aSfDX4NQav6M44rhn5hjtkKzB+wMTRlLLqxkeYEtQ3dd9696w==
-
-lightningcss-linux-x64-musl@1.29.3:
-  version "1.29.3"
-  resolved "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.29.3.tgz"
-  integrity sha512-3pVZhIzW09nzi10usAXfIGTTSTYQ141dk88vGFNCgawIzayiIzZQxEcxVtIkdvlEq2YuFsL9Wcj/h61JHHzuFQ==
+  resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.29.3.tgz"
+  integrity sha512-IszwRPu2cPnDQsZpd7/EAr0x2W7jkaWqQ1SwCVIZ/tSbZVXPLt6k8s6FkcyBjViCzvB5CW0We0QbbP7zp2aBjQ==
 
 lightningcss-win32-arm64-msvc@1.29.2:
   version "1.29.2"
@@ -4374,7 +4374,7 @@ tsconfig-paths@^3.15.0:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^2.0.0, tslib@^2.1.0, tslib@^2.4.0, tslib@^2.7.0, tslib@^2.8.0:
+tslib@^2.0.0, tslib@^2.1.0, tslib@^2.7.0, tslib@^2.8.0:
   version "2.8.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
@@ -4459,28 +4459,29 @@ unbox-primitive@^1.1.0:
     which-boxed-primitive "^1.1.1"
 
 unrs-resolver@^1.6.2:
-  version "1.6.4"
-  resolved "https://registry.npmjs.org/unrs-resolver/-/unrs-resolver-1.6.4.tgz"
-  integrity sha512-Fb6KH4pQK0XjR5PdRW8BEzsQmbYjkeRHF3IIIZtOVXVFM6Nh+Gb2fQh23Ba7qaYloDp+Aa8/JeNqyImJ8xHlkQ==
+  version "1.6.6"
+  resolved "https://registry.npmjs.org/unrs-resolver/-/unrs-resolver-1.6.6.tgz"
+  integrity sha512-IjvN/Nw9ogxlKbZY/YNqlYqvguKmyERCl7BHvFt3sDBRd/+VLfVHooQ03VbMUW9Hqh/lTY4MYwZHQNqBjkawhg==
   dependencies:
     napi-postinstall "^0.1.5"
   optionalDependencies:
-    "@unrs/resolver-binding-darwin-arm64" "1.6.4"
-    "@unrs/resolver-binding-darwin-x64" "1.6.4"
-    "@unrs/resolver-binding-freebsd-x64" "1.6.4"
-    "@unrs/resolver-binding-linux-arm-gnueabihf" "1.6.4"
-    "@unrs/resolver-binding-linux-arm-musleabihf" "1.6.4"
-    "@unrs/resolver-binding-linux-arm64-gnu" "1.6.4"
-    "@unrs/resolver-binding-linux-arm64-musl" "1.6.4"
-    "@unrs/resolver-binding-linux-ppc64-gnu" "1.6.4"
-    "@unrs/resolver-binding-linux-riscv64-gnu" "1.6.4"
-    "@unrs/resolver-binding-linux-s390x-gnu" "1.6.4"
-    "@unrs/resolver-binding-linux-x64-gnu" "1.6.4"
-    "@unrs/resolver-binding-linux-x64-musl" "1.6.4"
-    "@unrs/resolver-binding-wasm32-wasi" "1.6.4"
-    "@unrs/resolver-binding-win32-arm64-msvc" "1.6.4"
-    "@unrs/resolver-binding-win32-ia32-msvc" "1.6.4"
-    "@unrs/resolver-binding-win32-x64-msvc" "1.6.4"
+    "@unrs/resolver-binding-darwin-arm64" "1.6.6"
+    "@unrs/resolver-binding-darwin-x64" "1.6.6"
+    "@unrs/resolver-binding-freebsd-x64" "1.6.6"
+    "@unrs/resolver-binding-linux-arm-gnueabihf" "1.6.6"
+    "@unrs/resolver-binding-linux-arm-musleabihf" "1.6.6"
+    "@unrs/resolver-binding-linux-arm64-gnu" "1.6.6"
+    "@unrs/resolver-binding-linux-arm64-musl" "1.6.6"
+    "@unrs/resolver-binding-linux-ppc64-gnu" "1.6.6"
+    "@unrs/resolver-binding-linux-riscv64-gnu" "1.6.6"
+    "@unrs/resolver-binding-linux-riscv64-musl" "1.6.6"
+    "@unrs/resolver-binding-linux-s390x-gnu" "1.6.6"
+    "@unrs/resolver-binding-linux-x64-gnu" "1.6.6"
+    "@unrs/resolver-binding-linux-x64-musl" "1.6.6"
+    "@unrs/resolver-binding-wasm32-wasi" "1.6.6"
+    "@unrs/resolver-binding-win32-arm64-msvc" "1.6.6"
+    "@unrs/resolver-binding-win32-ia32-msvc" "1.6.6"
+    "@unrs/resolver-binding-win32-x64-msvc" "1.6.6"
 
 update-browserslist-db@^1.1.1:
   version "1.1.3"

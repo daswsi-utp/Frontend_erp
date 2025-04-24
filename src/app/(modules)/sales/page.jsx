@@ -5,6 +5,12 @@ export default function CrmPage() {
           <div className="grid grid-cols-3 gap-4">
               <div className="border p-4 rounded-lg">
                   <h3>Principal</h3>
+                  <h3>Principal</h3>
+                  <h3>Principal</h3>
+                  <h3>Principal1111</h3>
+                  <h3>Principal1111</h3>
+                  <h3>Principal1111</h3>
+                
                   <p className="text-2xl">124</p>
               </div>
           </div>

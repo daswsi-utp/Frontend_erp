@@ -9,6 +9,14 @@ import {
   Calendar,
   Contact,
   TicketsPlane,
+  FileAxis3d,
+  FileChartLine,
+  FileClock,
+  CalendarClock,
+  BookCopy,
+  
+  
+  
 } from "lucide-react";
 
 export const MODULES_CONFIG = {
@@ -38,8 +46,7 @@ export const MODULES_CONFIG = {
         icon: Contact,
         path: "/rrhh/attendance",
         subItems: [
-          { title: "Justificar Inasistencia", path: "/rrhh/justifyAttendance" },
-          { title: "Reportes de Asistencia", path: "/rrhh/attendanceReports" },
+          { title: "Registrar Asistencia", path: "/rrhh/departmentAttendance" },
         ],
       },
       {
@@ -48,8 +55,7 @@ export const MODULES_CONFIG = {
         path: "/rrhh/vacations",
         subItems: [
           { title: "Registrar Vacaciones", path: "/rrhh/vacations" },
-          { title: "Saldo de Vacaciones", path: "/rrhh/vacationsBalance" },
-          { title: "Registrar permisos", path: "/rrhh/permissions" },
+          { title: "Registrar Permisos", path: "/rrhh/permissions" },
         ],
       },
     ],
@@ -121,6 +127,7 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
+          { title: "Aprobación de Cotizaciones", path: "/sales/approvalofquotations"},
         ],
       },
       
@@ -129,7 +136,10 @@ export const MODULES_CONFIG = {
         icon: BadgeDollarSign,
         path: "/sales/registrationrequest",
         subItems: [
-          { title: "Ingresar/Procesar órdenes de clientes", path: "/sales/registrationrequest"},
+          { title: "Ingresar órdenes de clientes", path: "/sales/registrationrequest"},
+          { title: "Convetir a Órden", path: "/sales/convertorders"},
+          { title: "Tabla de Pedidos", path: "/sales/Tableorders"},
+          
         ],
       },
     ],
@@ -165,5 +175,58 @@ export const MODULES_CONFIG = {
         path: "/planning/project",
       },
     ]
+  },
+
+  manufacture: {
+    name: "Manufactura",
+    path: "/manufacture",
+    icon: BadgeDollarSign,
+    navItems: [
+      {
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/manufacture",
+        exact: true,
+      },
+      
+      {
+        title: "Datos Maestros",
+        icon: FileChartLine,
+        path: "/manufacture/masterData",
+        subItems: [
+          { title: "Productos", path: "/manufacture/masterData/manufacturingProducts" },
+        ],
+      },
+
+      {
+        title: "Control de Fabricación",
+        icon: FileClock,
+        path: "/manufacture/manufactoringControl",
+        subItems: [
+          { title: "Orden de producción", path: "/manufacture/manufactoringControl/productionOrder" },
+        ],
+      },
+
+      {
+        title: "Planificacion de la produccion",
+        icon: CalendarClock,
+        path: "/manufacture/productionPlanning",
+        subItems: [
+          { title: "MRP", path: "/manufacture/productionPlanning/MRP" },
+        ],
+      },
+
+      {
+        title: "KANBAN - Estado de la Producción",
+        icon: BookCopy,
+        path: "/manufacture/kanban",
+        
+      },
+
+
+      
+    ],
   }
+
+
 };
