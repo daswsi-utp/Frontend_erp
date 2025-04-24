@@ -1,8 +1,9 @@
 "use client"
 
 import CalendarSchedule from "@/components/calendar-schedule-planning";
-import CreateTaskForm from "@/components/create-task-form";
 import ManageParticipants from "@/components/manage-participants-planningDialog";
+import ManageTasks from "@/components/manage-task-planningDialog";
+import ScrollAreaTasks from "@/components/scroll-area-tasks";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 
@@ -44,8 +45,10 @@ const Schedule = ({ params }) => {
                 <section className="w-[25%] flex flex-col gap-2">
                     <h1 className="text-[20px]">{planning.name}</h1>
                     <Separator></Separator>
-                    <CreateTaskForm></CreateTaskForm>
+                    <ManageTasks></ManageTasks>
                     <ManageParticipants></ManageParticipants>
+                    <Separator></Separator>
+                    <ScrollAreaTasks></ScrollAreaTasks>
                 </section>
                 <section className="w-[75%]">
                     <CalendarSchedule></CalendarSchedule>
