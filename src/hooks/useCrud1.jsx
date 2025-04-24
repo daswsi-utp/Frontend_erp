@@ -71,7 +71,6 @@ const useCrud1 = (endpoint) => {
 
 
   const insertModel2 = async (_data, _endpoint = endpoint) => {
-    // En simulación, omitimos la confirmación
     console.log(`Mock POST request to: ${_endpoint}`, _data);
     await new Promise(resolve => setTimeout(resolve, 500));
     
@@ -106,13 +105,57 @@ const useCrud1 = (endpoint) => {
     return { success: true, message: "Registro creado con callback (simulado)" };
   };
 
+const searchModel = async (searchQuery = "", _endpoint = endpoint) => {
+  try {
+    if (!backend_host) {
+      console.log(`Mock SEARCH request to: ${_endpoint}?${searchQuery}`);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const mockSearchData = [
+        {
+          id: 1,
+          full_name: "Juan Pérez",
+          phone: "999888777",
+          whatsapp: "999888777",
+          email: "juan@example.com",
+          country: "Perú"
+        },
+        {
+          id: 2,
+          full_name: "María García",
+          phone: "999111222",
+          whatsapp: "999111222",
+          email: "maria@example.com",
+          country: "México"
+        }
+      ];
+      
+      const results = searchQuery 
+        ? mockSearchData.filter(item => 
+            item.full_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            item.phone.includes(searchQuery)
+        : mockSearchData;
+      
+      return { results, count: results.length };
+    }
+    
+    const response = await axios.get(`${backend_host}${_endpoint}?${searchQuery}`);
+    return response.data;
+    
+  } catch (error) {
+    console.error("Error searching data:", error);
+    return Promise.reject(error.response?.data || error);
+  }
+};
+
   return {
     getModel,
     insertModel,
     deleteModel,
     updateModel,
     insertModelWithCallback,
-    insertModel2
+    insertModel2,
+    searchModel
   };
 };
 
