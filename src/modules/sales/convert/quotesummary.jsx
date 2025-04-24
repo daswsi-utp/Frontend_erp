@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const quotesummary = () => {
+const Quotesummary = () => {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Resumen de Cotización</h2>
@@ -19,4 +19,4 @@ const quotesummary = () => {
   );
 };
 
-export default quotesummary;
+export default Quotesummary;
