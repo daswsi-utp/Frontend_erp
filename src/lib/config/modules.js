@@ -185,21 +185,21 @@ export const MODULES_CONFIG = {
         ],
       },
 
-      {
-        title: "Planificacion de la produccion",
-        icon: CalendarClock,
-        path: "/manufacture/productionPlanning",
-        subItems: [
-          { title: "MRP", path: "/manufacture/productionPlanning/MRP" },
-        ],
-      },
+      // {
+      //   title: "Planificacion de la produccion",
+      //   icon: CalendarClock,
+      //   path: "/manufacture/productionPlanning",
+      //   subItems: [
+      //     { title: "MRP", path: "/manufacture/productionPlanning/MRP" },
+      //   ],
+      // },
 
-      {
-        title: "KANBAN - Estado de la Producción",
-        icon: BookCopy,
-        path: "/manufacture/kanban",
+      // {
+      //   title: "KANBAN - Estado de la Producción",
+      //   icon: BookCopy,
+      //   path: "/manufacture/kanban",
         
-      },
+      // },
 
 
       
