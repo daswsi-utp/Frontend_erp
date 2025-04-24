@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form"; 
-import Spinner from "@/components/shared/Spinner"; 
+import { FormProvider, useForm } from "react-hook-form";
+import Spinner from "@/components/shared/Spinner";
 import { Button } from "@/components/shared/button";
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import GeneralTooltip from "@/components/shared/generalTooltip";
 import {
   Form,
@@ -11,24 +11,26 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import useCrud from "@/hooks/useCrud";
 import {
   capitalize,
   lettersOnly,
   regionNames,
 } from "@/lib/auxiliarFunctions";
 import lookup from "country-code-lookup";
-import Switch from "react-switch"; 
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectLabel } from "@/components/ui/select"; 
+import Switch from "react-switch";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectLabel } from "@/components/ui/select";
+import useCrud1 from "@/hooks/useCrud1";
+
+
 const LeadsImportTable = (props) => {
-  const { data, coursesAvailable } = props;
+  const { data, productsAvailable } = props
 
   const [isLoading, setIsLoading] = useState(true);
   const [finalData, setFinalData] = useState([]);
   const [selected, setSelected] = useState("");
   const [validated, setValidated] = useState(false);
   const [qualityLead, setQualityLead] = useState(false);
-  const { insertModel: insertLeads } = useCrud("");
+  const { insertModel2: insertLeads } = useCrud1("");
 
   const methods = useForm();
 
@@ -48,14 +50,14 @@ const LeadsImportTable = (props) => {
   };
 
   const middlewareInsertLeads = async (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    } else {
-      if (selected !== "") await handleInsertLeads(event);
+    event.preventDefault();
+    if (selected === "") {
+      setValidated(true);
+      return;
     }
-    setValidated(true);
+    await handleInsertLeads();
   };
+
 
   const getCountryData = (_client) => {
     if (_client.country === undefined) {
@@ -66,11 +68,11 @@ const LeadsImportTable = (props) => {
     } else if (_client.country.length > 2) {
       return {
         name: capitalize(_client.country),
-        code: lookup.byCountry(_client.country) && lookup.byCountry(_client.country).iso2,
+        code: lookup.byCountry(_client.country)?.iso2 || "PE",
       };
     } else {
       return {
-        name: regionNames.of(_client.country),
+        name: regionNames.of(_client.country) || "Perú",
         code: _client.country,
       };
     }
@@ -89,78 +91,82 @@ const LeadsImportTable = (props) => {
       return "Sin definir";
     } else {
       return _client.phone_number
-        .replace(/\s/g, "")
+        ?.replace(/\s/g, "")
         .replace(/\(/g, "")
         .replace(/\)/g, "")
         .replace(/-/g, "")
         .replace(/\:/g, "")
-        .replace(/\p/g, "");
+        .replace(/\p/g, "") || "Sin definir";
     }
   };
+
 
   const getWhatsAPPNumber = (_client) => {
     if (_client.whatsapp === undefined) {
       return getPhoneNumber(_client);
     } else {
       return _client.whatsapp
-        .replace(/\s/g, "")
+        ?.replace(/\s/g, "")
         .replace(/\(/g, "")
         .replace(/\)/g, "")
         .replace(/-/g, "")
         .replace(/\:/g, "")
-        .replace(/\p/g, "");
+        .replace(/\p/g, "") || "Sin definir";
     }
   };
 
   const getFullName = (_client) => {
-    let aux = lettersOnly(_client.full_name).split(" ");
+    let aux = lettersOnly(_client.full_name)?.split(" ") || []
     const res = {
       first_name: "",
       last_name: "",
     };
-    let first_name = "";
-    let last_name = "";
+    let first_name = ""
+    let last_name = ""
     let i = 0;
+
     if (aux.length > 1) {
       while (i < aux.length) {
         if (i < Math.trunc(aux.length / 2)) {
-          first_name = first_name + capitalize(aux[i]);
-          first_name = first_name + " ";
+          first_name = first_name + capitalize(aux[i])
+          first_name = first_name + " "
         } else {
           if (aux[i] !== undefined) {
-            last_name = last_name + capitalize(aux[i]);
-            last_name = last_name + " ";
+            last_name = last_name + capitalize(aux[i])
+            last_name = last_name + " "
           }
         }
         i++;
       }
     } else {
-      first_name = aux[0];
+      first_name = aux[0] || "Sin nombre"
     }
-    res.first_name = first_name;
-    res.last_name = last_name;
+    res.first_name = first_name.trim()
+    res.last_name = last_name.trim()
 
-    return res;
-  };
+    return res
+  }
 
   const formatearFecha = (fechaOriginal) => {
+    if (!fechaOriginal) return "Sin fecha";
+
     let fechaFormateada;
-    if (fechaOriginal && fechaOriginal.includes("/")) {
+    if (fechaOriginal.includes("/")) {
       const [mes, dia, anho] = fechaOriginal.split("/");
       fechaFormateada = `${dia}-${mes}-${anho}`;
-    } else if (fechaOriginal && fechaOriginal.includes("-")) {
+    } else if (fechaOriginal.includes("-")) {
       fechaFormateada = fechaOriginal;
     } else {
-      return "Formato de fecha no reconocido";
+      return "Formato no reconocido";
     }
 
-    const [anho, mes, dia] = fechaFormateada.split("-");
-    return `${dia}-${mes}-${anho}`;
-  };
+    const [anho, mes, dia] = fechaFormateada.split("-")
+    return `${dia}-${mes}-${anho}`
+  }
 
   const sanitizeData = () => {
-    const auxData = [];
-    props.data._data.map((client) => {
+    const auxData = []
+    props.data._data.forEach((client) => {
       auxData.push({
         first_name: getFullName(client).first_name,
         last_name: getFullName(client).last_name,
@@ -169,9 +175,9 @@ const LeadsImportTable = (props) => {
         country_code: getCountryData(client).code,
         whatsapp: getWhatsAPPNumber(client),
         city: getCityData(client),
-        email: client.email,
-        course_name: "Sin escoger un curso",
-        course_id: selected,
+        email: client.email || "Sin email",
+        product_name: "Sin escoger un producto",
+        product_id: selected,
         adset_name: client.adset_name,
         education_level: client.education_level,
         birth_date: formatearFecha(client.birth_date),
@@ -180,53 +186,52 @@ const LeadsImportTable = (props) => {
         created_time: client.created_time,
         form_name: client.form_name,
         quality_lead: qualityLead ? "is_quality" : "no_quality",
-      });
-    });
-    setFinalData(auxData);
-  };
+      })
+    })
+    setFinalData(auxData)
+  }
 
   const changeStatus = () => {
     setTimeout(() => {
-      setIsLoading(false);
-    }, 200);
-  };
+      setIsLoading(false)
+    }, 200)
+  }
 
   const handleChange = (event) => {
-    setSelected(event.target.value);
-    if (event.target.value === "") {
-      setValidated(false);
-    }
-    const auxData = finalData;
-    auxData.map((client) => {
-      client.course_id = event.target.value;
-      client.course_name =
-        event.target.options[event.target.selectedIndex].text ===
-          "Seleccione una opcion" ||
-        event.target.options[event.target.selectedIndex].text === ""
-          ? "Sin escoger un curso"
-          : event.target.options[event.target.selectedIndex].text;
-    });
-    setFinalData(auxData);
-  };
+    const value = event.target.value
+    setSelected(value)
+    setValidated(value === "")
+
+    const auxData = finalData.map(client => ({
+      ...client,
+      product_id: value,
+      product_name: value === ""
+        ? "Sin escoger un producto"
+        : event.target.options[event.target.selectedIndex].text
+    }))
+
+    setFinalData(auxData)
+  }
 
   useEffect(() => {
-    changeStatus();
-    sanitizeData();
-  }, []);
+    changeStatus()
+    sanitizeData()
+  }, [])
 
   useEffect(() => {
-    sanitizeData();
-  }, [qualityLead]);
+    sanitizeData()
+  }, [qualityLead])
+
+
 
   return (
-   
     <FormProvider {...methods}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex items-center space-x-3">
           <Button
             size="sm"
             variant="success"
-            onClick={(e) => middlewareInsertLeads(e)}
+            onClick={middlewareInsertLeads}
             className="font-bold dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
           >
             Insertar los datos procesados
@@ -243,68 +248,71 @@ const LeadsImportTable = (props) => {
           </GeneralTooltip>
         </div>
 
-        {/* Formulario para seleccionar curso */}
         <div>
           <form onSubmit={middlewareInsertLeads} className="space-y-4">
             <FormItem>
-              <FormLabel htmlFor="course_id" className="font-bold">
-                Curso de Interés
+              <FormLabel htmlFor="product_id" className="font-bold">
+                Producto de Interés
               </FormLabel>
               <FormControl>
-                <Select
-                  id="course_id"
-                  name="course_id"
+                <select
+                  id="product_id"
+                  name="product_id"
                   onChange={handleChange}
                   required
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  value={selected}
                 >
                   <option value="">Seleccione una opción</option>
-                  {coursesAvailable.map((course, index) => (
-                    <SelectItem key={index} value={course.id}>
-                      {course.name}
-                    </SelectItem>
+                  {productsAvailable.map((product, index) => (
+                    <option key={index} value={product.id}>
+                      {product.name}
+                    </option>
                   ))}
-                </Select>
+                </select>
               </FormControl>
-              <FormMessage className="font-bold text-red-500">
-                Selecciona un curso para continuar.
-              </FormMessage>
+              {validated && selected === "" && (
+                <FormMessage className="font-bold text-red-500">
+                  Selecciona un producto para continuar.
+                </FormMessage>
+              )}
             </FormItem>
           </form>
         </div>
       </div>
 
-      {/* Tabla de datos */}
       {isLoading ? (
         <Spinner color="primary" variant="grow" />
       ) : (
-        <Table className="mt-4">
-          <TableHead>
-            <TableRow>
-              {data._header.map((header, index) => (
-                <TableCell key={index}>{header.label}</TableCell>
+        <div className="mt-4 overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {data._header.map((header, index) => (
+                  <TableHead key={index}>{header.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {finalData.map((client, index) => (
+                <TableRow key={index}>
+                  <TableCell>{client.first_name}</TableCell>
+                  <TableCell>{client.last_name}</TableCell>
+                  <TableCell>{client.email}</TableCell>
+                  <TableCell>{client.phone}</TableCell>
+                  <TableCell>{client.whatsapp}</TableCell>
+                  <TableCell>{client.country}</TableCell>
+                  <TableCell>{client.city}</TableCell>
+                  <TableCell>{client.product_name}</TableCell>
+                  <TableCell>{client.product_id}</TableCell>
+                </TableRow>
               ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {finalData.length
-              ? finalData.map((client, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{client.first_name}</TableCell>
-                    <TableCell>{client.last_name}</TableCell>
-                    <TableCell>{client.email}</TableCell>
-                    <TableCell>{client.phone}</TableCell>
-                    <TableCell>{client.whatsapp}</TableCell>
-                    <TableCell>{client.country}</TableCell>
-                    <TableCell>{client.city}</TableCell>
-                    <TableCell>{client.course_name}</TableCell>
-                  </TableRow>
-                ))
-              : null}
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        </div>
       )}
     </FormProvider>
-  );
-};
+  )
+}
 
-export default LeadsImportTable;
+export default LeadsImportTable
