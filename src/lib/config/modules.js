@@ -165,5 +165,31 @@ export const MODULES_CONFIG = {
         path: "/planning/project",
       },
     ]
+  },
+
+  manufacture: {
+    name: "Manufactura",
+    path: "/manufacture",
+    icon: BadgeDollarSign,
+    navItems: [
+      {
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/manufacture",
+        exact: true,
+      },
+      
+      {
+        title: "Datos Maestros",
+        icon: UsersRound,
+        //path: "/manufacture/administrador/tracking",
+        subItems: [
+          { title: "Productos", path: "/manufacture/masterData/manufacturingProducts" },
+        ],
+      },
+      
+    ],
   }
+
+
 };
