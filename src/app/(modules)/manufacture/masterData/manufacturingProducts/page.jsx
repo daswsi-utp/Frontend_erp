@@ -16,9 +16,7 @@ const finishedProducts = [
     unit: 2,
     state: "Disponible",
 
-    quantity: 100,
-    cost: 5.0,
-    createdAt: "2023-05-12",
+    
   },
   {
     id: 2,
@@ -28,10 +26,7 @@ const finishedProducts = [
     unit: 2,
     state: "Disponible",
 
-    unitMeasure: "Unidades",
-    quantity: 200,
-    cost: 2.5,
-    createdAt: "2023-06-20",
+   
   },
   {
     id: 3,
@@ -41,10 +36,7 @@ const finishedProducts = [
     unit: 2,
     state: "Disponible",
 
-    unitMeasure: "Kg",
-    quantity: 75,
-    cost: 8.25,
-    createdAt: "2023-08-10",
+    
   },
 ];
 
