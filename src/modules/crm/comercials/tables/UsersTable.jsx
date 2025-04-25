@@ -62,7 +62,6 @@ const UsersTable = ({
 
   return (
     <div className="space-y-4">
-      {/* Header with add button */}
       <div className="flex justify-end">
         {showButtonNew && (
           <Button onClick={() => handleOpenModal('new')}>
@@ -72,7 +71,6 @@ const UsersTable = ({
         )}
       </div>
 
-      {/* Users Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>

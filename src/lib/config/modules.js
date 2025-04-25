@@ -133,7 +133,7 @@ export const MODULES_CONFIG = {
 
   customers: {
     name: "Logistic",
-    path: "/Logistics",
+    path: "/logistics",
     icon: BadgeDollarSign,
     // navItems: [
     //   {
