@@ -113,7 +113,7 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
-          { title: "Aprobación de Cotizaciones", path: "/sales/approvalofquotations"},
+          { title: "Aprobación De Cotizaciones", path: "/sales/approvalofquotations"},
         ],
       },
       
