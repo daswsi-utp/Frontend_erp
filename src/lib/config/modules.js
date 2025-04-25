@@ -109,7 +109,7 @@ export const MODULES_CONFIG = {
       {
         title: "Gestion de Cotizaciones",
         icon: BadgeDollarSign,
-        path: "/sales/quotationManagement",
+        path: "/sales/quotes",
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
