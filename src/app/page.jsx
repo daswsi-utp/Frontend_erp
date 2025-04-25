@@ -8,7 +8,7 @@ import LandbotFloating from '@/components/landbot-floating';
 
 const modules = [
     { title: 'RRHH', icon: <UsersRound size={32} />, link: '/rrhh' },
-    { title: 'Logística', icon: <Forklift size={32} />, link: '/Logistic' },
+    { title: 'Logística', icon: <Forklift size={32} />, link: '/logistic' },
     { title: 'Ventas', icon: <BadgeDollarSign size={32} />, link: '/sales' },
     { title: 'Planeación', icon: <NotebookPen size={32} />, link: '/planning' },
     { title: 'Manufactura', icon: <Factory size={32} />, link: '/manufacture' },
