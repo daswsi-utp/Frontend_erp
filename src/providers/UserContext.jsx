@@ -152,6 +152,19 @@ export const UserProvider = ({ children }) => {
   }
  }
 
+ useEffect(() => {
+  const axiosInterceptor = axios.interceptors.response.use(
+   (response) => response,
+   (error) => {
+    if (error.response?.status === 401) {
+     logoutUser()
+    }
+    return Promise.reject(error)
+   }
+  )
+  return () => axios.interceptors.response.eject(axiosInterceptor)
+ }, [])
+
 
 
 }
