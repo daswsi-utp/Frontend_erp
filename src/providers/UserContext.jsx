@@ -3,7 +3,7 @@ import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 import { toast } from "sonner"
 
-const backend_host = import.meta.env.NEXT_BACKEND_HOST
+const backend_host = process.env.NEXT_PUBLIC_BACKEND_HOST
 
 const UserContext = createContext()
 
@@ -45,7 +45,7 @@ export const UserProvider = ({ children }) => {
     const expiresAt = data.expires_at
     const message = data.message
 
-    if (accessToken && refreshToken && expiresAt && uesr) {
+    if (accessToken && refreshToken && expiresAt && user) {
      const tokens = {
       access_token: accessToken,
       refresh_token: refreshToken,

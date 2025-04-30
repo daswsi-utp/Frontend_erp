@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+'use client'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/providers/UserContext';
 import { FormLogin } from './components/FormLogin';
-import UserContext from '@/providers/UserContext';
-import ViteLogo from './../../../assets/react.svg';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ document_number: '', password: '' });
-
-  const { loginUser } = useContext(UserContext);
+  const { loginUser } = useAuth(); 
+  const router = useRouter();
 
   return (
     <>
