@@ -165,6 +165,21 @@ export const UserProvider = ({ children }) => {
   return () => axios.interceptors.response.eject(axiosInterceptor)
  }, [])
 
+ useEffect(() => {
+  const axiosInterceptor = axios.interceptors.request.use(
+   (config) => {
+    const token = authTokensRef.current?.access_token
+    if (token) {
+     config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+   },
+   (error) => Promise.reject(error)
+  )
+  return () => axios.interceptors.request.eject(axiosInterceptor)
+ }, [])
+
+
 
 
 }
