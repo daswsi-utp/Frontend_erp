@@ -126,8 +126,6 @@ export const MODULES_CONFIG = {
         ],
       },
 
-      
-
     ],
   },
 
