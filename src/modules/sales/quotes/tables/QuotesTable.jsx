@@ -64,9 +64,6 @@ const QuotesTable = ({
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-xs"
         />
-        <Button onClick={() => console.log("Crear nueva cotización")}>
-          Nueva Cotización
-        </Button>
       </div>
 
       <ScrollArea className="w-full">
@@ -99,16 +96,18 @@ const QuotesTable = ({
                     <TableCell>{formatDate(quote.expiration)}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => {
+                      
+                          <Button 
+                             variant="outline" 
+                             size="sm" 
+                             onClick={() => {
+                            setSelectedQuote(quote);
                             setSelectedFile(quote.file);
                             setOpenView(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                             }}
+>
+  <Eye className="h-4 w-4" />
+</Button>
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -129,23 +128,23 @@ const QuotesTable = ({
                           <Download className="h-4 w-4" />
                         </Button>
                         <Button 
-                          variant="destructive" 
-                          size="sm"
-                          onClick={() => {
-                            setSelectedQuote(quote);
-                            setOpenDelete(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+  variant="destructive" 
+  size="sm"
+  onClick={() => {
+    setSelectedQuote(quote); // Establece la cotización a eliminar
+    setOpenDelete(true);    // Abre el modal
+  }}
+>
+  <Trash2 className="h-4 w-4" />
+</Button>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No hay cotizaciones disponibles
+                  <TableCell colSpan={9} className="text-center py-4">
+                    No se encontraron cotizaciones.
                   </TableCell>
                 </TableRow>
               )}
