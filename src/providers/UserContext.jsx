@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
      },
     },
     {
-     headers: {"Content-Type": "application/json"},
+     headers: { "Content-Type": "application/json" },
     }
    )
    if (response.status == 200) {
@@ -60,17 +60,53 @@ export const UserProvider = ({ children }) => {
 
      localStorage.setItem("authTokens", JSON.stringify(tokens))
      localStorage.setItem("user", JSON.stringify(user))
-     
+
      window.location.href = "/"
     } else {
      console.error("Error: Missing tokens or user data in response")
     }
-   }else {
+   } else {
     alert('Something went wrong | incorrect credentials')
    }
-  }catch (error) {
+  } catch (error) {
    console.error('Error en loginUser:', error.response ? error.response.data : error.message)
    alert('Something went wrong | Please try again later')
   }
  }
+
+ const logoutUser = async () => {
+  toast("Tu sesión ha sido cerrada con éxito. ¡Hasta pronto!", {
+   action: {
+    label: "Aceptar",
+    onClick: () => console.log("Sesión cerrada confirmada"),
+   },
+  })
+
+  try {
+   if (authTokensRef.current) {
+    await axios, delete (
+     `${backend_host}/api/v1/general/users/sign_out/`,
+     {
+      headers: {
+       'Content-Type': 'application/json',
+       Authorization: "Bearer " + authTokensRef.current.access_token,
+      },
+     }
+    )
+   }
+  } catch (error) {
+   console.error("Error al cerrar sesión:", error.response ? error.response.data : error.message)
+  }finally {
+   authTokensRef.current = null
+   userRef.current = null
+   localStorage.removeItem("authTokens")
+   localStorage.removeItem("user")
+   setAuthTokens(null)
+   setUser(null)
+   window.location.href = "/login"
+  }
+ }
+
+
+
 }
