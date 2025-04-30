@@ -179,7 +179,50 @@ export const UserProvider = ({ children }) => {
   return () => axios.interceptors.request.eject(axiosInterceptor)
  }, [])
 
+ useEffect(() => {
+  if (authTokensRef) {
+   axios.defaults.headers.common["Authorization"] = "Bearer " + authTokensRef.current?.access_token;
+  } else {
+   delete axios.defaults.headers.common["Authorization"]
+   localStorage.removeItem("authTokens")
+  }
+ }, [authTokensRef])
 
+ useEffect(() => {
+  authTokensRef.current = authTokens
+  userRef.current = user
+ }, [authTokensRef, userRef])
 
+ useEffect(() => {
+  const intervalId = setInterval(() => {
+   const expireAtRefInSeconds = parseInt(authTokensRef.current?.expire_at) || 0
+   const expireAtInMillis = expireAtRefInSeconds * 1000
+   const currentTime = new Date().getTime()
+   const fiveMinutesInMillis = 5 * 60 * 1000
+   const rest = expireAtInMillis - currentTime
+   if (rest <= fiveMinutesInMillis && authTokens) {
+    updateToken()
+   }
+  }, 60000)
+  return () => clearInterval(intervalId)
+ }, [authTokensRef])
 
+ const contextData = useMemo(() => ({
+  user: userRef?.current,
+  authTokens: authTokensRef?.current,
+  loginUser,
+  logoutUser,
+  setAuthTokens,
+  setUser,
+ }), [authTokensRef])
+
+ return (
+  <UserContext.Provider value={contextData}>
+   {children}
+  </UserContext.Provider>
+ )
 }
+
+export const useAuth = () => useContext(UserContext)
+
+export default UserContext
