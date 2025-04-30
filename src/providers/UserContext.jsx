@@ -1,3 +1,4 @@
+'use client'
 import React, { createContext, useEffect, useState, useContext, useRef, useMemo } from 'react'
 import axios from "axios"
 import { jwtDecode } from "jwt-decode"
@@ -9,16 +10,20 @@ const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
  const [loading, setLoading] = useState(false)
- const [authTokens, setAuthTokens] = useState(() =>
-  localStorage.getItem("authTokens")
-   ? JSON.parse(localStorage.getItem("authTokens"))
-   : null
- )
- const [user, setUser] = useState(() =>
-  localStorage.getItem("authTokens")
-   ? jwtDecode(localStorage.getItem("authTokens"))
-   : null
- )
+ const [authTokens, setAuthTokens] = useState(() => {
+  if (typeof window !== "undefined") {
+   const tokens = localStorage.getItem("authTokens")
+   return tokens ? JSON.parse(tokens) : null
+  }
+  return null
+ })
+ const [user, setUser] = useState(() => {
+  if (typeof window !== "undefined") {
+   const tokens = localStorage.getItem("authTokens")
+   return tokens ? jwtDecode(tokens) : null
+  }
+  return null
+ })
 
  const authTokensRef = useRef(authTokens)
  const userRef = useRef(user)

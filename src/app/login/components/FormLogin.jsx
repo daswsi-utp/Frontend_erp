@@ -68,12 +68,12 @@ export function FormLogin({ credentials, setCredentials, loginUser }) {
                   <FormItem className="space-y-1">
                     <div className="flex items-center justify-between">
                       <FormLabel>Contraseña</FormLabel>
-                      <Link
+                      {/* <Link
                         to="/forgot-password"
                         className="text-sm font-medium text-muted-foreground hover:opacity-75"
                       >
                         Olvido su contraseña?
-                      </Link>
+                      </Link> */}
                     </div>
 
                     <FormControl>

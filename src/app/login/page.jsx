@@ -30,7 +30,7 @@ const Login = () => {
             ERP System
           </div>
           <img
-            src='https://raw.githubusercontent.com/jluisdeveloper/magna_images/main/logo.png'
+            src='https://imgs.search.brave.com/7NrHstma7gnuEz0MRiMSR8Np6AHe-oT4xecXTkpGyek/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuc2Vla2xvZ28u/Y29tL2xvZ28tcG5n/LzI4LzIvZXJwLXJr/dnYtbG9nby1wbmdf/c2Vla2xvZ28tMjg3/NzM1LnBuZw'
             className='relative m-auto w-full'
             width={301}
             height={60}
@@ -38,7 +38,7 @@ const Login = () => {
           />
           <div className='relative z-20 mt-auto'>
             <blockquote className='space-y-2'>
-              <footer className='text-sm'>Planificación Magna</footer>
+              <footer className='text-sm'>ERP System</footer>
             </blockquote>
           </div>
         </div>

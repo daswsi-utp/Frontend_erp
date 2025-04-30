@@ -1,22 +1,13 @@
-import { Button } from "@/components/ui/button";
 import {
   UsersRound,
-  Forklift,
   BadgeDollarSign,
-  BookUser,
-  NotebookPen,
   LayoutDashboard,
   Calendar,
   Contact,
   TicketsPlane,
-  FileAxis3d,
   FileChartLine,
   FileClock,
-  CalendarClock,
-  BookCopy,
-  
-  
-  
+
 } from "lucide-react";
 
 export const MODULES_CONFIG = {
@@ -24,6 +15,7 @@ export const MODULES_CONFIG = {
     name: "Recursos Humanos",
     path: "/rrhh",
     icon: UsersRound,
+    allowedRoles: ['administrador'],
     navItems: [
       {
         title: "Dashboard",
@@ -64,6 +56,7 @@ export const MODULES_CONFIG = {
     name: "CRM",
     path: "/crm",
     icon: BadgeDollarSign,
+    allowedRoles: ['administrador', 'coordinator', 'comercial'],
     navItems: [
       {
         title: "Dashboard",
@@ -104,6 +97,7 @@ export const MODULES_CONFIG = {
   sales: {
     name: "Ventas",
     path: "/sales",
+    allowedRoles: ['administrador'],
     icon: BadgeDollarSign,
     navItems: [
       {
@@ -134,6 +128,7 @@ export const MODULES_CONFIG = {
   customers: {
     name: "Logistic",
     path: "/logistics",
+    allowedRoles: ['administrador'],
     icon: BadgeDollarSign,
     // navItems: [
     //   {
@@ -147,6 +142,7 @@ export const MODULES_CONFIG = {
   planning: {
     name: "Planning",
     path: "/planning",
+    allowedRoles: ['administrador'],
     icon: BadgeDollarSign,
     navItems: [
       {
@@ -166,6 +162,7 @@ export const MODULES_CONFIG = {
   manufacture: {
     name: "Manufactura",
     path: "/manufacture",
+    allowedRoles: ['administrador'],
     icon: BadgeDollarSign,
     navItems: [
       {
