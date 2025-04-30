@@ -121,10 +121,8 @@ export const MODULES_CONFIG = {
         icon: BadgeDollarSign,
         path: "/sales/registrationrequest",
         subItems: [
-          { title: "Ingresar órdenes de clientes", path: "/sales/registrationrequest"},
           { title: "Convetir a Órden", path: "/sales/convertorders"},
-          { title: "Tabla de Pedidos", path: "/sales/Tableorders"},
-          
+
         ],
       },
 
