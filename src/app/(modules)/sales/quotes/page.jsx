@@ -1,104 +1,78 @@
-"use client";
+'use client';
+import { useState } from 'react';
+import QuotesTable from "@/modules/sales/quotes/tables/QuotesTable";
+import { Button } from '@/components/ui/button';
 
-import { useState } from "react";
-import Link from "next/link";
-import { PlusCircle, Search, Printer } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+const SalesPage = () => {
+  const [selectedQuote, setSelectedQuote] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-const QuotesPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const quotes = [
-    { id: "COT-001", client: "Consultoría Digital", date: "2024-06-10", total: 1500, status: "pending" },
-    { id: "COT-002", client: "García & Asociados", date: "2024-06-12", total: 3200, status: "approved" },
+  const exampleQuotes = [
+    {
+      id: 1,
+      client: { name: 'Constructora Alfa' },
+      salesRep: 'María López',
+      serviceType: 'Diseño Arquitectónico',
+      amount: 50000,
+      status: 'pendiente',
+      expiration: '2025-05-20',
+      date: '2025-04-15',
+      file: '/files/quote1.pdf'
+    },
+    {
+      id: 2,
+      client: { name: 'Inmobiliaria Beta' },
+      salesRep: 'Carlos Ruiz',
+      serviceType: 'Supervisión de Obra',
+      amount: 75000,
+      status: 'aceptada',
+      expiration: '2025-05-10',
+      date: '2025-04-10',
+      file: '/files/quote2.pdf'
+    },
+    {
+      id: 3,
+      client: { name: 'Grupo Delta' },
+      salesRep: 'Laura Gómez',
+      serviceType: 'Consultoría Técnica',
+      amount: 32000,
+      status: 'rechazada',
+      expiration: '2025-04-25',
+      date: '2025-04-01',
+      file: '/files/quote3.pdf'
+    }
   ];
-
-  const filteredQuotes = quotes.filter((quote) =>
-    quote.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    quote.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="p-6 space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Cotizaciones</CardTitle>
-          <Button asChild>
-            <Link href="/sales/quotes/create">
-              <PlusCircle className="mr-2 h-4 w-4" /> Nueva Cotización
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex items-center gap-2">
-            <div className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por cliente o ID..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
+      <h1 className="text-2xl font-bold">Cotizaciones - Módulo de Ventas</h1>
+      
+      <QuotesTable 
+        quotes={exampleQuotes}
+        setSelectedQuote={setSelectedQuote}
+        setSelectedFile={setSelectedFile}
+        setOpenEdit={setOpenEdit}
+        setOpenDelete={setOpenDelete}
+        setOpenView={() => {}} // Puedes implementar si quieres abrir modal
+      />
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredQuotes.map((quote) => (
-                <TableRow key={quote.id}>
-                  <TableCell className="font-medium">{quote.id}</TableCell>
-                  <TableCell>{quote.client}</TableCell>
-                  <TableCell>{quote.date}</TableCell>
-                  <TableCell>${quote.total.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      quote.status === "approved" 
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}>
-                      {quote.status === "approved" ? "Aprobada" : "Pendiente"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/sales/quotes/${quote.id}`}>
-                        <Printer className="h-4 w-4 mr-2" /> Imprimir
-                      </Link>
-                    </Button>
-                    <Button variant="secondary" size="sm" asChild>
-                      <Link href={`/sales/quotes/${quote.id}/view`}>
-                        Ver
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {selectedFile && (
+        <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+          <h2 className="text-lg font-semibold mb-2">Vista Previa de Cotización</h2>
+          <iframe 
+            src={selectedFile}
+            className="w-full h-[500px] border rounded"
+            title="Vista previa de archivo"
+          />
+          <Button onClick={() => setSelectedFile(null)} className="mt-4">
+            Cerrar vista previa
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
 
-export default QuotesPage;
+export default SalesPage;
