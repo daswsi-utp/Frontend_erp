@@ -16,7 +16,7 @@ const formatDate = (dateStr) => {
 };
 
 const QuotesTable = ({ 
-  quotes, 
+  quotes = [], // Valor por defecto para evitar undefined
   setSelectedQuote, 
   setSelectedFile, 
   setOpenEdit, 
@@ -29,7 +29,6 @@ const QuotesTable = ({
     { key: 'id', label: 'ID', className: 'w-20' },
     { key: 'client', label: 'Cliente' },
     { key: 'salesRep', label: 'Vendedor' },
-    { key: 'serviceType', label: 'Tipo de Servicio' },
     { key: 'amount', label: 'Monto', className: 'w-32' },
     { key: 'status', label: 'Estado', className: 'w-32' },
     { key: 'date', label: 'Creación', className: 'w-32' },
@@ -48,12 +47,13 @@ const QuotesTable = ({
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN'
-    }).format(amount);
+    }).format(amount || 0);
   };
 
-  const filteredQuotes = quotes.filter((quote) =>
-    quote.client.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredQuotes = quotes.filter((quote) => {
+    const clientName = quote.client?.name || '';
+    return clientName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
     <div className="relative w-full max-w-[100vw] overflow-hidden space-y-4">
@@ -82,32 +82,30 @@ const QuotesTable = ({
               {filteredQuotes.length > 0 ? (
                 filteredQuotes.map((quote) => (
                   <TableRow key={quote.id}>
-                    <TableCell className="font-medium">{quote.id}</TableCell>
-                    <TableCell>{quote.client.name}</TableCell>
-                    <TableCell>{quote.salesRep}</TableCell>
-                    <TableCell>{quote.serviceType}</TableCell>
+                    <TableCell className="font-medium">COT-{quote.id.toString().padStart(4, '0')}</TableCell>
+                    <TableCell>{quote.client?.name || 'Cliente no especificado'}</TableCell>
+                    <TableCell>{quote.salesRep || '-'}</TableCell>
                     <TableCell>{formatCurrency(quote.amount)}</TableCell>
                     <TableCell>
-                      <Badge className={`${statusColorVariants[quote.status]} text-xs capitalize`}>
-                        {quote.status}
+                      <Badge className={`${statusColorVariants[quote.status] || 'bg-gray-100 text-gray-800'} text-xs capitalize`}>
+                        {quote.status || 'pendiente'}
                       </Badge>
                     </TableCell>
-                    <TableCell>{formatDate(quote.date)}</TableCell>
-                    <TableCell>{formatDate(quote.expiration)}</TableCell>
+                    <TableCell>{quote.date ? formatDate(quote.date) : '-'}</TableCell>
+                    <TableCell>{quote.expiration ? formatDate(quote.expiration) : '-'}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                      
-                          <Button 
-                             variant="outline" 
-                             size="sm" 
-                             onClick={() => {
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
                             setSelectedQuote(quote);
                             setSelectedFile(quote.file);
                             setOpenView(true);
-                             }}
->
-  <Eye className="h-4 w-4" />
-</Button>
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -128,23 +126,23 @@ const QuotesTable = ({
                           <Download className="h-4 w-4" />
                         </Button>
                         <Button 
-  variant="destructive" 
-  size="sm"
-  onClick={() => {
-    setSelectedQuote(quote); // Establece la cotización a eliminar
-    setOpenDelete(true);    // Abre el modal
-  }}
->
-  <Trash2 className="h-4 w-4" />
-</Button>
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedQuote(quote);
+                            setOpenDelete(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-4">
-                    No se encontraron cotizaciones.
+                  <TableCell colSpan={8} className="text-center py-4">
+                    {quotes.length === 0 ? 'No hay cotizaciones disponibles' : 'No se encontraron resultados'}
                   </TableCell>
                 </TableRow>
               )}

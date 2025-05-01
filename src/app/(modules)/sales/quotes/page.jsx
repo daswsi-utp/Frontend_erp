@@ -128,7 +128,6 @@ const SalesPage = () => {
         isDeleting={isDeleting}
       />
 
-  
 
     </div>
   );
