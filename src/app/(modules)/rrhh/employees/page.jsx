@@ -5,13 +5,14 @@ import EmployeesTable from "@/modules/rrhh/employees/tables/employees-table";
 import EditEmployeeModal from "@/modules/rrhh/employees/modals/modal-edit-employee";
 import DeleteEmployeeModal from "@/modules/rrhh/employees/modals/modal.delete-employee";
 import NewEmployee from "@/modules/rrhh/employees/modals/modal-new-employee";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+
 const employees = [
   {
     id: 1,
     firstName: "Daniel",
     lastName: "Cabrera",
-    documentType: "DNI",
-    documentNumber: "12345678",
+    dni: "12345678",
     email: "daniel@example.com",
     phoneNumber: "999999999",
     address: "Av. avenida 123",
@@ -30,17 +31,14 @@ const employees = [
     contractType: "Indefinido",
     employeeCode: "EMP-001",
     state: "Activo",
-    emergencyContact: {
-      name: "Hanna",
-      phone: "999888777"
-    },
+    emergencyContactName: "Hanna",
+    emergencyContactPhone: "123456789"
   },
   {
     id: 2,
     firstName: "Estefani",
     lastName: "Davila",
-    documentType: "DNI",
-    documentNumber: "87654321",
+    dni: "87654321",
     email: "estefani@example.com",
     phoneNumber: "988877766",
     address: "Calle calle 456",
@@ -52,24 +50,21 @@ const employees = [
       code: "CRM",
     },
     position: {
-      id:2,
+      id:1,
       name: "Gerente de Area",
     },
     hireDate: "2021-06-20",
     contractType: "Temporal",
     employeeCode: "EMP-002",
     state: "Activo",
-    emergencyContact: {
-      name: "Juan",
-      phone: "911122233",
-    },
+    emergencyContactName: "Juan",
+    emergencyContactPhone: "987654321"
   },
   {
     id: 3,
     firstName: "Sebastián",
     lastName: "Ticlavilca",
-    documentType: "Pasaporte",
-    documentNumber: "X1234567",
+    dni: "X1234567",
     email: "sebastian@example.com",
     phoneNumber: "977766655",
     address: "Av. Independencia 789",
@@ -81,24 +76,21 @@ const employees = [
       code: "IV",
     },
     position: {
-      id:3,
+      id:2,
       name: "Ejecutivo de Inventario",
     },
     hireDate: "2020-11-01",
     contractType: "Indefinido",
     employeeCode: "EMP-003",
-    state: "Activo",
-    emergencyContact: {
-      name: "Laura Lopez",
-      phone: "922233344",
-    },
+    state: "Desactivado",
+    emergencyContactName: "Pedro",
+    emergencyContactPhone: "111222333"
   },
   {
     id: 4,
     firstName: "Valentina",
     lastName: "Martínez",
-    documentType: "DNI",
-    documentNumber: "44556677",
+    dni: "44556677",
     email: "valentina@example.com",
     phoneNumber: "966655544",
     address: "Jirón Las Flores 101",
@@ -110,17 +102,15 @@ const employees = [
       code: "FI",
     },
     position: {
-      id:4,
+      id:3,
       name: "Contadora",
     },
     hireDate: "2023-02-10",
     contractType: "Indefinido",
     employeeCode: "EMP-004",
-    state: "Activo",
-    emergencyContact: {
-      name: "Mario Martínez",
-      phone: "955112233",
-    },
+    state: "Vacaciones",
+    emergencyContactName: "Mario",
+    emergencyContactPhone: "999888777"
   },
 ]
 
@@ -134,23 +124,27 @@ const Employees = () => {
         <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Empleados de la Organización</h1>
         <NewEmployee/>
       </div>
-      <EmployeesTable
-        data={employees}
-        setSelectedEmployee={setSelectedEmployee}
-        setOpenEdit={setOpenEdit}
-        setOpenDelete={setOpenDelete}
-      />
-      <EditEmployeeModal
-        open={openEdit}
-        onOpenChange={setOpenEdit}
-        employee={selectedEmployee}
-        onEmployeeChange={setSelectedEmployee}
-      />
-      <DeleteEmployeeModal
-        open={openDelete}
-        onOpenChange={setOpenDelete}
-        employee={selectedEmployee}
-      />
+      <Card>
+        <CardContent>
+          <EmployeesTable
+            data={employees}
+            setSelectedEmployee={setSelectedEmployee}
+            setOpenEdit={setOpenEdit}
+            setOpenDelete={setOpenDelete}
+          />
+          <EditEmployeeModal
+            open={openEdit}
+            onOpenChange={setOpenEdit}
+            employee={selectedEmployee}
+            onEmployeeChange={setSelectedEmployee}
+          />
+          <DeleteEmployeeModal
+            open={openDelete}
+            onOpenChange={setOpenDelete}
+            employee={selectedEmployee}
+          />
+        </CardContent>
+      </Card>
     </>
   );
 };

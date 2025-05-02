@@ -10,7 +10,7 @@ import { UserCircle } from "lucide-react";
 
 const NewEmployee=()=> {
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ state: 'Activo' });
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -38,7 +38,6 @@ const NewEmployee=()=> {
 
           <ScrollArea className="h-[70vh] pr-2">
             <div className="grid grid-cols-2 gap-4">
-              {/* Primer par */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Nombre</label>
                 <Input onChange={e => handleChange('firstName', e.target.value)} className="mb-1" />
@@ -49,14 +48,15 @@ const NewEmployee=()=> {
                 <UserCircle size={128} />
               </div>
 
-              {/* Luego el resto en pares */}
               {[
-                { label: "Tipo de Documento", field: "documentType" },
-                { label: "Número de Documento", field: "documentNumber" },
+                { label: "Codigo de empleado", field: "code" },
+                { label: "DNI", field: "dni" },
                 { label: "Correo Electrónico", field: "email" },
                 { label: "Teléfono", field: "phoneNumber" },
                 { label: "Dirección", field: "address" },
                 { label: "Fecha de Nacimiento", field: "birthDate", type: "date" },
+                { label: "Contacto de emergencia - Nombre", field: "emergencyContactName" },
+                { label: "Contacto de emergencia - Número", field: "emergencyContactPhone" },
               ].map((item, idx) => (
                 <div key={idx} className="flex flex-col">
                   <label className="text-sm font-medium mb-1">{item.label}</label>
@@ -81,18 +81,18 @@ const NewEmployee=()=> {
                 </Select>
               </div>
 
-              {/* Código de Departamento */}
+              {/* Departamento */}
               <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Código de Departamento</label>
-                <Select onValueChange={val => handleChange('department.name', val)}>
+                <label className="text-sm font-medium mb-1">Departamento</label>
+                <Select onValueChange={val => handleChange('department', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
-                    <SelectItem value="Client Relation Managment">Client Relation Managment</SelectItem>
-                    <SelectItem value="Inventario">Inventario</SelectItem>
-                    <SelectItem value="Finanzas">Finanzas</SelectItem>
+                    <SelectItem value="1">Recursos Humanos</SelectItem>
+                    <SelectItem value="2">Client Relation Managment</SelectItem>
+                    <SelectItem value="3">Inventario</SelectItem>
+                    <SelectItem value="4">Finanzas</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -100,49 +100,22 @@ const NewEmployee=()=> {
               {/* Cargo */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Cargo</label>
-                <Select onValueChange={val => handleChange('position.name', val)}>
+                <Select onValueChange={val => handleChange('position', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Gerente de Area">Gerente de Area</SelectItem>
-                    <SelectItem value="Ejecutivo de Inventario">Ejecutivo de Inventario</SelectItem>
-                    <SelectItem value="Contadora">Contadora</SelectItem>
+                    <SelectItem value="1">Gerente de Area</SelectItem>
+                    <SelectItem value="2">Ejecutivo de Inventario</SelectItem>
+                    <SelectItem value="3">Contadora</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              {/* Fecha de Contratación */}
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Fecha de Contratación</label>
-                <Input type="date" onChange={e => handleChange('hireDate', e.target.value)} />
-              </div>
-
-              {/* Tipo de Contrato */}
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Tipo de Contrato</label>
-                <Select onValueChange={val => handleChange('contractType', val)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Indefinido">Indefinido</SelectItem>
-                    <SelectItem value="Temporal">Temporal</SelectItem>
-                    <SelectItem value="Practicante">Practicante</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Código de Empleado */}
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Código de Empleado</label>
-                <Input onChange={e => handleChange('employeeCode', e.target.value)} />
               </div>
 
               {/* Estado */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Estado</label>
-                <Select onValueChange={val => handleChange('state', val)}>
+                <Select defaultValue="Activo" onValueChange={val => handleChange('state', val)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
@@ -152,21 +125,10 @@ const NewEmployee=()=> {
                   </SelectContent>
                 </Select>
               </div>
-
-              {/* Contacto de Emergencia */}
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Contacto de Emergencia - Nombre</label>
-                <Input  onChange={e => handleChange('emergencyContactName', e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Contacto de Emergencia - Teléfono</label>
-                <Input onChange={e => handleChange('emergencyContactPhone', e.target.value)} />
-              </div>
             </div>
           </ScrollArea>
-
           <DialogFooter className="mt-6">
-            <Button variant="default">Guardar Cambios</Button>
+            <Button variant="default" onClick={handleSave}>Guardar Cambios</Button>
           </DialogFooter>
         </DialogContent>
     </Dialog>
