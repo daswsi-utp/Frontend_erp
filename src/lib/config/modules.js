@@ -68,6 +68,7 @@ export const MODULES_CONFIG = {
         title: "Seguimiento",
         icon: UsersRound,
         path: "/crm/administrador/tracking",
+        allowedRoles: ['administrador', 'coordinator'],
         subItems: [
           { title: "Por Asesor", path: "/crm/administrador/tracking" },
         ],
@@ -76,6 +77,7 @@ export const MODULES_CONFIG = {
         title: "Leads",
         icon: Contact,
         path: "/crm/administrador/leads",
+        allowedRoles: ['administrador', 'coordinator'],
         subItems: [
           { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
           { title: "Insertar Manualmente", path: "/crm/administrador/leads/insert" },
