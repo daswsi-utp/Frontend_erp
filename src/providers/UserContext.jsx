@@ -154,7 +154,7 @@ export const UserProvider = ({ children }) => {
      dni: data.dni,
      role: data.roleName
     }
-    console.log("data", data)
+    
 
     if (accessToken && refreshToken && expiresAt && user) {
      const tokens = {
@@ -163,7 +163,6 @@ export const UserProvider = ({ children }) => {
       expires_at: expiresAt,
       user: user
      }
-     console.log("datatok", tokens)
 
      authTokensRef.current = tokens
      userRef.current = jwtDecode(accessToken)
