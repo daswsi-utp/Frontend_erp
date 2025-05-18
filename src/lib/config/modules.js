@@ -1,29 +1,22 @@
-import { Button } from "@/components/ui/button";
 import {
   UsersRound,
-  Forklift,
   BadgeDollarSign,
-  BookUser,
-  NotebookPen,
   LayoutDashboard,
   Calendar,
   Contact,
   TicketsPlane,
-  FileAxis3d,
   FileChartLine,
   FileClock,
-  CalendarClock,
-  BookCopy,
-  
-  
-  
 } from "lucide-react";
+import { ROLES } from '@/lib/config/roles'
+
 
 export const MODULES_CONFIG = {
   rrhh: {
     name: "Recursos Humanos",
     path: "/rrhh",
     icon: UsersRound,
+    allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_RRHH],
     navItems: [
       {
         title: "Dashboard",
@@ -64,6 +57,12 @@ export const MODULES_CONFIG = {
     name: "CRM",
     path: "/crm",
     icon: BadgeDollarSign,
+    allowedRoles: [
+      ROLES.ADMIN,
+      ROLES.ADMIN_CRM,
+      ROLES.COORDINATOR_CRM,
+      ROLES.ASESOR_CRM,
+    ],
     navItems: [
       {
         title: "Dashboard",
@@ -75,6 +74,10 @@ export const MODULES_CONFIG = {
         title: "Seguimiento",
         icon: UsersRound,
         path: "/crm/administrador/tracking",
+        allowedRoles: [
+          ROLES.ADMIN,
+          ROLES.ADMIN_CRM
+        ],
         subItems: [
           { title: "Por Asesor", path: "/crm/administrador/tracking" },
         ],
@@ -83,9 +86,19 @@ export const MODULES_CONFIG = {
         title: "Leads",
         icon: Contact,
         path: "/crm/administrador/leads",
+        allowedRoles: [
+          ROLES.ADMIN,
+          ROLES.ADMIN_CRM
+        ],
         subItems: [
-          { title: "Importar Manualmente", path: "/crm/administrador/leads/import" },
-          { title: "Insertar Manualmente", path: "/crm/administrador/leads/insert" },
+          {
+            title: "Importar Manualmente",
+            path: "/crm/administrador/leads/import",
+          },
+          {
+            title: "Insertar Manualmente",
+            path: "/crm/administrador/leads/insert",
+          },
           { title: "Buscar Cliente", path: "/crm/administrador/leads/search" },
         ],
       },
@@ -93,17 +106,24 @@ export const MODULES_CONFIG = {
         title: "Ejecutivos de Ventas",
         icon: Contact,
         path: "/crm/administrador/comercials",
+        allowedRoles: [
+          ROLES.ADMIN,
+          ROLES.ADMIN_CRM
+        ],
         subItems: [
-          { title: "Ejecutivos de ventas", path: "/crm/administrador/comercials" },
+          {
+            title: "Ejecutivos de ventas",
+            path: "/crm/administrador/comercials",
+          },
         ],
       },
-      
     ],
   },
 
   sales: {
     name: "Ventas",
     path: "/sales",
+    allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_VENTAS],
     icon: BadgeDollarSign,
     navItems: [
       {
@@ -113,19 +133,24 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
           { title: "Nueva Corización", path: "/sales/newQuote" },
-          { title: "Aprobación De Cotizaciones", path: "/sales/approvalofquotations"},
+          {
+            title: "Aprobación De Cotizaciones",
+            path: "/sales/approvalofquotations",
+          },
         ],
       },
-      
+
       {
         title: "Registro de Pedido de Venta",
         icon: BadgeDollarSign,
         path: "/sales/registrationrequest",
         subItems: [
-          { title: "Ingresar órdenes de clientes", path: "/sales/registrationrequest"},
-          { title: "Convetir a Órden", path: "/sales/convertorders"},
-          { title: "Tabla de Pedidos", path: "/sales/Tableorders"},
-          
+          {
+            title: "Ingresar órdenes de clientes",
+            path: "/sales/registrationrequest",
+          },
+          { title: "Convetir a Órden", path: "/sales/convertorders" },
+          { title: "Tabla de Pedidos", path: "/sales/Tableorders" },
         ],
       },
     ],
@@ -134,6 +159,7 @@ export const MODULES_CONFIG = {
   customers: {
     name: "Logistic",
     path: "/logistics",
+    allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_LOGISTIC],
     icon: BadgeDollarSign,
     // navItems: [
     //   {
@@ -147,6 +173,7 @@ export const MODULES_CONFIG = {
   planning: {
     name: "Planning",
     path: "/planning",
+    allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_PLANNING],
     icon: BadgeDollarSign,
     navItems: [
       {
@@ -160,12 +187,13 @@ export const MODULES_CONFIG = {
         icon: Calendar,
         path: "/planning/project",
       },
-    ]
+    ],
   },
 
   manufacture: {
     name: "Manufactura",
     path: "/manufacture",
+    allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_MANUFACTURE],
     icon: BadgeDollarSign,
     navItems: [
       {
@@ -174,13 +202,16 @@ export const MODULES_CONFIG = {
         path: "/manufacture",
         exact: true,
       },
-      
+
       {
         title: "Datos Maestros",
         icon: FileChartLine,
         path: "/manufacture/masterData",
         subItems: [
-          { title: "Productos", path: "/manufacture/masterData/manufacturingProducts" },
+          {
+            title: "Productos",
+            path: "/manufacture/masterData/manufacturingProducts",
+          },
         ],
       },
 
@@ -189,7 +220,10 @@ export const MODULES_CONFIG = {
         icon: FileClock,
         path: "/manufacture/manufactoringControl",
         subItems: [
-          { title: "Orden de producción", path: "/manufacture/manufactoringControl/productionOrder" },
+          {
+            title: "Orden de producción",
+            path: "/manufacture/manufactoringControl/productionOrder",
+          },
         ],
       },
 
@@ -206,13 +240,8 @@ export const MODULES_CONFIG = {
       //   title: "KANBAN - Estado de la Producción",
       //   icon: BookCopy,
       //   path: "/manufacture/kanban",
-        
+
       // },
-
-
-      
     ],
-  }
-
-
+  },
 };

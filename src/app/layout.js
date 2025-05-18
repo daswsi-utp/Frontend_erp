@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";  
+import { UserProvider } from "@/providers/UserContext";
 import './globals.css'; 
 
 const geistSans = Geist({
@@ -28,9 +29,11 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
+          <UserProvider>
           <SidebarProvider className="flex flex-col h-full">
             {children}
           </SidebarProvider>
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>
