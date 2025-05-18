@@ -158,7 +158,7 @@ export const MODULES_CONFIG = {
 
   customers: {
     name: "Logistic",
-    path: "/logistics",
+    path: "/logistic",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_LOGISTIC],
     icon: BadgeDollarSign,
     // navItems: [
