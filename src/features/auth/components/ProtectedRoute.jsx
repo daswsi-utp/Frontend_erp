@@ -12,17 +12,17 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   if (!loading) {
    if (!user) {
     redirect('/login')
-   } else if (allowedRoles && !allowedRoles.includes(user.role)) {
+   } else if (allowedRoles && !allowedRoles.includes(user.roleName)) {
     redirect('/unauthorized')
    }
 
-   if (pathname.startsWith('/crm/administrador') && user.role !== 'administrador') {
+   if (pathname.startsWith('/crm/administrador') && user.roleName !== 'administrador') {
     redirect('/crm')
    }
   }
  }, [user, loading, allowedRoles, pathname])
 
- if (loading || !user || (allowedRoles && !allowedRoles.includes(user.role))) {
+ if (loading || !user || (allowedRoles && !allowedRoles.includes(user.roleName))) {
   return (
    <div className="flex h-screen items-center justify-center">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>

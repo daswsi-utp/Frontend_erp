@@ -50,7 +50,8 @@ export const UserProvider = ({ children }) => {
     const user = {
      id: data.id,
      email: data.email,
-     dni: data.dni
+     dni: data.dni,
+     role: data.roleName,
     }
 
     const expiresAt = data.expireAt
@@ -121,20 +122,22 @@ export const UserProvider = ({ children }) => {
  const updateToken = async () => {
   try {
    const response = await axios.post(
-    `${backend_host}/api/v1/general/users/tokens/`,
+    `${backend_host}/api/auth/refresh-token`,
+    {
+     refreshToken: authTokensRef.current?.refresh_token
+    },
     {
      headers: {
       "Content-Type": "application/json",
-      "Refresh-Token": authTokensRef.current?.refresh_token,
       Authorization: "Bearer " + authTokensRef.current?.access_token,
      },
     }
    )
    if (response.status == 200) {
     const data = response.data
-    const accessToken = data.access_token
-    const refreshToken = data.refresh_token
-    const expiresAt = data.expires_at
+    const accessToken = data.accessToken
+    const refreshToken = data.refreshToken
+    const expiresAt = data.expireAt
 
     if (accessToken && refreshToken && expiresAt) {
      const tokens = {
