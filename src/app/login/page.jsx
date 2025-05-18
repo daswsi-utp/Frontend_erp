@@ -5,7 +5,7 @@ import { useAuth } from '@/providers/UserContext';
 import { FormLogin } from './components/FormLogin';
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ document_number: '', password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const { loginUser } = useAuth(); 
   const router = useRouter();
 

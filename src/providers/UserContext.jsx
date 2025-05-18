@@ -9,7 +9,6 @@ const backend_host = process.env.NEXT_PUBLIC_BACKEND_HOST
 const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
- const [loading, setLoading] = useState(false)
  const [authTokens, setAuthTokens] = useState(() => {
   if (typeof window !== "undefined") {
    const tokens = localStorage.getItem("authTokens")
@@ -30,24 +29,31 @@ export const UserProvider = ({ children }) => {
 
  const loginUser = async (credentials) => {
   try {
+
    const response = await axios.post(
-    `${backend_host}/api/v1/general/users/sign_in/`,
+    `${backend_host}/api/auth/login`,
     {
-     authentication: {
-      document_number: credentials.document_number,
-      password: credentials.password,
-     },
+     username: credentials.email,
+     password: credentials.password
     },
     {
-     headers: { "Content-Type": "application/json" },
+     headers: {
+      "Content-Type": "application/json"
+     },
+     withCredentials: true
     }
    )
    if (response.status == 200) {
     const data = response.data
-    const accessToken = data.access_token
-    const refreshToken = data.refresh_token
-    const user = data.user
-    const expiresAt = data.expires_at
+    const accessToken = data.accessToken
+    const refreshToken = data.refreshToken
+    const user = {
+     id: data.id,
+     email: data.email,
+     dni: data.dni
+    }
+
+    const expiresAt = data.expireAt
     const message = data.message
 
     if (accessToken && refreshToken && expiresAt && user) {
@@ -74,8 +80,8 @@ export const UserProvider = ({ children }) => {
     alert('Something went wrong | incorrect credentials')
    }
   } catch (error) {
-   console.error('Error en loginUser:', error.response ? error.response.data : error.message)
-   alert('Something went wrong | Please try again later')
+   console.error("Login failed:", error);
+   alert("Invalid credentials. Please try again.");
   }
  }
 

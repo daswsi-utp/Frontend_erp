@@ -16,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 const formSchema = z.object({
-  document_number: z.string().min(4, { message: 'Documento debe tener al menos 4 caracteres.' }),
+  email: z.string().email({ message: 'ingres un Correo válido' }),
   password: z.string().min(6, { message: 'Contraseña debe tener al menos 6 caracteres.' }),
 })
 
@@ -24,7 +24,7 @@ export function FormLogin({ credentials, setCredentials, loginUser }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      document_number: credentials.document_number,
+      email: credentials.email,
       password: credentials.password,
     },
   })
@@ -36,7 +36,7 @@ export function FormLogin({ credentials, setCredentials, loginUser }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} method='POST'>
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle className="text-2xl"></CardTitle>
@@ -48,12 +48,12 @@ export function FormLogin({ credentials, setCredentials, loginUser }) {
             <div className="grid gap-2">
               <FormField
                 control={form.control}
-                name="document_number"
+                name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
                     <FormLabel>Usuario</FormLabel>
                     <FormControl>
-                      <Input placeholder="user" {...field} />
+                      <Input placeholder="user@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
