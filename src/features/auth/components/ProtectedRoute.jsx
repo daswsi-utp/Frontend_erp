@@ -1,33 +1,61 @@
-// src/components/ProtectedRoute.jsx
 'use client'
 import { useAuth } from '@/providers/UserContext'
-import { redirect, usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { redirect, usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { ROLES, getRolePermissions, getModuleFromRole } from '@/lib/config/roles'
+import Spinner from '@/components/shared/Spinner'
 
-export default function ProtectedRoute({ children, allowedRoles }) {
+export default function ProtectedRoute({ children, allowedRoles, requiredPermissions }) {
  const { user, loading } = useAuth()
  const pathname = usePathname()
+ const router = useRouter()
+ const [isClient, setIsClient] = useState(false)
 
  useEffect(() => {
-  if (!loading) {
+  setIsClient(true)
+ }, [])
+
+ useEffect(() => {
+  if (!loading && isClient) {
    if (!user) {
     redirect('/login')
-   } else if (allowedRoles && !allowedRoles.includes(user.roleName)) {
-    redirect('/unauthorized')
+    return
    }
 
-   if (pathname.startsWith('/crm/administrador') && user.roleName !== 'administrador') {
-    redirect('/crm')
+   // if (allowedRoles && !allowedRoles.includes(user.role)) {
+   //   redirect('/unauthorized')
+   //   return
+   // }
+
+   if (user.role === ROLES.ADMIN && pathname !== '/') {
+    redirect('/')
+    return
+   }
+
+   if (user.role && user.role !== ROLES.ADMIN) {
+    const module = getModuleFromRole(user.role)
+    if (module && !pathname.startsWith(`/${module}`)) {
+     redirect(`/${module}`)
+     return
+    }
+   }
+
+   if (requiredPermissions) {
+    const userPermissions = getRolePermissions(user.role)
+    const hasPermission = Object.keys(requiredPermissions).every(
+     key => userPermissions.permissions?.[key] === requiredPermissions[key]
+    )
+
+    if (!hasPermission) {
+     redirect('/unauthorized')
+     return
+    }
    }
   }
- }, [user, loading, allowedRoles, pathname])
+ }, [user, loading, allowedRoles, pathname, requiredPermissions, isClient])
 
- if (loading || !user || (allowedRoles && !allowedRoles.includes(user.roleName))) {
-  return (
-   <div className="flex h-screen items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-   </div>
-  )
+ if (loading || !isClient) {
+  return <Spinner />
  }
 
  return children

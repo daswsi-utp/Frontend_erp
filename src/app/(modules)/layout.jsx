@@ -5,15 +5,15 @@ import Link from 'next/link';
 import { ModeToggle } from "@/components/mode-toogle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/providers/UserContext";
-import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 
 
 export default function ModulesLayout({ children }) {
 
     const { user } = useAuth();
 
+
     return (
-        <ProtectedRoute allowedRoles={['administrador', 'coordinator', 'comercial']}>
+        <>
             <div className="flex h-full w-full">
                 <AppSidebar user={user} />
                 <div className="flex-1 flex flex-col h-full">
@@ -32,6 +32,6 @@ export default function ModulesLayout({ children }) {
                     </main>
                 </div>
             </div>
-        </ProtectedRoute>
+        </>
     );
 }

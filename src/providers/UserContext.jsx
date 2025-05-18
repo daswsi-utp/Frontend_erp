@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState, useContext, useRef, useMemo 
 import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 import { toast } from "sonner"
+import { ROLES } from '@/lib/config/roles'
 
 const backend_host = process.env.NEXT_PUBLIC_BACKEND_HOST
 
@@ -58,6 +59,7 @@ export const UserProvider = ({ children }) => {
     const message = data.message
 
     if (accessToken && refreshToken && expiresAt && user) {
+
      const tokens = {
       access_token: accessToken,
       refresh_token: refreshToken,
@@ -65,6 +67,7 @@ export const UserProvider = ({ children }) => {
       user: user,
       message: message
      }
+
      setAuthTokens(tokens)
      authTokensRef.current = tokens
      setUser(jwtDecode(accessToken))
@@ -72,8 +75,15 @@ export const UserProvider = ({ children }) => {
 
      localStorage.setItem("authTokens", JSON.stringify(tokens))
      localStorage.setItem("user", JSON.stringify(user))
+     console.log("user", user.role)
+     if (user.role === ROLES.ADMIN) {
+      window.location.href = "/"
+    } else {
+      const module = user.role.split('_')[1]?.toLowerCase()
+      window.location.href = module ? `/${module}` : '/'
+    }
+    
 
-     window.location.href = "/"
     } else {
      console.error("Error: Missing tokens or user data in response")
     }
@@ -96,8 +106,8 @@ export const UserProvider = ({ children }) => {
 
   try {
    if (authTokensRef.current) {
-    await axios, delete (
-     `${backend_host}/api/v1/general/users/sign_out/`,
+    await axios.delete(
+     `${backend_host}/api/auth/logout`,
      {
       headers: {
        'Content-Type': 'application/json',
