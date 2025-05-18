@@ -78,11 +78,11 @@ export const UserProvider = ({ children }) => {
      console.log("user", user.role)
      if (user.role === ROLES.ADMIN) {
       window.location.href = "/"
-    } else {
+     } else {
       const module = user.role.split('_')[1]?.toLowerCase()
       window.location.href = module ? `/${module}` : '/'
-    }
-    
+     }
+
 
     } else {
      console.error("Error: Missing tokens or user data in response")
@@ -143,18 +143,28 @@ export const UserProvider = ({ children }) => {
      },
     }
    )
+
    if (response.status == 200) {
     const data = response.data
     const accessToken = data.accessToken
     const refreshToken = data.refreshToken
     const expiresAt = data.expireAt
+    const user = {
+     email: data.email,
+     dni: data.dni,
+     role: data.roleName
+    }
+    console.log("data", data)
 
-    if (accessToken && refreshToken && expiresAt) {
+    if (accessToken && refreshToken && expiresAt && user) {
      const tokens = {
       access_token: accessToken,
       refresh_token: refreshToken,
       expires_at: expiresAt,
+      user: user
      }
+     console.log("datatok", tokens)
+
      authTokensRef.current = tokens
      userRef.current = jwtDecode(accessToken)
      setAuthTokens(tokens)
@@ -222,7 +232,7 @@ export const UserProvider = ({ children }) => {
    const expireAtRefInSeconds = parseInt(authTokensRef.current?.expire_at) || 0
    const expireAtInMillis = expireAtRefInSeconds * 1000
    const currentTime = new Date().getTime()
-   const fiveMinutesInMillis = 5 * 60 * 1000
+   const fiveMinutesInMillis = 1 * 60 * 1000
    const rest = expireAtInMillis - currentTime
    if (rest <= fiveMinutesInMillis && authTokens) {
     updateToken()
