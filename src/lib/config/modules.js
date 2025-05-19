@@ -102,7 +102,25 @@ export const MODULES_CONFIG = {
         ],
       },
       {
-        title: "Gestionr Personal",
+        title: "Gestión de Personal",
+        icon: Contact,
+        path: "/crm/administrador/comercials",
+        allowedRoles: [
+          ROLES.ADMIN
+        ],
+        subItems: [
+          {
+            title: "Ejecutivos de ventas",
+            path: "/crm/administrador/comercials",
+          },
+          {
+            title: "Coordindores de ventas",
+            path: "/crm/administrador/comercials/coordinators",
+          },
+        ],
+      },
+      {
+        title: "Área Comercial",
         icon: Contact,
         path: "/crm/administrador/comercials",
         allowedRoles: [
