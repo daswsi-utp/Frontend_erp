@@ -133,7 +133,7 @@ export const MODULES_CONFIG = {
           },
           {
             title: "Productos",
-            path: "/crm/administrador/comercials/coordinators",
+            path: "/crm/administrador/teams/products",
           },
         ],
       },
