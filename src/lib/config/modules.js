@@ -87,8 +87,7 @@ export const MODULES_CONFIG = {
         icon: Contact,
         path: "/crm/administrador/leads",
         allowedRoles: [
-          ROLES.ADMIN,
-          ROLES.ADMIN_CRM
+          ROLES.ADMIN
         ],
         subItems: [
           {
@@ -103,17 +102,20 @@ export const MODULES_CONFIG = {
         ],
       },
       {
-        title: "Ejecutivos de Ventas",
+        title: "Gestionr Personal",
         icon: Contact,
         path: "/crm/administrador/comercials",
         allowedRoles: [
-          ROLES.ADMIN,
-          ROLES.ADMIN_CRM
+          ROLES.ADMIN
         ],
         subItems: [
           {
             title: "Ejecutivos de ventas",
             path: "/crm/administrador/comercials",
+          },
+          {
+            title: "Coordindores de ventas",
+            path: "/crm/administrador/comercials/coordinators",
           },
         ],
       },
