@@ -10,8 +10,8 @@ import { faArrowsDownToPeople, faAtlassian, faCrown } from '@fortawesome/free-so
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import useCrud from '../../../../hooks/useCrud'
-import ModalAssignLeads from './extras/ModalAssignLeads'
-import ModalAssignLeadsBadgeGeneral from './extras/ModalAssignLeadsBadgeGeneral'
+import ModalAssignLeads from '@/modules/crm/teams/modals/ModalAssignLeads'
+import ModalAssignLeadsBadgeGeneral from '@/modules/crm/teams/modals/ModalAssignLeadsBadgeGeneral'
 
 const CoordinadoresVentas = () => {
   const { getModelData: getMyTeam, getModelData: getCourses } = useCrud('')
