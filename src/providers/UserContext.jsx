@@ -154,7 +154,6 @@ export const UserProvider = ({ children }) => {
      dni: data.dni,
      role: data.roleName
     }
-    
 
     if (accessToken && refreshToken && expiresAt && user) {
      const tokens = {
@@ -170,7 +169,7 @@ export const UserProvider = ({ children }) => {
      setUser(jwtDecode(accessToken))
 
      localStorage.setItem('authTokens', JSON.stringify(tokens))
-     localStorage.setItem('user', JSON.stringify(data.user))
+     localStorage.setItem('user', JSON.stringify(user))
 
     } else {
      console.error("Error: Missing tokens in response")
