@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import useCrud from '@/hooks/useCrud'
 
 import ProductModal from '@/modules/crm/teams/tables/ProductModal'
+import ProductTable from '@/modules/crm/teams/tables/ProductTable'
 
 const Products = () => {
   const { getModelData: getProducts } = useCrud('')
