@@ -122,17 +122,17 @@ export const MODULES_CONFIG = {
       {
         title: "Área Comercial",
         icon: Contact,
-        path: "/crm/administrador/comercials",
+        path: "/crm/administrador/teams",
         allowedRoles: [
           ROLES.ADMIN
         ],
         subItems: [
           {
-            title: "Ejecutivos de ventas",
-            path: "/crm/administrador/comercials",
+            title: "Equipo Comercial",
+            path: "/crm/administrador/teams",
           },
           {
-            title: "Coordindores de ventas",
+            title: "Productos",
             path: "/crm/administrador/comercials/coordinators",
           },
         ],

@@ -13,9 +13,8 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tooltip } from '@/components/ui/tooltip'
-import { Spinner } from '@/components/ui/spinner'
 
-import useCrud from '../../../../../hooks/useCrud'
+import useCrud from '@/hooks/useCrud'
 
 const ModalAssignLeadsBadgeGeneral = ({ comercial, courses, open, onOpenChange, typeModal }) => {
   const currentUser = JSON.parse(localStorage.getItem('current_user'))
