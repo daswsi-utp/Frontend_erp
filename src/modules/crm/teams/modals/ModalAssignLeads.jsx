@@ -64,7 +64,7 @@ const ModalAssignLeads = ({ comercial, listCourses, open, onOpenChange, typeModa
   }
 
   if (!comercial) return null
-
+ 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
