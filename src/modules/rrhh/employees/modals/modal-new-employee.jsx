@@ -4,13 +4,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // usando Select de shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { UserCircle } from "lucide-react";
+import useCrud from "@/hooks/useCrud";
+import { positions } from "../data/positions";
+import { DialogClose } from "@radix-ui/react-dialog";
 
-const NewEmployee=()=> {
+const NewEmployee=({fetchEmployees})=> {
 
-  const [formData, setFormData] = useState({ state: 'Activo' });
+  const {getModel, insertModel} = useCrud()
+  const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [formData, setFormData] = useState({ state: 'ACTIVO' });
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -19,10 +26,37 @@ const NewEmployee=()=> {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    onOpenChange(false);
+  const handleSave = async () => {
+    try {
+      console.log("Datos guardados:", formData);
+      await insertModel(formData, "/rrhh/employee");
+      fetchEmployees();
+    } catch (error) {
+      console.error("Error during create new employe", error)
+    }
   };
+
+  const fetchDepartments = async () =>{
+    try {
+      const data = await getModel("/rrhh/department");
+      setDepartments(data);
+    } catch (error) {
+      console.error("Error during recovery departments");
+    }
+  }
+  const fetchRoles = async () =>{
+    try {
+      const data = await getModel("/rrhh/role");
+      setRoles(data);
+    } catch (error) {
+      console.error("Error during recovery roles");
+    }
+  }
+
+  useEffect(() => {
+    fetchDepartments();
+    fetchRoles();
+  }, []);
 
   return (
     <Dialog>
@@ -49,14 +83,13 @@ const NewEmployee=()=> {
               </div>
 
               {[
-                { label: "Codigo de empleado", field: "code" },
                 { label: "DNI", field: "dni" },
                 { label: "Correo Electrónico", field: "email" },
-                { label: "Teléfono", field: "phoneNumber" },
+                { label: "Teléfono", field: "phone" },
                 { label: "Dirección", field: "address" },
-                { label: "Fecha de Nacimiento", field: "birthDate", type: "date" },
                 { label: "Contacto de emergencia - Nombre", field: "emergencyContactName" },
                 { label: "Contacto de emergencia - Número", field: "emergencyContactPhone" },
+                { label: "Fecha de Nacimiento", field: "birthDate", type: "date" },
               ].map((item, idx) => (
                 <div key={idx} className="flex flex-col">
                   <label className="text-sm font-medium mb-1">{item.label}</label>
@@ -89,25 +122,39 @@ const NewEmployee=()=> {
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Recursos Humanos</SelectItem>
-                    <SelectItem value="2">Client Relation Managment</SelectItem>
-                    <SelectItem value="3">Inventario</SelectItem>
-                    <SelectItem value="4">Finanzas</SelectItem>
-                  </SelectContent>
+                    {departments?.map((department)=>(
+                      <SelectItem key={department.id} value={department.id}>{department.name}</SelectItem>
+                    ))}
+                    </SelectContent>
                 </Select>
               </div>
 
-              {/* Cargo */}
+              {/* Role */}
               <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Cargo</label>
-                <Select onValueChange={val => handleChange('position', { id: val })}>
+                <label className="text-sm font-medium mb-1">Role</label>
+                <Select onValueChange={val => handleChange('role', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Gerente de Area</SelectItem>
-                    <SelectItem value="2">Ejecutivo de Inventario</SelectItem>
-                    <SelectItem value="3">Contadora</SelectItem>
+                    {roles?.map((role)=>(
+                      <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+              </div>
+
+              {/* Posicion */}
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Posicion</label>
+                <Select onValueChange={val => handleChange('position', val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {positions.map((position)=>(
+                      <SelectItem key={position.id} value={position.id}>{position.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -115,20 +162,24 @@ const NewEmployee=()=> {
               {/* Estado */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Estado</label>
-                <Select defaultValue="Activo" onValueChange={val => handleChange('state', val)}>
+                <Select defaultValue="ACTIVO" onValueChange={val => handleChange('state', val)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Activo">Activo</SelectItem>
-                    <SelectItem value="Inactivo">Inactivo</SelectItem>
+                    <SelectItem value="ACTIVO">Activo</SelectItem>
+                    <SelectItem value="DESACTIVADO">Desactivado</SelectItem>
+                    <SelectItem value="VACACIONES">Vacaciones</SelectItem>
+                    <SelectItem value="PERMISO">Permiso</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
           </ScrollArea>
           <DialogFooter className="mt-6">
-            <Button variant="default" onClick={handleSave}>Guardar Cambios</Button>
+            <DialogClose onClick={handleSave}>
+              Guardar Cambios
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
     </Dialog>

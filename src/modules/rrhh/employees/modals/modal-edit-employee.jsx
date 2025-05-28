@@ -5,12 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserCircle } from "lucide-react";
+import useCrud from "@/hooks/useCrud";
+import { positions } from "../data/positions";
 
-const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) =>{
+const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange, fetchEmployees  }) =>{
   if (!employee) return null;
 
+  const {getModel, updateModel} = useCrud()
+  const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState(employee ?? {});
 
   if (employee && employee.id !== formData.id) {
@@ -25,10 +30,38 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
     }
   };
 
-  const handleSave = () => {
-    console.log("Datos editados guardados:", formData);
-    onOpenChange(false);
+  const handleSave = async () => {
+    try {
+      console.log("Datos actualizados:", formData);
+      await updateModel(formData, "/rrhh/employee");
+      fetchEmployees();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error during create new employe", error)
+    }
   };
+
+  const fetchDepartments = async () =>{
+    try {
+      const data = await getModel("/rrhh/department");
+      setDepartments(data);
+    } catch (error) {
+      console.error("Error during recovery departments");
+    }
+  }
+  const fetchRoles = async () =>{
+    try {
+      const data = await getModel("/rrhh/role");
+      setRoles(data);
+    } catch (error) {
+      console.error("Error during recovery roles");
+    }
+  }
+
+  useEffect(() => {
+    fetchDepartments();
+    fetchRoles();
+  }, []);
 
   return (
     <div className="relative h-full max-h-screen overflow-hidden">
@@ -44,29 +77,22 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Nombre</label>
-                <Input
-                  value={formData.firstName}
-                  onChange={e => handleChange('firstName', e.target.value)} 
-                  className="mb-1" />
+                <Input value={formData.firstName} onChange={e => handleChange('firstName', e.target.value)} className="mb-1" />
                 <label className="text-sm font-medium mb-1">Apellido</label>
-                <Input 
-                  value={formData.lastName}
-                  onChange={e => handleChange('lastName', e.target.value)}
-                  className="mb-1" />
+                <Input value={formData.lastName} onChange={e => handleChange('lastName', e.target.value)} className="mb-1" />
               </div>
               <div className="flex flex-col items-center justify-center ">
                 <UserCircle size={128} />
               </div>
 
               {[
-                { label: "Codigo de empleado", field: "employeeCode", value:formData.employeeCode },
-                { label: "DNI", field: "dni", value:formData.dni },
-                { label: "Correo Electrónico", field: "email", value:formData.email },
-                { label: "Teléfono", field: "phoneNumber", value:formData.phoneNumber },
-                { label: "Dirección", field: "address", value:formData.address },
-                { label: "Fecha de Nacimiento", field: "birthDate", type: "date", value:formData.birthDate },
-                { label: "Contacto de emergencia - Nombre", field: "emergencyContactName", value:formData.emergencyContactName },
-                { label: "Contacto de emergencia - Número", field: "emergencyContactPhone", value:formData.emergencyContactPhone },
+                { label: "DNI", field: "dni", value: formData.dni },
+                { label: "Correo Electrónico", field: "email", value: formData.email },
+                { label: "Teléfono", field: "phone", value: formData.phone },
+                { label: "Dirección", field: "address", value: formData.address },
+                { label: "Contacto de emergencia - Nombre", field: "emergencyContactName", value: formData.emergencyContactName },
+                { label: "Contacto de emergencia - Número", field: "emergencyContactPhone", value: formData.emergencyContactPhone },
+                { label: "Fecha de Nacimiento", field: "birthDate", type: "date", value: formData.birthDate },
               ].map((item, idx) => (
                 <div key={idx} className="flex flex-col">
                   <label className="text-sm font-medium mb-1">{item.label}</label>
@@ -100,25 +126,39 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={1}>Recursos Humanos</SelectItem>
-                    <SelectItem value={2}>Client Relation Managment</SelectItem>
-                    <SelectItem value={3}>Inventario</SelectItem>
-                    <SelectItem value={4}>Finanzas</SelectItem>
-                  </SelectContent>
+                    {departments?.map((department)=>(
+                      <SelectItem key={department.id} value={department.id}>{department.name}</SelectItem>
+                    ))}
+                    </SelectContent>
                 </Select>
               </div>
 
-              {/* Cargo */}
+              {/* Role */}
               <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Cargo</label>
-                <Select defaultValue={formData.position.id} onValueChange={val => handleChange('position', { id: val })}>
+                <label className="text-sm font-medium mb-1">Role</label>
+                <Select defaultValue={formData.role.id}  onValueChange={val => handleChange('role', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={1}>Gerente de Area</SelectItem>
-                    <SelectItem value={2}>Ejecutivo de Inventario</SelectItem>
-                    <SelectItem value={3}>Contadora</SelectItem>
+                    {roles?.map((role)=>(
+                      <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+              </div>
+
+              {/* Posicion */}
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Posicion</label>
+                <Select defaultValue={formData.position}  onValueChange={val => handleChange('position', val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {positions.map((position)=>(
+                      <SelectItem key={position.id} value={position.id}>{position.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -131,9 +171,10 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Activo">Activo</SelectItem>
-                    <SelectItem value="Desactivado">Desactivado</SelectItem>
-                    <SelectItem value="Vacaciones">Vacaciones</SelectItem>
+                    <SelectItem value="ACTIVO">Activo</SelectItem>
+                    <SelectItem value="DESACTIVADO">Desactivado</SelectItem>
+                    <SelectItem value="VACACIONES">Vacaciones</SelectItem>
+                    <SelectItem value="PERMISO">Permiso</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
