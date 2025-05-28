@@ -3,7 +3,7 @@ import axios from "axios"
 import { useConfirm } from "@/components/shared/alert"
 import { LuAlertOctagon } from "react-icons/lu";
 
-const backend_host = process.env.NEXT_BACKEND_HOST || 'http://localhost:5000';
+const backend_host = process.env.NEXT_BACKEND_HOST || 'http://localhost:8095/api/v1';
 
 const useCrud = (endpoint) => {
   const confirm = useConfirm()

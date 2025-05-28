@@ -40,10 +40,10 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, setOpenDelete 
   ];
 
   const typeColorVariants = {
-    Activo: 'bg-green-300 text-green-800',
-    Vacaciones: 'bg-orange-300 text-orange-800',
-    Permiso: 'bg-orange-300 text-orange-800',
-    Desactivado: 'bg-red-300 text-red-800'
+    ACTIVO: 'bg-green-300 text-green-800',
+    VACACIONES: 'bg-orange-300 text-orange-800',
+    PERMISO: 'bg-orange-300 text-orange-800',
+    DESACTIVADO: 'bg-red-300 text-red-800'
   }
 
   return (
@@ -92,11 +92,11 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, setOpenDelete 
               {filteredEmployees.length > 0 ? (
                 filteredEmployees.map((employee) => (
                   <TableRow key={employee.id}>
-                    <TableCell>{employee.employeeCode}</TableCell>
+                    <TableCell>{employee.id}</TableCell>
                     <TableCell>{employee.firstName}</TableCell>
                     <TableCell>{employee.lastName}</TableCell>
                     <TableCell>{employee.department.name}</TableCell>
-                    <TableCell>{employee.position.name}</TableCell>
+                    <TableCell>{employee.position}</TableCell>
                     <TableCell>
                       <Badge className={`${typeColorVariants[employee.state]} text-xs w-fit`}>
                         {employee.state}
