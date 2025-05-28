@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ModeToggle } from "@/components/mode-toogle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/providers/UserContext";
+import { AlertDialogProvider } from "@/components/shared/alert";
 
 
 export default function ModulesLayout({ children }) {
@@ -28,7 +29,9 @@ export default function ModulesLayout({ children }) {
                         <UserNav />
                     </header>
                     <main className="flex-1 overflow-auto p-6">
+                      <AlertDialogProvider>
                         {children}
+                      </AlertDialogProvider>
                     </main>
                 </div>
             </div>

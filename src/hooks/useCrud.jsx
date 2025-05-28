@@ -1,9 +1,10 @@
 import React from "react"
 import axios from "axios"
 import { useConfirm } from "@/components/shared/alert"
-import { LuAlertOctagon } from "react-icons/lu";
+import { LuAlertOctagon  } from "react-icons/lu";
+import { OctagonAlert } from 'lucide-react';
 
-const backend_host = process.env.NEXT_BACKEND_HOST || 'http://localhost:8095/api/v1';
+const backend_host = 'http://localhost:8095/api/v1' || process.env.NEXT_BACKEND_HOST ;
 
 const useCrud = (endpoint) => {
   const confirm = useConfirm()
@@ -24,7 +25,7 @@ const useCrud = (endpoint) => {
       body: "¿Estás seguro de que quieres eliminar este registro? No podrás recuperarlo una vez eliminado.",
       cancelButton: "Cancelar",
       actionButton: "Eliminar!",
-      icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+      icon: <OctagonAlert className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     })
     if (confirmation) {
 
@@ -45,7 +46,7 @@ const useCrud = (endpoint) => {
       body: "¿Estás seguro de que quieres ingresar este registro?",
       cancelButton: "Cancelar",
       actionButton: "Registrar",
-      icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+      icon: <OctagonAlert className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     })
     if (!confirmation) {
       throw new Error('Acción cancelada por el usuario');
@@ -72,7 +73,7 @@ const useCrud = (endpoint) => {
       body: "¿Estás seguro de que quieres actualizar este registro?",
       cancelButton: "Cancelar",
       actionButton: "Actualizar",
-      icon: <LuAlertOctagon className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+      icon: <OctagonAlert className="text-red-500 h-16 w-16 mx-auto mb-4" />,
     })
     if (!confirmation) {
       throw new Error('Acción cancelada por el usuario');

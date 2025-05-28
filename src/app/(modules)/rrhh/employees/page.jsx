@@ -13,17 +13,25 @@ const Employees = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
-  const {getModel} = useCrud("/rrhh/employee")
+  const {getModel, deleteModel} = useCrud("/rrhh/employee")
   const [employees, setEmployees] = useState({});
 
   const fetchEmployees = async () =>{
     try {
-      console.log("imprimiendoooo")
       const data = await getModel();
       setEmployees(data);
-      console.log(data)
     } catch (error) {
       console.error("error cargando empleados");
+    }
+  }
+
+  const deleteEmployee = async (employee) =>{
+    try {
+      console.log(`/rrhh/employee/${employee.id}`)
+      await deleteModel(`/rrhh/employee/${employee.id}`);
+      await fetchEmployees();
+    } catch (error) {
+      console.error("Error during delete employee", error)
     }
   }
 
@@ -43,7 +51,7 @@ const Employees = () => {
             data={employees}
             setSelectedEmployee={setSelectedEmployee}
             setOpenEdit={setOpenEdit}
-            setOpenDelete={setOpenDelete}
+            deleteEmployee={deleteEmployee}
           />
           <EditEmployeeModal
             open={openEdit}

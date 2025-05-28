@@ -9,7 +9,7 @@ import { Trash2, SquarePen, Search } from 'lucide-react'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, setOpenDelete }) => {
+const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('')
 
@@ -30,7 +30,7 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, setOpenDelete 
   }, [data, searchTerm, searchState])
   
   const columns = [
-      { key: 'index', label: 'Codigo del Empleado', className: 'w-10' },
+      { key: 'index', label: 'Codigo', className: 'w-10' },
       { key: 'firstName', label: 'Nombre' },
       { key: 'lastName', label: 'Apellido' },
       { key: 'department', label: 'Departamento' },
@@ -96,7 +96,7 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, setOpenDelete 
                     <TableCell>{employee.firstName}</TableCell>
                     <TableCell>{employee.lastName}</TableCell>
                     <TableCell>{employee.department.name}</TableCell>
-                    <TableCell>{employee.position}</TableCell>
+                    <TableCell>{employee.position?.replaceAll("_", " ")}</TableCell>
                     <TableCell>
                       <Badge className={`${typeColorVariants[employee.state]} text-xs w-fit`}>
                         {employee.state}
@@ -121,7 +121,7 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, setOpenDelete 
                           <TooltipTrigger asChild>
                             <Button variant="destructive" onClick={() => {
                                 setSelectedEmployee(employee);
-                                setOpenDelete(true);
+                                deleteEmployee(employee);
                             }}><Trash2 size={16}/></Button>
                           </TooltipTrigger>
                           <TooltipContent>
