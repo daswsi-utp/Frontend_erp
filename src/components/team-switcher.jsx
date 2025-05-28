@@ -28,6 +28,9 @@ export function TeamSwitcher({
   if (!activeTeam) {
     return null
   }
+  
+  const TeamIcon = activeTeam.logo
+
 
   return (
     (<SidebarMenu>
