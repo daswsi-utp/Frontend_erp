@@ -7,9 +7,9 @@ import { useState, useEffect } from "react";
 
 // Datos de ejemplo (deberías reemplazarlos con llamadas a tu API)
 const sampleProducts = [
-  { id: 1, name: "Producto A", price: 100 },
-  { id: 2, name: "Producto B", price: 200 },
-  { id: 3, name: "Producto C", price: 300 }
+  { id: 101, name: "Producto A", price: 150 },
+  { id: 102, name: "Producto B", price: 300 },
+  { id: 103, name: "Producto C", price: 450 }
 ];
 
 const sampleClients = [
@@ -18,43 +18,36 @@ const sampleClients = [
   { id: 3, name: "Cliente Z" }
 ];
 
+
+
 const paymentMethods = [
-  { id: 1, name: "Efectivo" },
-  { id: 2, name: "Tarjeta Crédito" },
-  { id: 3, name: "Transferencia" }
+  { id: "CASH", name: "Efectivo" },
+  { id: "CREDIT_CARD", name: "Tarjeta Crédito" },
+  { id: "TRANSFER", name: "Transferencia" }
+];
+
+const quoteStates = [
+  { id: "PENDING", name: "Pendiente" },
+  { id: "APPROVED", name: "Aprobada" },
+  { id: "REJECTED", name: "Rechazada" }
 ];
 
 const NewQuoteModal = ({ open, onClose, onSave }) => {
   const [form, setForm] = useState({
     clientId: "",
-    date: new Date().toISOString().split('T')[0],
+    employeeId: "",
+    issueDate: new Date().toISOString(),
     expirationDate: "",
-    tax: 18,
-    paymentMethod: "",
-    status: "pendiente"
+    state: "PENDING",
+    typePayment: "",
+    observation: ""
   });
 
+  const [employees, setEmployees] = useState([]); 
+
   const [products, setProducts] = useState([
-    { productId: "", quantity: 1, price: 0, discount: 0 }
+    { productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }
   ]);
-
-  const [subtotal, setSubtotal] = useState(0);
-  const [taxAmount, setTaxAmount] = useState(0);
-  const [total, setTotal] = useState(0);
-
-  // Calcular totales cuando cambian los productos
-  useEffect(() => {
-    const newSubtotal = products.reduce((sum, item) => {
-      return sum + (item.price * item.quantity - item.discount);
-    }, 0);
-    
-    const newTaxAmount = newSubtotal * (form.tax / 100);
-    const newTotal = newSubtotal + newTaxAmount;
-    
-    setSubtotal(newSubtotal);
-    setTaxAmount(newTaxAmount);
-    setTotal(newTotal);
-  }, [products, form.tax]);
 
   const handleFormChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -62,7 +55,7 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
 
   const handleProductChange = (index, field, value) => {
     const newProducts = [...products];
-    newProducts[index][field] = field === 'quantity' || field === 'price' || field === 'discount' 
+    newProducts[index][field] = field === 'amount' || field === 'prize' || field === 'discount' || field === 'tax' 
       ? parseFloat(value) || 0 
       : value;
     
@@ -70,7 +63,7 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
     if (field === 'productId') {
       const selectedProduct = sampleProducts.find(p => p.id.toString() === value);
       if (selectedProduct) {
-        newProducts[index].price = selectedProduct.price;
+        newProducts[index].prize = selectedProduct.price;
       }
     }
     
@@ -78,7 +71,7 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
   };
 
   const addProductRow = () => {
-    setProducts([...products, { productId: "", quantity: 1, price: 0, discount: 0 }]);
+    setProducts([...products, { productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
   };
 
   const removeProductRow = (index) => {
@@ -90,39 +83,53 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
   };
 
   const handleSubmit = () => {
-    const newQuote = {
-      id: Date.now(),
-      clientId: form.clientId,
-      date: form.date,
-      expirationDate: form.expirationDate,
-      tax: form.tax,
-      paymentMethod: form.paymentMethod,
-      status: form.status,
-      subtotal,
-      taxAmount,
-      total,
-      products: products.map(p => ({
-        productId: p.productId,
-        productName: sampleProducts.find(prod => prod.id.toString() === p.productId)?.name || "",
-        quantity: p.quantity,
-        price: p.price,
+    const quoteData = {
+      issueDate: form.issueDate,
+      expirationDate: new Date(form.expirationDate).toISOString(),
+      state: form.state,
+      clientId: Number(form.clientId),
+      employeeId: Number(form.employeeId),
+      typePayment: form.typePayment,
+      observation: form.observation,
+      details: products.map(p => ({
+        productId: Number(p.productId),
+        amount: p.amount,
+        prize: p.prize,
         discount: p.discount,
-        subtotal: (p.price * p.quantity) - p.discount
+        tax: p.tax
       }))
     };
     
-    onSave(newQuote);
+    onSave(quoteData);
     // Reset form
     setForm({
       clientId: "",
-      date: new Date().toISOString().split('T')[0],
+      employeeId: "",
+      issueDate: new Date().toISOString(),
       expirationDate: "",
-      tax: 18,
-      paymentMethod: "",
-      status: "pendiente"
+      state: "PENDING",
+      typePayment: "",
+      observation: ""
     });
-    setProducts([{ productId: "", quantity: 1, price: 0, discount: 0 }]);
+    setProducts([{ productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
   };
+
+   useEffect(() => {
+    const fetchVendedores = async () => {
+      try {
+        const response = await fetch('http://localhost:8095/api/v1/rrhh/employee/position/VENDEDOR');
+        if (!response.ok) throw new Error('Error al obtener vendedores');
+        const data = await response.json();
+        setEmployees(data);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+
+    if (open) {
+      fetchVendedores();
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -154,47 +161,56 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Fecha</label>
+              <label className="block text-sm font-medium mb-1">Vendedor</label>
+              <Select 
+                value={form.employeeId} 
+                onValueChange={(value) => setForm({...form, employeeId: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccione vendedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {employees.map(emp => (
+                    <SelectItem key={emp.id} value={emp.id.toString()}>
+                       {`${emp.firstName} ${emp.lastName} `}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Fecha Emisión</label>
               <Input 
-                type="date" 
-                name="date" 
-                value={form.date} 
-                onChange={handleFormChange} 
+                type="datetime-local" 
+                name="issueDate" 
+                value={form.issueDate.substring(0, 16)} 
+                onChange={(e) => setForm({...form, issueDate: e.target.value})} 
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Fecha de Vencimiento</label>
+              <label className="block text-sm font-medium mb-1">Fecha Vencimiento</label>
               <Input 
-                type="date" 
+                type="datetime-local" 
                 name="expirationDate" 
-                value={form.expirationDate} 
+                value={form.expirationDate.substring(0, 16)} 
                 onChange={(e) => setForm({...form, expirationDate: e.target.value})} 
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Impuesto (%)</label>
-              <Input 
-                type="number" 
-                name="tax" 
-                value={form.tax} 
-                onChange={handleFormChange} 
               />
             </div>
             
             <div>
               <label className="block text-sm font-medium mb-1">Método de Pago</label>
               <Select 
-                value={form.paymentMethod} 
-                onValueChange={(value) => setForm({...form, paymentMethod: value})}
+                value={form.typePayment} 
+                onValueChange={(value) => setForm({...form, typePayment: value})}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione método" />
                 </SelectTrigger>
                 <SelectContent>
                   {paymentMethods.map(method => (
-                    <SelectItem key={method.id} value={method.id.toString()}>
+                    <SelectItem key={method.id} value={method.id}>
                       {method.name}
                     </SelectItem>
                   ))}
@@ -205,24 +221,36 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
             <div>
               <label className="block text-sm font-medium mb-1">Estado</label>
               <Select 
-                value={form.status} 
-                onValueChange={(value) => setForm({...form, status: value})}
+                value={form.state} 
+                onValueChange={(value) => setForm({...form, state: value})}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="aprobada">Aprobada</SelectItem>
-                  <SelectItem value="rechazada">Rechazada</SelectItem>
+                  {quoteStates.map(state => (
+                    <SelectItem key={state.id} value={state.id}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+            </div>
+            
+            <div className="col-span-2">
+              <label className="block text-sm font-medium mb-1">Observación</label>
+              <Input
+                name="observation"
+                value={form.observation}
+                onChange={handleFormChange}
+                placeholder="Notas adicionales"
+              />
             </div>
           </div>
           
           {/* Sección de productos */}
           <div className="mt-6">
-            <h3 className="font-medium mb-2">Productos/Servicios</h3>
+            <h3 className="font-medium mb-2">Detalles de Productos</h3>
             
             {products.map((product, index) => (
               <div key={index} className="grid grid-cols-12 gap-2 mb-3 items-end">
@@ -250,8 +278,8 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
                   <Input
                     type="number"
                     min="1"
-                    value={product.quantity}
-                    onChange={(e) => handleProductChange(index, 'quantity', e.target.value)}
+                    value={product.amount}
+                    onChange={(e) => handleProductChange(index, 'amount', e.target.value)}
                   />
                 </div>
                 
@@ -261,8 +289,8 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={product.price}
-                    onChange={(e) => handleProductChange(index, 'price', e.target.value)}
+                    value={product.prize}
+                    onChange={(e) => handleProductChange(index, 'prize', e.target.value)}
                   />
                 </div>
                 
@@ -298,26 +326,6 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
             >
               + Agregar Producto
             </Button>
-          </div>
-          
-          {/* Totales */}
-          <div className="mt-6 border-t pt-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">Subtotal:</p>
-                <p className="font-medium">${subtotal.toFixed(2)}</p>
-              </div>
-              
-              <div>
-                <p className="text-sm text-gray-600">Impuesto ({form.tax}%):</p>
-                <p className="font-medium">${taxAmount.toFixed(2)}</p>
-              </div>
-              
-              <div>
-                <p className="text-sm text-gray-600">Total:</p>
-                <p className="text-lg font-bold">${total.toFixed(2)}</p>
-              </div>
-            </div>
           </div>
           
           {/* Botón de guardar */}
