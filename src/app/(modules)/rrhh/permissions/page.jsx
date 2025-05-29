@@ -5,6 +5,7 @@ import PermisionsTable from "@/modules/rrhh/permisions/tables/PermisionsTable";
 import PermisionNew from "@/modules/rrhh/permisions/modals/NewPermision";
 import PermisionEdit from "@/modules/rrhh/permisions/modals/EditPermision";
 import DeletePermisionModal from "@/modules/rrhh/permisions/modals/DeletePermision";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 const permisions = [
   {
@@ -17,7 +18,7 @@ const permisions = [
     startDate: '2025-04-21',
     endDate: '2026-04-21',
     daysTaken: '70',
-    status: 'APROVADO',
+    state: 'APROBADO',
     requestedAt: '2004-10-20',
     type: 'ENFERMEDAD'
   },
@@ -31,7 +32,7 @@ const permisions = [
     startDate: '2026-04-21',
     endDate: '2027-04-21',
     daysTaken: '70',
-    status: 'PENDIENTE',
+    state: 'SOLICITADO',
     requestedAt: '2025-04-20',
     type: 'MATERNIDAD'
   },
@@ -45,7 +46,7 @@ const permisions = [
     startDate: '2027-04-21',
     endDate: '2028-04-21',
     daysTaken: '70',
-    status: 'DESAPROVADO',
+    state: 'RECHAZADO',
     requestedAt: '2004-10-20',
     type: 'LUTO'
   }
@@ -63,22 +64,25 @@ const Permisions = () => {
           <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Registrar Permisos</h1>
           <PermisionNew/>
         </div>
-        <PermisionsTable
-          permisions={permisions}
-          setSelectedPermision={setSelectedPermision}
-          setOpenDelete={setOpenDelete}
-          setOpenEdit={setOpenEdit}
-        />
-        <PermisionEdit
-          open={openEdit}
-          onOpenChange={setOpenEdit}
-          permision={selectedPermision}
-        />
-        <DeletePermisionModal
-          open={openDelete}
-          onOpenChange={setOpenDelete}
-          permision={selectedPermision}
-        />
+        <Card>
+          <CardContent>
+            <PermisionsTable
+              permisions={permisions}
+              setSelectedPermision={setSelectedPermision}
+              setOpenEdit={setOpenEdit}
+            />
+            <PermisionEdit
+              open={openEdit}
+              onOpenChange={setOpenEdit}
+              permision={selectedPermision}
+            />
+            <DeletePermisionModal
+              open={openDelete}
+              onOpenChange={setOpenDelete}
+              permision={selectedPermision}
+            />
+          </CardContent>
+        </Card>
       </>
     );
 };
