@@ -31,7 +31,7 @@ const DepartmentsTable = ({ data, setSelectedDepartment, setOpenEdit, deleteDepa
   
       const matchesState =
         searchState === 'todos' ||
-        department.state?.toLowerCase().includes(searchState.toLowerCase());
+        department.state?.toLowerCase() === searchState.toLowerCase()
   
       return matchesName && matchesState;
     });
@@ -72,7 +72,7 @@ const DepartmentsTable = ({ data, setSelectedDepartment, setOpenEdit, deleteDepa
                     <SelectContent>
                       <SelectItem value="todos">Todos</SelectItem>
                       <SelectItem value="activo">Activo</SelectItem>
-                      <SelectItem value="inactivo">Desactivado</SelectItem>
+                      <SelectItem value="inactivo">Inactivo</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

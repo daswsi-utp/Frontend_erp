@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import DepartmentsTable from "@/modules/rrhh/departments/tables/departments-table";
 import EditModal from "@/modules/rrhh/departments/modals/modal-edit-department";
-import NewModal from "@/modules/rrhh/departments/modals/modal-new-department";
+import NewDepartment from "@/modules/rrhh/departments/modals/modal-new-department";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import useCrud from "@/hooks/useCrud";
 
@@ -42,7 +42,7 @@ const Departments = () => {
     <>
       <div className="w-full flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Departamentos de la Organización</h1>
-        <NewModal type="department"/>
+        <NewDepartment fetchDepartments={fetchDepartments} />
       </div>
       <Card>
         <CardContent>
