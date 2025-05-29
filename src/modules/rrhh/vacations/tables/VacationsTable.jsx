@@ -73,7 +73,7 @@ const VacationsTable = ({ vacations, setSelectedVacation, setOpenEdit, deleteVac
                     <SelectItem value="solicitado">Solicitado</SelectItem>
                     <SelectItem value="aprobado">Aprobado</SelectItem>
                     <SelectItem value="rechazado">Rechazado</SelectItem>
-                    <SelectItem value="en_progreso">En Progreso</SelectItem>
+                    <SelectItem value="en_proceso">En Proceso</SelectItem>
                     <SelectItem value="finalizado">Finalizado</SelectItem>
                   </SelectContent>
                 </Select>

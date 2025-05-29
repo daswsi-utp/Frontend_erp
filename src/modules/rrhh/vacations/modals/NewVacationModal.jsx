@@ -109,7 +109,7 @@ const VacationNew=({ fetchVacations })=> {
                     <SelectItem value="SOLICITADO">Solicitado</SelectItem>
                     <SelectItem value="APROBADO">Aprobado</SelectItem>
                     <SelectItem value="RECHAZADO">Rechazado</SelectItem>
-                    <SelectItem value="EN_PROcESO">En Progreso</SelectItem>
+                    <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
                     <SelectItem value="FINALIZADO">Finalizado</SelectItem>
                   </SelectContent>
                 </Select>

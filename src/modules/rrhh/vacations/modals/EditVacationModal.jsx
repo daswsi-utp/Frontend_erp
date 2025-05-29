@@ -4,26 +4,51 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // usando Select de shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { FileText, TreePalm  } from "lucide-react";
+import useCrud from "@/hooks/useCrud";
 
 
-const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
-    if (!vacation) return null;
 
-  const [formData, setFormData] = useState({});
+const VacationEdit=({ open, onOpenChange, vacation, onVacationChange, fetchVacations })=> {
+  if (!vacation) return null;
+
+  const {getModel, updateModel} = useCrud()
+  
+  const [formData, setFormData] = useState({ ...vacation });
+  const [employees, setEmployees] = useState([]);
+
+  const fetchEmployees = async () =>{
+    try {
+      const data = await getModel("/rrhh/employee/state/ACTIVO");
+      setEmployees(data);
+    } catch (error) {
+      console.error("Error during recovery employees", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    const updated = { ...formData, [field]: value };
+    setFormData(updated);
+    if (onVacationChange) {
+      onItemChange(updated);
+    }
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    onOpenChange(false);
+  const handleSave = async () => {
+    try {
+      console.log("Datos actualizados:", formData);
+      await updateModel(formData, "/rrhh/vacation");
+      fetchVacations();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error during update vacation", error)
+    }
   };
 
   return (
@@ -41,25 +66,21 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
             <div className="flex flex-col gap-4 col-span-2">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Empleado</label>
-                <Select value={vacation.employee.id} onValueChange={val => handleChange('employee', val)}>
+                <Select value={formData.employee.id} onValueChange={val => handleChange('employee', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={1}>Daniel Cabrera</SelectItem>
-                    <SelectItem value={2}>Empleado 2</SelectItem>
-                    <SelectItem value={3}>Empleado 3</SelectItem>
+                    {(employees.map((employee)=>(
+                      <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
+                    )))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dias tomados</label>
-                <Input
-                  value={vacation.daysTaken}
-                  type="text"
-                  onChange={e => handleChange("startDate", e.target.value)}
-                />
+                <Input value={vacation.daysTaken} type="text"/>
               </div>
             </div>
             <TreePalm size={180} className="text-primary" />
@@ -71,7 +92,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Inicio</label>
                 <Input
-                  value={vacation.startDate}
+                  value={formData.startDate}
                   type="date"
                   onChange={e => handleChange("startDate", e.target.value)}
                 />
@@ -80,7 +101,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Fin</label>
                 <Input
-                  value={vacation.endDate}
+                  value={formData.endDate}
                   type="date"
                   onChange={e => handleChange("endDate", e.target.value)}
                 />
@@ -88,14 +109,16 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Estado</label>
-                <Select value={vacation.status} onValueChange={val => handleChange('state', val)}>
+                <Select value={formData.state} onValueChange={val => handleChange('state', val)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="APROVADO">APROVADO</SelectItem>
-                    <SelectItem value="PENDIENTE">PENDIENTE</SelectItem>
-                    <SelectItem value="DESAPROVADO">DESAPROVADO</SelectItem>
+                    <SelectItem value="SOLICITADO">Solicitado</SelectItem>
+                    <SelectItem value="APROBADO">Aprobado</SelectItem>
+                    <SelectItem value="RECHAZADO">Rechazado</SelectItem>
+                    <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
+                    <SelectItem value="FINALIZADO">Finalizado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -103,9 +126,9 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Solicitud</label>
                 <Input
-                  value={vacation.requestedAt}
+                  value={formData.requestAt}
                   type="date"
-                  onChange={e => handleChange("endDate", e.target.value)}
+                  onChange={e => handleChange("requestAt", e.target.value)}
                 />
               </div>
             </div>
@@ -113,7 +136,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
         </div>
 
           <DialogFooter className="mt-6">
-            <Button variant="default">Guardar Cambios</Button>
+            <Button variant="default" onClick={handleSave}>Guardar Cambios</Button>
           </DialogFooter>
         </DialogContent>
     </Dialog>

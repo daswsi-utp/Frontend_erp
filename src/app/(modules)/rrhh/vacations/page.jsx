@@ -58,6 +58,7 @@ const Vacations = () => {
               open={openEdit}
               onOpenChange={setOpenEdit}
               vacation={selectedVacation}
+              fetchVacations={fetchVacations}
             />
           </CardContent>
         </Card>
