@@ -93,6 +93,7 @@ const SalesPage = () => {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(newQuoteData)
     });
 
