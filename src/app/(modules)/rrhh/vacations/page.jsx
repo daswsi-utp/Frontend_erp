@@ -24,6 +24,16 @@ const Vacations = () => {
     }
   }
 
+  const deleteVacation = async (vacation) =>{
+    try {
+      console.log(`/rrhh/vacation/${vacation.id}`)
+      await deleteModel(`/rrhh/vacation/${vacation.id}`);
+      await fetchVacations();
+    } catch (error) {
+      console.error("Error during delete department", error)
+    }
+  }
+
   useEffect(() => {
     fetchVacations();
   }, []);
@@ -32,7 +42,9 @@ const Vacations = () => {
       <>
         <div className="w-full flex justify-between items-center mb-2">
           <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Vacaciones Registradas</h1>
-          <VacationNew/>
+          <VacationNew 
+            fetchVacations={fetchVacations}
+          />
         </div>
         <Card>
           <CardContent>
@@ -40,6 +52,7 @@ const Vacations = () => {
               vacations={vacations}
               setSelectedVacation={setSelectedVacation}
               setOpenEdit={setOpenEdit}
+              deleteVacation={deleteVacation}
             />
             <VacationEdit
               open={openEdit}
