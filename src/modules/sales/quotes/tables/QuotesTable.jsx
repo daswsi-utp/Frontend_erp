@@ -31,6 +31,8 @@ const QuotesTable = ({
     { key: 'expirationDate', label: 'Fecha Expiración', className: 'w-40' },
     { key: 'state', label: 'Estado', className: 'w-32' },
     { key: 'totalAmount', label: 'Monto Total', className: 'w-32' },
+    { key: 'paymentMethod', label: 'Método Pago', className: 'w-32' },
+    { key: 'observation', label: 'Observaciones', className: 'w-32' },
     { key: 'options', label: 'Opciones', className: 'w-40' }
   ];;
 
@@ -101,6 +103,8 @@ const QuotesTable = ({
                       </Badge>
                     </TableCell>
                     <TableCell>{formatCurrency(quote.totalAmount)}</TableCell>
+                    <TableCell>{quote.paymentMethod}</TableCell>
+                    <TableCell>{quote.observation}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button 

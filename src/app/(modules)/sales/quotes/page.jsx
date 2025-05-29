@@ -37,6 +37,8 @@ const SalesPage = () => {
       expirationDate: quote.expirationDate,
       state: quote.state,
       totalAmount: quote.totalAmount,
+      paymentMethod: quote.typePayment, 
+      observation: quote.observation,
       // Agrega más campos si necesitas mostrar otros datos
     }));
 
@@ -134,9 +136,9 @@ const SalesPage = () => {
       )}
 
       <NewQuoteModal 
-  open={openNew}
-  onClose={() => setOpenNew(false)}
-  onSave={handleCreateQuote} // Pasa la función modificada
+        open={openNew}
+        onClose={() => setOpenNew(false)}
+       onSave={handleCreateQuote} // Pasa la función modificada
 />
 
       <EditQuoteModal 
