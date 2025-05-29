@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import QuotesTable from "@/modules/sales/quotes/tables/QuotesTable";
 import { Button } from '@/components/ui/button';
 import NewQuoteModal from '@/modules/sales/quotes/modals/NewQuoteModal';
@@ -8,73 +8,64 @@ import DeleteQuoteModal from '@/modules/sales/quotes/modals/DeleteQuoteModal';
 import ViewQuoteModal  from '@/modules/sales/quotes/modals/ViewQuoteModal';
 
 const SalesPage = () => { 
-  const initialQuotes = [
-    
-    {
-      id: 1,
-      client: { name: 'Constructora Alfa' },
-      salesRep: 'María López',
-      serviceType: 'Diseño Arquitectónico',
-      amount: 50000,
-      status: 'pendiente',
-      expiration: '2025-05-20',
-      date: '2025-04-15',
-      file: '/files/quote1.pdf'
-    },
-    {
-      id: 2,
-      client: { name: 'Inmobiliaria Beta' },
-      salesRep: 'Carlos Ruiz',
-      serviceType: 'Supervisión de Obra',
-      amount: 75000,
-      status: 'aceptada',
-      expiration: '2025-05-10',
-      date: '2025-04-10',
-      file: '/files/quote2.pdf'
-    },
-    {
-      id: 3,
-      client: { name: 'Grupo Delta' },
-      salesRep: 'Laura Gómez',
-      serviceType: 'Consultoría Técnica',
-      amount: 32000,
-      status: 'rechazada',
-      expiration: '2025-04-25',
-      date: '2025-04-01',
-      file: '/files/quote3.pdf'
-    }
+ 
 
-  ];
-
-  // Estados consolidados
-  const [quotes, setQuotes] = useState(initialQuotes);
+   const [quotes, setQuotes] = useState([]);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  
-  // Estados para modales
   const [openNew, setOpenNew] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openView, setOpenView] = useState(false); // Añadido para vista previa
+  const [openView, setOpenView] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  
-  
-  // Estado para carga
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Estado para carga
 
-  // Función para manejar edición
-  const handleEdit = (quote) => {
-    setSelectedQuote(quote);
-    setOpenEdit(true);
+
+  //DESDE LA BASE DE DATOS
+
+  const fetchQuotes = async () => {
+    try {
+      const response = await fetch('http://localhost:8091/api/v1/sales/quotes');
+      if (!response.ok) {
+        throw new Error('Error al obtener cotizaciones');
+      }
+      const data = await response.json();
+
+      const formattedQuotes = data.map(quote => ({
+      id: quote.id,
+      issueDate: quote.issueDate,
+      expirationDate: quote.expirationDate,
+      state: quote.state,
+      totalAmount: quote.totalAmount,
+      // Agrega más campos si necesitas mostrar otros datos
+    }));
+
+
+      setQuotes(formattedQuotes);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al cargar cotizaciones");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Función para manejar eliminación
-  const handleDelete = async (quoteId) => {
+  useEffect(() => {
+    fetchQuotes();
+  }, []);
+
+   const handleDelete = async (quoteId) => {
     setIsDeleting(true);
     try {
-      // Simulación de llamada API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(`http://localhost:8091/api/v1/sales/quotes/${quoteId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar cotización');
+      }
       
-      setQuotes(quotes.filter(q => q.id !== quoteId));
+      await fetchQuotes(); // Recarga las cotizaciones
       setOpenDelete(false);
     } catch (error) {
       console.error("Error al eliminar:", error);
@@ -104,7 +95,10 @@ const SalesPage = () => {
 
     const createdQuote = await response.json();
     setQuotes([...quotes, createdQuote]);
+    await fetchQuotes();
     setOpenNew(false);
+
+
     
     // Mostrar mensaje de éxito
     alert('Cotización creada exitosamente');
@@ -123,6 +117,12 @@ const SalesPage = () => {
         </Button>
       </div>
 
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <p>Cargando cotizaciones...</p>
+        </div>
+      ) : (
+
       <QuotesTable 
         quotes={quotes}
         setSelectedQuote={setSelectedQuote}
@@ -131,6 +131,7 @@ const SalesPage = () => {
         setOpenDelete={setOpenDelete}
         setOpenView={setOpenView}
       />
+      )}
 
       <NewQuoteModal 
   open={openNew}
