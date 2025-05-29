@@ -83,6 +83,36 @@ const SalesPage = () => {
     }
   };
 
+ const handleCreateQuote = async (newQuoteData) => {
+  try {
+    console.log('Enviando datos:', newQuoteData); // Para depuración
+    
+    const response = await fetch('http://localhost:8091/api/v1/sales/quotes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(newQuoteData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || `Error HTTP: ${response.status}`);
+    }
+
+    const createdQuote = await response.json();
+    setQuotes([...quotes, createdQuote]);
+    setOpenNew(false);
+    
+    // Mostrar mensaje de éxito
+    alert('Cotización creada exitosamente');
+  } catch (error) {
+    console.error("Error al crear cotización:", error);
+    alert(`Error al crear cotización: ${error.message}`);
+  }
+};
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -102,13 +132,10 @@ const SalesPage = () => {
       />
 
       <NewQuoteModal 
-        open={openNew}
-        onClose={() => setOpenNew(false)}
-        onSave={(newQuote) => {
-          setQuotes([...quotes, newQuote]);
-          setOpenNew(false);
-        }}
-      />
+  open={openNew}
+  onClose={() => setOpenNew(false)}
+  onSave={handleCreateQuote} // Pasa la función modificada
+/>
 
       <EditQuoteModal 
         open={openEdit}
@@ -126,6 +153,13 @@ const SalesPage = () => {
         onDelete={handleDelete}
         quote={selectedQuote}
         isDeleting={isDeleting}
+      />
+
+      <ViewQuoteModal
+        open={openView}
+        onClose={() => setOpenView(false)}
+        quote={selectedQuote}
+        file={selectedFile}
       />
 
 

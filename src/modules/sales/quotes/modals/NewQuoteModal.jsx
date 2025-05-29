@@ -82,7 +82,19 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
     }
   };
 
-  const handleSubmit = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleSubmit = async () => {
+      
+    
+     const expirationDate = new Date(form.expirationDate);
+  if (isNaN(expirationDate.getTime())) {
+    alert('La fecha de vencimiento no es válida');
+    return;
+  }
+    
+    setIsSubmitting(true);
+      
+     try{
     const quoteData = {
       issueDate: form.issueDate,
       expirationDate: new Date(form.expirationDate).toISOString(),
@@ -112,7 +124,12 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
       observation: ""
     });
     setProducts([{ productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
-  };
+  }catch (error) {
+    console.error("Error al guardar:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
    useEffect(() => {
     const fetchVendedores = async () => {
@@ -172,7 +189,7 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
                 <SelectContent>
                   {employees.map(emp => (
                     <SelectItem key={emp.id} value={emp.id.toString()}>
-                       {`${emp.firstName} ${emp.lastName} `}
+                       {`${emp.firstName} ${emp.lastName}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -330,7 +347,9 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
           
           {/* Botón de guardar */}
           <div className="flex justify-end mt-6">
-            <Button onClick={handleSubmit}>Guardar Cotización</Button>
+            <Button onClick={handleSubmit} disabled={isSubmitting}>
+               {isSubmitting ? "Guardando..." : "Guardar Cotización"}
+            </Button>
           </div>
         </div>
       </DialogContent>
