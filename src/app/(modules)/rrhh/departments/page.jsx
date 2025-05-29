@@ -56,7 +56,8 @@ const Departments = () => {
             open={openEdit}
             onOpenChange={setOpenEdit}
             item={selectedDepartment}
-            type="department"
+            onItemChange={setSelectedDepartment}
+            fetchDepartments={fetchDepartments}
           />
         </CardContent>
       </Card>
