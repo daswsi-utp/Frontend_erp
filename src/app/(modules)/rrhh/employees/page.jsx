@@ -35,8 +35,8 @@ const Employees = () => {
   }
 
   useEffect(() => {
-  fetchEmployees();
-}, []);
+    fetchEmployees();
+  }, []);
 
   return (
     <>
