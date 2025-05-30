@@ -34,16 +34,16 @@ const Contracts = () => {
     <>
       <div className="w-full flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Contratos de la Organizacion</h1>
-        <ContractNew/>
+        <ContractNew fetchContracts={fetchContracts}/>
       </div>
       <Card>
         <CardContent>
           <ContractsTable
-          contracts={contracts}
-          setSelectedContract={setSelectedContract}
-          setSelectedFile={setSelectedFile}
-          setOpenContract={setOpenContract}
-          setOpenEdit={setOpenEdit}
+            contracts={contracts}
+            setSelectedContract={setSelectedContract}
+            setSelectedFile={setSelectedFile}
+            setOpenContract={setOpenContract}
+            setOpenEdit={setOpenEdit}
           />
           <ShowContractModal
             open={openContract}

@@ -4,13 +4,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // usando Select de shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { FileText } from "lucide-react";
+import useCrud from "@/hooks/useCrud";
+import { DialogClose } from "@radix-ui/react-dialog";
 
+const ContractNew=({ fetchContracts })=> {
 
-const ContractNew=()=> {
-
+  const {getModel} = useCrud()
+  const {insertMultipartModel} = useCrud("/rrhh/contract")
+  const [employees, setEmployees] = useState([]);
   const [formData, setFormData] = useState({});
 
   const handleChange = (field, value) => {
@@ -20,10 +24,36 @@ const ContractNew=()=> {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    onOpenChange(false);
-  };
+  const handleSave = async () => {
+  try {
+    const file = formData.contractFile;
+    const contractData = {
+      employee: formData.employee,
+      type: formData.type,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      state: formData.state
+    };
+    const response = await insertMultipartModel(contractData, file);
+    console.log("Contrato creado:", response);
+    fetchContracts();
+  } catch (error) {
+    console.error("Error al guardar contrato:", error);
+  }
+};
+
+  const fetchEmployees = async () =>{
+    try {
+      const data = await getModel("/rrhh/employee");
+      setEmployees(data);
+    } catch (error) {
+      console.error("Error during recovery departments");
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
   return (
     <Dialog>
@@ -43,28 +73,34 @@ const ContractNew=()=> {
             <div className="flex flex-col gap-4 col-span-2">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Empleado</label>
-                <Select onValueChange={val => handleChange('employee', val)}>
+                <Select onValueChange={val => handleChange('employee', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Employee1">Daniel Cabrera</SelectItem>
-                    <SelectItem value="Employee2">Empleado 2</SelectItem>
-                    <SelectItem value="Employee3">Empleado 3</SelectItem>
+                    {(employees.map((employee)=>(
+                      <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
+                    )))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Tipo de contrato</label>
-                <Select onValueChange={val => handleChange('contractType', val)}>
+                <Select onValueChange={val => handleChange('type', val)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione"/>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Indefinido">Indefinido</SelectItem>
-                    <SelectItem value="Temporal">Temporal</SelectItem>
-                    <SelectItem value="Practicante">Practicante</SelectItem>
+                    <SelectItem value="INDEFINIDO">INDEFINIDO</SelectItem>
+                    <SelectItem value="DETERMINADO">DETERMINADO</SelectItem>
+                    <SelectItem value="SERVICIO">SERVICIO</SelectItem>
+                    <SelectItem value="TEMPORAL">TEMPORAL</SelectItem>
+                    <SelectItem value="PASANTIA">PASANTIA</SelectItem>
+                    <SelectItem value="HONORARIOS">HONORARIOS</SelectItem>
+                    <SelectItem value="SUPLENCIA">SUPLENCIA</SelectItem>
+                    <SelectItem value="PARTTIME">PARTTIME</SelectItem>
+                    <SelectItem value="APRENDIZAJE">APRENDIZAJE</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -98,9 +134,13 @@ const ContractNew=()=> {
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ACTIVO">ACTIVO</SelectItem>
-                    <SelectItem value="FINALIZADO">FINALIZADO</SelectItem>
-                    <SelectItem value="RESCINDIDO">RESCINDIDO</SelectItem>
+                    <SelectItem value="VIGENTE">Vigente</SelectItem>
+                    <SelectItem value="SUSPENDIDO">Suspendido</SelectItem>
+                    <SelectItem value="RENOVADO">Renovado</SelectItem>
+                    <SelectItem value="VENCIDO">Vencido</SelectItem>
+                    <SelectItem value="RESCINDIDO">Rescindido</SelectItem>
+                    <SelectItem value="FINALIZADO">Finalizado</SelectItem>
+                    <SelectItem value="ARCHIVADO">Archivado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -109,7 +149,7 @@ const ContractNew=()=> {
                 <label className="text-sm font-medium">Archivo del Contrato</label>
                 <Input
                   type="file"
-                  onChange={e => handleChange('contractFile', e.target.value)}
+                  onChange={e => handleChange('contractFile', e.target.files[0])}
                 />
               </div>
             </div>
@@ -117,7 +157,9 @@ const ContractNew=()=> {
         </div>
 
           <DialogFooter className="mt-6">
-            <Button variant="default">Guardar Cambios</Button>
+            <DialogClose className="rounded-lg border bg-gray-100 text-black px-3 py-1 font-bold" onClick={handleSave}>
+              Guardar Cambios
+            </DialogClose> 
           </DialogFooter>
         </DialogContent>
     </Dialog>
