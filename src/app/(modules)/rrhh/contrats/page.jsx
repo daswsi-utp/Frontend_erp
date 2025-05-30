@@ -48,7 +48,7 @@ const Contracts = () => {
           <ShowContractModal
             open={openContract}
             onOpenChange={setOpenContract}
-            contract={setSelectedContract}
+            contract={selectedContract}
             onContractChange={setSelectedContract}
           />
           <ContractEdit

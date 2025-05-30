@@ -18,11 +18,17 @@ const ShowContractModal = ({ open, onOpenChange, contract, onContractChange  }) 
 
           <ScrollArea className="h-[70vh] pr-2">
             <div className="w-full h-[80vh]">
-                <iframe
-                    src="http://localhost:8095/files/Bocchi%20The%20Rock%21%20-%20Tomo%2001%20%28000-013%29.pdf"
+                {contract?.key ? (
+                  <iframe
+                    src={contract.key}
                     className="w-full h-full"
                     frameBorder="0"
-                />
+                  />
+                  ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No se encontró ningún contrato para este empleado.
+                  </div>
+                )}
             </div>
           </ScrollArea>
         </DialogContent>

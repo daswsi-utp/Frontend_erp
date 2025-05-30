@@ -115,7 +115,7 @@ return (
                   <TableCell>
                     <Button variant="ghost" size="sm" 
                       onClick={() => {
-                        setSelectedFile(contract.file);
+                        setSelectedContract(contract);
                         setOpenContract(true);
                       }}
                     >
