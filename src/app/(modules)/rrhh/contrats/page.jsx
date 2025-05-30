@@ -26,6 +26,16 @@ const Contracts = () => {
     }
   }
 
+  const deleteContract = async (contract) =>{
+    try {
+      console.log(`/rrhh/contract/${contract.id}`)
+      await deleteModel(`/rrhh/contract/${contract.id}`);
+      await fetchContracts();
+    } catch (error) {
+      console.error("Error during delete contract", error)
+    }
+  }
+
   useEffect(() => {
     fetchContracts();
   }, []);
@@ -41,7 +51,7 @@ const Contracts = () => {
           <ContractsTable
             contracts={contracts}
             setSelectedContract={setSelectedContract}
-            setSelectedFile={setSelectedFile}
+            deleteContract={deleteContract}
             setOpenContract={setOpenContract}
             setOpenEdit={setOpenEdit}
           />

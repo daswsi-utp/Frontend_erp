@@ -8,7 +8,7 @@ import { Eye, Trash2, Search, SquarePen } from 'lucide-react';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Input } from '@/components/ui/input'
 
-const ContractsTable = ({ contracts, setSelectedContract, setSelectedFile, setOpenEdit, setOpenDelete, setOpenContract }) => {
+const ContractsTable = ({ contracts, setSelectedContract, deleteContract, setOpenEdit, setOpenDelete, setOpenContract }) => {
   
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('todos')
@@ -122,8 +122,7 @@ return (
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button variant="destructive" onClick={() => {
-                      setSelectedContract(contract);
-                      setOpenDelete(true);
+                      deleteContract(contract);
                     }}><Trash2 size={16}/></Button>
                   </TableCell>
                 </TableRow>
