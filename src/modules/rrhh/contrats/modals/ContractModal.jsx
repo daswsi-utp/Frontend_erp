@@ -19,7 +19,7 @@ const ShowContractModal = ({ open, onOpenChange, contract, onContractChange  }) 
           <ScrollArea className="h-[70vh] pr-2">
             <div className="w-full h-[80vh]">
                 <iframe
-                    src="https://trabajoapurimac.gob.pe/wp-content/uploads/MODELO_DE_CONTRATO_DE_TRABAJO_SUJETO_A_MODALIDAD_.pdf"
+                    src="http://localhost:8095/files/Bocchi%20The%20Rock%21%20-%20Tomo%2001%20%28000-013%29.pdf"
                     className="w-full h-full"
                     frameBorder="0"
                 />
