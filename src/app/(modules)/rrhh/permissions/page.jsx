@@ -15,7 +15,7 @@ const Permisions = () => {
     const {getModel, deleteModel} = useCrud("/rrhh/permission")
     const [permisions, setPermisions] = useState([]);
     
-    const fetchPermisions = async () =>{
+    const fetchPermissions = async () =>{
       try {
         const data = await getModel();
         setPermisions(data);
@@ -24,8 +24,18 @@ const Permisions = () => {
       }
     }
 
+    const deletePermission = async (permission) =>{
+    try {
+      console.log(`/rrhh/permission/${permission.id}`)
+      await deleteModel(`/rrhh/permission/${permission.id}`);
+      await fetchPermissions();
+    } catch (error) {
+      console.error("Error during delete permission", error)
+    }
+  }
+
     useEffect(() => {
-      fetchPermisions();
+      fetchPermissions();
     }, []);
 
 
@@ -41,6 +51,7 @@ const Permisions = () => {
               permisions={permisions}
               setSelectedPermision={setSelectedPermision}
               setOpenEdit={setOpenEdit}
+              deletePermission={deletePermission}
             />
             <PermisionEdit
               open={openEdit}

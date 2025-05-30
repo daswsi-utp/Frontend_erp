@@ -9,7 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Input } from '@/components/ui/input'
 
 
-const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit }) => {
+const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit, deletePermission }) => {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('todos')
@@ -124,8 +124,7 @@ const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit }) => {
                             }}><SquarePen className="h-4 w-4" />
                         </Button>
                         <Button variant="destructive" size="sm" onClick={() => {
-                                setSelectedPermision(permision);
-                                setOpenDelete(true);
+                                deletePermission(permision);
                             }}><Trash2 className="h-4 w-4" />
                         </Button>
                         </TableCell>
