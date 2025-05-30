@@ -25,7 +25,7 @@ const PermisionNew=({ fetchPermissions })=> {
 
   const fetchEmployees = async () =>{
     try {
-      const data = await getModel("/rrhh/employee/state/ACTIVO");
+      const data = await getModel("/rrhh/employee");
       setEmployees(data);
     } catch (error) {
       console.error("Error during recovery employees", error);

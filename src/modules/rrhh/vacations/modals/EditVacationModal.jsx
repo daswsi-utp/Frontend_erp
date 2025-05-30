@@ -10,7 +10,6 @@ import { FileText, TreePalm  } from "lucide-react";
 import useCrud from "@/hooks/useCrud";
 
 
-
 const VacationEdit=({ open, onOpenChange, vacation, onVacationChange, fetchVacations })=> {
   if (!vacation) return null;
 
@@ -21,7 +20,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange, fetchVacat
 
   const fetchEmployees = async () =>{
     try {
-      const data = await getModel("/rrhh/employee/state/ACTIVO");
+      const data = await getModel("/rrhh/employee");
       setEmployees(data);
     } catch (error) {
       console.error("Error during recovery employees", error);

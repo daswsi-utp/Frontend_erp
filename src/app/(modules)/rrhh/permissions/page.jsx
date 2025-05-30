@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useEffect, useState } from "react";
 import PermisionsTable from "@/modules/rrhh/permisions/tables/PermisionsTable";
 import PermisionNew from "@/modules/rrhh/permisions/modals/NewPermision";
@@ -59,6 +58,7 @@ const Permisions = () => {
               open={openEdit}
               onOpenChange={setOpenEdit}
               permision={selectedPermision}
+              fetchPermissions={fetchPermissions}
             />
           </CardContent>
         </Card>
