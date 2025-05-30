@@ -1,62 +1,33 @@
 "use client"
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PermisionsTable from "@/modules/rrhh/permisions/tables/PermisionsTable";
 import PermisionNew from "@/modules/rrhh/permisions/modals/NewPermision";
 import PermisionEdit from "@/modules/rrhh/permisions/modals/EditPermision";
-import DeletePermisionModal from "@/modules/rrhh/permisions/modals/DeletePermision";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-
-const permisions = [
-  {
-    id: 1,
-    employee: {
-      id: 1,
-      firstName: "Daniel",
-      lastName: "Cabrera"
-    },
-    startDate: '2025-04-21',
-    endDate: '2026-04-21',
-    daysTaken: '70',
-    state: 'APROBADO',
-    requestedAt: '2004-10-20',
-    type: 'ENFERMEDAD'
-  },
-  {
-    id: 2,
-    employee: {
-      id: 2,
-      firstName: "Miriam",
-      lastName: "Estremadollo"
-    },
-    startDate: '2026-04-21',
-    endDate: '2027-04-21',
-    daysTaken: '70',
-    state: 'SOLICITADO',
-    requestedAt: '2025-04-20',
-    type: 'MATERNIDAD'
-  },
-  {
-    id: 3,
-    employee: {
-      id: 1,
-      firstName: "Daniel",
-      lastName: "Cabrera"
-    },
-    startDate: '2027-04-21',
-    endDate: '2028-04-21',
-    daysTaken: '70',
-    state: 'RECHAZADO',
-    requestedAt: '2004-10-20',
-    type: 'LUTO'
-  }
-];
+import useCrud from "@/hooks/useCrud";
 
 const Permisions = () => {
 
     const [selectedPermision, setSelectedPermision] = useState(null);
     const [openEdit, setOpenEdit] = useState(false);
-    const [openDelete, setOpenDelete] = useState(false);
+
+    const {getModel, deleteModel} = useCrud("/rrhh/permission")
+    const [permisions, setPermisions] = useState([]);
+    
+    const fetchPermisions = async () =>{
+      try {
+        const data = await getModel();
+        setPermisions(data);
+      } catch (error) {
+        console.error("Error recovery permisions");
+      }
+    }
+
+    useEffect(() => {
+      fetchPermisions();
+    }, []);
+
 
     return (
       <>
@@ -74,11 +45,6 @@ const Permisions = () => {
             <PermisionEdit
               open={openEdit}
               onOpenChange={setOpenEdit}
-              permision={selectedPermision}
-            />
-            <DeletePermisionModal
-              open={openDelete}
-              onOpenChange={setOpenDelete}
               permision={selectedPermision}
             />
           </CardContent>

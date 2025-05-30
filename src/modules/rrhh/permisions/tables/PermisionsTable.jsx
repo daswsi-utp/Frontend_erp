@@ -112,10 +112,10 @@ const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit }) => {
                             </Badge>
                         </TableCell>
                         <TableCell>
-                            {new Date(permision.requestedAt).toLocaleDateString()}
+                            {new Date(permision.requestAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                            {permision.type}
+                            {permision.type?.replaceAll("_", " ")}
                         </TableCell>
                         <TableCell>
                         <Button variant="ghost" size="sm" onClick={() => {
