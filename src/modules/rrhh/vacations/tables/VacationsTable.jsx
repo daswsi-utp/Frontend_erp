@@ -80,7 +80,7 @@ const VacationsTable = ({ vacations, setSelectedVacation, setOpenEdit, deleteVac
               </div>
             </div>
           </div>
-          <div className="min-w-max w-full">
+          <div className="min-w-max w-full rounded-md border">
             <Table>
                 <TableHeader className="bg-gray-200 dark:bg-gray-900">
                 <TableRow>

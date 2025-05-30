@@ -4,26 +4,50 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // usando Select de shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Ambulance   } from "lucide-react";
+import useCrud from "@/hooks/useCrud";
 
 
-const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange })=> {
-    if (!permision) return null;
+const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPermissions })=> {
+  if (!permision) return null;
 
-  const [formData, setFormData] = useState({});
+  const {getModel, updateModel} = useCrud()
+  
+  const [formData, setFormData] = useState({ ...permision });
+  const [employees, setEmployees] = useState([]);
+
+  const fetchEmployees = async () =>{
+    try {
+      const data = await getModel("/rrhh/employee");
+      setEmployees(data);
+    } catch (error) {
+      console.error("Error during recovery employees", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    const updated = { ...formData, [field]: value };
+    setFormData(updated);
+    if (onPermisionChange) {
+      onPermisionChange(updated);
+    }
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    onOpenChange(false);
+  const handleSave = async () => {
+    try {
+      console.log("Datos actualizados:", formData);
+      await updateModel(formData, "/rrhh/permission");
+      fetchPermissions();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error during update vacation", error)
+    }
   };
 
   return (
@@ -41,25 +65,36 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange })=> {
             <div className="flex flex-col gap-4 col-span-2">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Empleado</label>
-                <Select value={permision.employee.id} onValueChange={val => handleChange('employee', val)}>
+                <Select value={formData.employee.id} onValueChange={val => handleChange('employee', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={1}>Daniel Cabrera</SelectItem>
-                    <SelectItem value={2}>Empleado 2</SelectItem>
-                    <SelectItem value={3}>Empleado 3</SelectItem>
+                    {(employees.map((employee)=>(
+                      <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
+                    )))}
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Dias tomados</label>
-                <Input
-                  value={permision.daysTaken}
-                  type="text"
-                  onChange={e => handleChange("startDate", e.target.value)}
-                />
+                <label className="text-sm font-medium">Tipo</label>
+                <Select value={formData.type} onValueChange={val => handleChange('type', val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PERMISO_ENFERMEDAD">ENFERMEDAD</SelectItem>
+                    <SelectItem value="PERMISO_PERSONAL">PERSONAL</SelectItem>
+                    <SelectItem value="PERMISO_LICENCIA">LICENCIA</SelectItem>
+                    <SelectItem value="PERMISO_EXAMEN">EXAMEN</SelectItem>
+                    <SelectItem value="PERMISO_VIAJE">VIAJE</SelectItem>
+                    <SelectItem value="PERMISO_FAMILIAR">FAMILIAR</SelectItem>
+                    <SelectItem value="PERMISO_COMPENSATORIO">COMPENSATORIO</SelectItem>
+                    <SelectItem value="PERMISO_JUDICIAL">JUDICIAL</SelectItem>
+                    <SelectItem value="PERMISO_CELEBRACION">CELEBRACION</SelectItem>
+                    <SelectItem value="PERMISO_OTRO">OTRO</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <Ambulance  size={180} className="text-primary" />
@@ -71,7 +106,7 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange })=> {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Inicio</label>
                 <Input
-                  value={permision.startDate}
+                  value={formData.startDate}
                   type="date"
                   onChange={e => handleChange("startDate", e.target.value)}
                 />
@@ -80,7 +115,7 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange })=> {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Fin</label>
                 <Input
-                  value={permision.endDate}
+                  value={formData.endDate}
                   type="date"
                   onChange={e => handleChange("endDate", e.target.value)}
                 />
@@ -88,14 +123,16 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange })=> {
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Estado</label>
-                <Select value={permision.status} onValueChange={val => handleChange('state', val)}>
+                <Select value={formData.state} onValueChange={val => handleChange('state', val)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="APROVADO">APROVADO</SelectItem>
-                    <SelectItem value="PENDIENTE">PENDIENTE</SelectItem>
-                    <SelectItem value="DESAPROVADO">DESAPROVADO</SelectItem>
+                    <SelectItem value="SOLICITADO">Solicitado</SelectItem>
+                    <SelectItem value="APROBADO">Aprobado</SelectItem>
+                    <SelectItem value="RECHAZADO">Rechazado</SelectItem>
+                    <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
+                    <SelectItem value="FINALIZADO">Finalizado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -103,31 +140,17 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange })=> {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Solicitud</label>
                 <Input
-                  value={permision.requestedAt}
+                  value={formData.requestAt}
                   type="date"
-                  onChange={e => handleChange("endDate", e.target.value)}
+                  onChange={e => handleChange("requestAt", e.target.value)}
                 />
               </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Tipo</label>
-                <Select value={permision.type} onValueChange={val => handleChange('state', val)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ENFERMEDAD">ENFERMEDAD</SelectItem>
-                    <SelectItem value="MATERNIDAD">MATERNIDAD</SelectItem>
-                    <SelectItem value="LUTO">LUTO</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
-          </ScrollArea>
+            </ScrollArea>
         </div>
 
           <DialogFooter className="mt-6">
-            <Button variant="default">Guardar Cambios</Button>
+            <Button onClick={handleSave} variant="default">Guardar Cambios</Button>
           </DialogFooter>
         </DialogContent>
     </Dialog>
