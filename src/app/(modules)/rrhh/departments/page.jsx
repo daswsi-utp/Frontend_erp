@@ -10,7 +10,6 @@ import useCrud from "@/hooks/useCrud";
 const Departments = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
 
   const {getModel, deleteModel} = useCrud("/rrhh/department")
   const [departments, setDepartments] = useState({});
