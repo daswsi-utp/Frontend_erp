@@ -93,6 +93,7 @@ const NewMail=({fetchMails})=> {
       setReadyForMail(false);
       setFormData({});
       setMailType("GLOBAL");
+      fetchMails();
     } catch (error) {
       console.error("Error during send emails", error);
       setReadyForMail(false);
@@ -114,7 +115,7 @@ const NewMail=({fetchMails})=> {
         <DialogContent className="max-w-xl p-6 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <DialogHeader className="space-y-0">
-              <DialogTitle>Nuevo Empleado</DialogTitle>
+              <DialogTitle>Nuevo Correo</DialogTitle>
             </DialogHeader>
           </div>
 

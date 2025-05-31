@@ -32,9 +32,6 @@ const Employees = () => {
     <>
       <div className="w-full flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Empleados de la Organización</h1>
-        {/*<NewEmployee
-          fetchEmployees={fetchEmployees}
-        />*/}
         <NewMail 
           fetchMails={fetchMails}
         />

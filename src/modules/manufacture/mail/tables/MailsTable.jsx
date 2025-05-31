@@ -62,7 +62,7 @@ const MailsTable = ({ data, setSelectedMail, setOpenSee }) => {
                   <TableRow key={mail.id}>
                     <TableCell>{mail.id}</TableCell>
                     <TableCell>{mail.subject}</TableCell>
-                    <TableCell>{mail.to.join(" ")}</TableCell>
+                    <TableCell>{mail.to.join(" - ")}</TableCell>
                     <TableCell className="w-32">
                       <TooltipProvider>
                         <Tooltip>
