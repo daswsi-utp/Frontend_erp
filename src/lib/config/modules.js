@@ -31,7 +31,7 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Empleados", path: "/rrhh/employees" },
           { title: "Contratos", path: "/rrhh/contrats" },
-          { title: "Cargos y Departamentos", path: "/rrhh/departments" },
+          { title: "Departamentos", path: "/rrhh/departments" },
         ],
       },
       {

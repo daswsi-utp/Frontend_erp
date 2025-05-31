@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 const DeleteEmployeeModal=({ open, onOpenChange, employee })=>{
   if (!employee) return null;
 
+  const handleDelete = () =>{
+    console.log(`Empleado y usuario con id: ${employee.id} eliminado`);
+    onOpenChange(false)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -16,7 +21,7 @@ const DeleteEmployeeModal=({ open, onOpenChange, employee })=>{
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button variant="destructive">Eliminar</Button>
+          <Button variant="destructive" onClick={handleDelete}>Eliminar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
