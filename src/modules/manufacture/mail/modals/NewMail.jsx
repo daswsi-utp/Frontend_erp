@@ -118,7 +118,7 @@ const NewMail=({fetchMails})=> {
             </DialogHeader>
           </div>
 
-          <ScrollArea className="h-[70vh] pr-2">
+          <ScrollArea className="h-[50vh] pr-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Tipo de Correo</label>
