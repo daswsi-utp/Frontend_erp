@@ -1,0 +1,12 @@
+.tiptap-editor button {
+  padding: 6px 10px;
+  border: 1px solid #000000;
+  background-color: #000000;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tiptap-editor button.active {
+  background-color: #054774;
+  color: rgb(0, 0, 0);
+}

@@ -10,6 +10,7 @@ import { Mail  } from "lucide-react";
 import useCrud from "@/hooks/useCrud";
 import { DialogClose } from "@radix-ui/react-dialog";
 import axios from "axios";
+import TiptapEditor from "@/components/tiptap";
 
 
 const NewMail=({fetchMails})=> {
@@ -82,6 +83,17 @@ const NewMail=({fetchMails})=> {
     setDestinatarios([]);
   };
 
+  const handleSave = () =>{
+    const dataToSend = {
+      ...formData,
+      to: destinatarios,
+    };
+    console.log("Form data", dataToSend);
+    setReadyForMail(false);
+    setFormData({});
+    setMailType("GLOBAL");
+  }
+
   useEffect(() => {
     fetchDepartments();
     fetchEmployees();
@@ -92,7 +104,7 @@ const NewMail=({fetchMails})=> {
       <DialogTrigger asChild>
         <Button variant="outline">Nuevo Empleado</Button>
       </DialogTrigger>
-        <DialogContent className="max-w-3xl p-6 overflow-hidden">
+        <DialogContent className="max-w-xl p-6 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <DialogHeader className="space-y-0">
               <DialogTitle>Nuevo Empleado</DialogTitle>
@@ -182,19 +194,18 @@ const NewMail=({fetchMails})=> {
               <div className="flex flex-col items-center justify-center ">
                 <Mail  size={128} />
               </div>
-              {readyForMail && (
+            </div>
+            {readyForMail && (
                 <>
                   <label className="text-sm font-medium">Asunto</label>
                   <Input onChange={(e) => handleChange("subject", e.target.value)} />
-
-                  <label className="text-sm font-medium">Contenido</label>
-                  <Input onChange={(e) => handleChange("body", e.target.value)} />
+                  <label className="text-sm font-medium">Cuerpo del correo</label>
+                  <TiptapEditor onChange={(html) => handleChange("body", html)} />
                 </>
               )}
-            </div>
           </ScrollArea>
-          <DialogFooter className="mt-6">
-            <DialogClose>
+          <DialogFooter className="mt-1">
+            <DialogClose onClick={handleSave}>
               Guardar Cambios
             </DialogClose>
           </DialogFooter>
