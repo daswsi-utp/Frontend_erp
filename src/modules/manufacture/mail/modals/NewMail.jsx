@@ -83,15 +83,22 @@ const NewMail=({fetchMails})=> {
     setDestinatarios([]);
   };
 
-  const handleSave = () =>{
-    const dataToSend = {
-      ...formData,
-      to: destinatarios,
-    };
-    console.log("Form data", dataToSend);
-    setReadyForMail(false);
-    setFormData({});
-    setMailType("GLOBAL");
+  const handleSave = async () =>{
+    try {
+      const dataToSend = {
+        ...formData,
+        to: destinatarios,
+      };
+      await insertModel(dataToSend, "/api/v1/manufacture/mail");
+      setReadyForMail(false);
+      setFormData({});
+      setMailType("GLOBAL");
+    } catch (error) {
+      console.error("Error during send emails", error);
+      setReadyForMail(false);
+      setFormData({});
+      setMailType("GLOBAL");
+    }
   }
 
   useEffect(() => {
