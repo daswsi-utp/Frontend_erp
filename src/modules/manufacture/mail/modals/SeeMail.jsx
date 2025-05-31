@@ -20,9 +20,9 @@ const SeeMail=({open, onOpenChange, mail, onMailChange})=> {
 
           <ScrollArea className="h-[50vh] pr-2">
             <label className="text-sm font-medium">Para:</label>
-            <Input value={mail.to.join(" - ")} />
+            <Input value={mail.to.join(" - ")} className="mb-2"/>
             <label className="text-sm font-medium">Asunto</label>
-            <Input value={mail.subject} />
+            <Input value={mail.subject} className="mb-2"/>
             <label className="text-sm font-medium">Cuerpo del correo</label>
             <TiptapEditor content={mail.body} />
           </ScrollArea>

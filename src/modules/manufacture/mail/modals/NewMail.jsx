@@ -110,7 +110,7 @@ const NewMail=({fetchMails})=> {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Nuevo Empleado</Button>
+        <Button variant="outline">Nuevo Correo</Button>
       </DialogTrigger>
         <DialogContent className="max-w-xl p-6 overflow-hidden">
           <div className="flex items-center justify-between mb-4">

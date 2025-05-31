@@ -32,7 +32,7 @@ const Employees = () => {
   return (
     <>
       <div className="w-full flex justify-between items-center mb-2">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Empleados de la Organización</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Correos enviados</h1>
         <NewMail 
           fetchMails={fetchMails}
         />
