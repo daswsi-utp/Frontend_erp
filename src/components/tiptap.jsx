@@ -5,6 +5,7 @@ import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import Strike from "@tiptap/extension-strike";
 import TextAlign from "@tiptap/extension-text-align";
+import { AlignLeft , AlignRight , AlignCenter  } from 'lucide-react'
 
 import "@/styles/TipTapStyles.css";
 
@@ -38,13 +39,13 @@ const MenuBar = ({ editor }) => {
       </button>
 
       <button onClick={() => editor.chain().focus().setTextAlign('left').run()} className={editor.isActive({ textAlign: 'left' }) ? 'active' : ''}>
-        ⬅️
+        <AlignLeft/>
       </button>
       <button onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'active' : ''}>
-        ⬅️➡️
+        <AlignCenter/>
       </button>
       <button onClick={() => editor.chain().focus().setTextAlign('right').run()} className={editor.isActive({ textAlign: 'right' }) ? 'active' : ''}>
-        ➡️
+        <AlignRight/>
       </button>
 
       <button
