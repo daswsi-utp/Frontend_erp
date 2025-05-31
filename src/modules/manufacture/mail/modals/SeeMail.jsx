@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import TiptapEditor from "@/components/tiptap";
+import TiptapEditor from "@/components/tiptapsee";
 
 
 const SeeMail=({open, onOpenChange, mail, onMailChange})=> {
@@ -24,7 +24,7 @@ const SeeMail=({open, onOpenChange, mail, onMailChange})=> {
             <label className="text-sm font-medium">Asunto</label>
             <Input value={mail.subject} />
             <label className="text-sm font-medium">Cuerpo del correo</label>
-            <TiptapEditor value={mail.body} />
+            <TiptapEditor content={mail.body} />
           </ScrollArea>
 
         </DialogContent>
