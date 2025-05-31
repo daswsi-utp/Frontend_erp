@@ -104,13 +104,49 @@ const useCrud = (endpoint) => {
     }
   };
 
+  const insertMultipartModel = async (contractData, file, _endpoint = endpoint) => {
+    const confirmation = await confirm({
+      title: "Registrar nuevo contrato",
+      body: "¿Estás seguro de que quieres registrar este contrato con su archivo adjunto?",
+      cancelButton: "Cancelar",
+      actionButton: "Registrar",
+      icon: <OctagonAlert className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+    });
+
+    if (!confirmation) {
+      throw new Error('Acción cancelada por el usuario');
+    }
+
+    const formData = new FormData();
+    formData.append("contract", new Blob([JSON.stringify(contractData)], { type: "application/json" }));
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(`${backend_host}${_endpoint}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.error('Error al registrar el contrato:', error);
+        return Promise.reject(error.response.data);
+      } else {
+        console.error('Network error or server is not responding:', error);
+        return Promise.reject({ message: 'Error de red o el servidor no responde' });
+      }
+    }
+    };
+
 
   return {
     getModel,
     insertModel,
     deleteModel,
     updateModel,
-    insertModelWithCallback
+    insertModelWithCallback,
+    insertMultipartModel 
   }
 }
 
