@@ -6,6 +6,7 @@ import EditEmployeeModal from "@/modules/rrhh/employees/modals/modal-edit-employ
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import useCrud from "@/hooks/useCrud";
 import NewMail from "@/modules/manufacture/mail/modals/NewMail";
+import SeeMail from "@/modules/manufacture/mail/modals/SeeMail";
 
 const Employees = () => {
   const [selectedMail, setSelectedMail] = useState(null);
@@ -42,6 +43,11 @@ const Employees = () => {
             data={mails}
             setSelectedMail={setSelectedMail}
             setOpenSee={setOpenSee}
+          />
+          <SeeMail 
+            open={openSee}
+            onOpenChange={setOpenSee}
+            mail={selectedMail}
           />
           {/*<EditEmployeeModal
             open={openEdit}

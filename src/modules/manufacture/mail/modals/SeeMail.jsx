@@ -1,18 +1,16 @@
 "use client"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import TiptapEditor from "@/components/tiptap";
 
 
 const SeeMail=({open, onOpenChange, mail, onMailChange})=> {
+  if (!mail) return null;
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Nuevo Empleado</Button>
-      </DialogTrigger>
+    <div className="relative h-full max-h-screen overflow-hidden">
+      <Dialog open={open} onOpenChange={onOpenChange} className="max-h-[60vh]">
         <DialogContent className="max-w-xl p-6 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <DialogHeader className="space-y-0">
@@ -30,7 +28,8 @@ const SeeMail=({open, onOpenChange, mail, onMailChange})=> {
           </ScrollArea>
 
         </DialogContent>
-    </Dialog>
+      </Dialog>
+    </div>
   );
 }
 export default SeeMail;
