@@ -6,11 +6,13 @@ import NewQuoteModal from '@/modules/sales/quotes/modals/NewQuoteModal';
 import EditQuoteModal from '@/modules/sales/quotes/modals/EditQuoteModal';
 import DeleteQuoteModal from '@/modules/sales/quotes/modals/DeleteQuoteModal';
 import ViewQuoteModal  from '@/modules/sales/quotes/modals/ViewQuoteModal';
+import DetailQuoteModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
+import useCrud from '@/hooks/useCrud';
+import ProductDetailsModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
+
 
 const SalesPage = () => { 
- 
-
-   const [quotes, setQuotes] = useState([]);
+  const [quotes, setQuotes] = useState([]);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [openNew, setOpenNew] = useState(false);
@@ -19,10 +21,19 @@ const SalesPage = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Estado para carga
-
-
+  const [openProducts, setOpenProducts] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]); 
+  const {getModel, deleteModel} = useCrud() 
   //DESDE LA BASE DE DATOS
 
+  const deleteQuote = async (quote) => {
+      try {
+        await deleteModel (`/api/v1/sales/quotes/${quote.id}`);
+        await fetchQuotes ();
+      } catch (error) {
+        console.error(error)       
+      }
+  }
   const fetchQuotes = async () => {
     try {
       const response = await fetch('http://localhost:8091/api/v1/sales/quotes');
@@ -39,6 +50,7 @@ const SalesPage = () => {
       totalAmount: quote.totalAmount,
       paymentMethod: quote.typePayment, 
       observation: quote.observation,
+      details: quote.details || []
       // Agrega más campos si necesitas mostrar otros datos
     }));
 
@@ -110,6 +122,34 @@ const SalesPage = () => {
   }
 };
 
+ const handleShowProducts = (quote) => {
+    setSelectedProducts(quote.details || []);
+    setOpenProducts(true);
+  };
+
+  useEffect(() => {
+    fetchQuotes();
+  }, []);
+
+const handleDeleteProduct = async (productId) => {
+  try {
+    const response = await fetch(`http://localhost:8091/api/v1/sales/detailquote/${productId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) throw new Error("Error al eliminar producto");
+    
+    // Actualiza el estado local sin recargar toda la página
+    setSelectedProducts(prev => prev.filter(p => p.id !== productId));
+    alert("Producto eliminado correctamente");
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+};
+
+
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -130,8 +170,9 @@ const SalesPage = () => {
         setSelectedQuote={setSelectedQuote}
         setSelectedFile={setSelectedFile}
         setOpenEdit={setOpenEdit}
-        setOpenDelete={setOpenDelete}
+        deleteQuote={deleteQuote}
         setOpenView={setOpenView}
+        onShowProducts={handleShowProducts}
       />
       )}
 
@@ -157,6 +198,13 @@ const SalesPage = () => {
         onDelete={handleDelete}
         quote={selectedQuote}
         isDeleting={isDeleting}
+      />
+
+      <ProductDetailsModal
+        open={openProducts}
+        onClose={() => setOpenProducts(false)}
+        products={selectedProducts}
+        onDeleteProduct={handleDeleteProduct} // ¡Nueva prop!
       />
 
       <ViewQuoteModal

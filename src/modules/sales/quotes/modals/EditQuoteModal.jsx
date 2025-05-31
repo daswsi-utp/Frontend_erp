@@ -77,6 +77,7 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
     onClose();
   };
 
+  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">

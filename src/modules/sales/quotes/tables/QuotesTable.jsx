@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, Trash2, FileEdit, Download } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from '@/components/ui/input';
+import { Package, ShoppingBag, Tag } from 'lucide-react';
 
 const formatDate = (dateStr) => {
   return new Intl.DateTimeFormat("es-ES", {
@@ -16,14 +17,17 @@ const formatDate = (dateStr) => {
 };
 
 const QuotesTable = ({ 
-  quotes = [], // Valor por defecto para evitar undefined
+  quotes = [],
   setSelectedQuote, 
   setSelectedFile, 
   setOpenEdit, 
-  setOpenDelete, 
-  setOpenView 
+  deleteQuote, 
+  setOpenView,
+  onShowProducts
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+   const [openProductModal, setOpenProductModal] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
    const columns = [
     { key: 'id', label: 'ID', className: 'w-20' },
@@ -127,16 +131,25 @@ const QuotesTable = ({
                         >
                           <FileEdit className="h-4 w-4" />
                         </Button>
+                        <Button
+                         variant="outline" 
+                         size="sm"
+                         onClick={() => onShowProducts(quote)}                   
+                        >
+                          <Package className="h-4 w-4" />  {/* Icono de caja/paquete */}                       
+                          </Button>
+                        
                         <Button 
                           variant="destructive" 
                           size="sm"
                           onClick={() => {
-                            setSelectedQuote(quote);
-                            setOpenDelete(true);
+                            deleteQuote(quote);
+                            
                           }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
+                        
                       </div>
                     </TableCell>
                   </TableRow>

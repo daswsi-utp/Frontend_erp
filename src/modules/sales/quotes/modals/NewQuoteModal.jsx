@@ -18,8 +18,6 @@ const sampleClients = [
   { id: 3, name: "Cliente Z" }
 ];
 
-
-
 const paymentMethods = [
   { id: "CASH", name: "Efectivo" },
   { id: "CREDIT_CARD", name: "Tarjeta Crédito" },
