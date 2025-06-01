@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
-export function SimpleDropDown() {
+export function SimpleDropDown({ onDelete }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [date, setDate] = useState();
@@ -101,7 +101,12 @@ export function SimpleDropDown() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => alert("Registro borrado")}>
+            <AlertDialogAction
+              onClick={() => {
+                setIsDeleteAlertOpen(false);
+                onDelete?.(); // llama a la prop
+              }}
+            >
               Borrar
             </AlertDialogAction>
           </AlertDialogFooter>
