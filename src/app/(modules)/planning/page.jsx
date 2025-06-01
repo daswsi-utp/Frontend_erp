@@ -59,7 +59,7 @@ const Planning = () => {
             <CardTitle className="flex justify-between items-center mb-4">
               <h1 className="text-xl font-semibold group-hover:text-white">{plan.plan_name}</h1>
               <div onClick={(e) => e.stopPropagation()}>
-                <SimpleDropDown onDelete={() => handleDelete(plan.plan_id)} />
+                <SimpleDropDown plan={plan} onDelete={() => handleDelete(plan.plan_id)} onUpdate={fetchPlanes} />
               </div>
             </CardTitle>
             <CardDescription className="text-white/90">
