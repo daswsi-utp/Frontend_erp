@@ -122,15 +122,26 @@ const SalesPage = () => {
   }
 };
 
- const handleShowProducts = (quote) => {
-    setSelectedProducts(quote.details || []);
-    setOpenProducts(true);
-  };
+const handleShowProducts = (quote) => {
+  // Verificación de seguridad
+  if (!quote) {
+    console.error('Error: La cotización recibida es null/undefined');
+    alert('Error al cargar los productos de la cotización');
+    return;
+  }
 
-  useEffect(() => {
-    fetchQuotes();
-  }, []);
-
+  // Guarda la cotización COMPLETA en el estado
+  setSelectedQuote({
+    id: quote.id, // Asegura que al menos el ID está presente
+    ...quote      // Copia todas las propiedades existentes
+  });
+  
+  // Guarda los productos de la cotización
+  setSelectedProducts(quote.details || []);
+  
+  // Abre el modal
+  setOpenProducts(true);
+};
 const handleDeleteProduct = async (productId) => {
   try {
     const response = await fetch(`http://localhost:8091/api/v1/sales/detailquote/${productId}`, {
@@ -141,6 +152,17 @@ const handleDeleteProduct = async (productId) => {
     
     // Actualiza el estado local sin recargar toda la página
     setSelectedProducts(prev => prev.filter(p => p.id !== productId));
+
+    setQuotes(prevQuotes => prevQuotes.map(quote => {
+      if (quote.id === selectedQuote?.id) {
+        return {
+          ...quote,
+          details: quote.details?.filter(p => p.id !== productId)
+        };
+      }
+      return quote;
+    }));
+
     alert("Producto eliminado correctamente");
   } catch (error) {
     console.error(error);
@@ -148,7 +170,60 @@ const handleDeleteProduct = async (productId) => {
   }
 };
 
+//AGREGAR PRODUCTOS
+const handleAddProducts = async (newProducts) => {
+  try {
+    // Para cada producto nuevo, hacemos un POST a tu API
+    const creationPromises = newProducts.map(product => {
+      const requestBody = {
+        quoteId: { id: selectedQuote.id },
+        productId: product.productId,
+        amount: product.amount,
+        prize: product.prize,
+        discount: product.discount,
+        tax: product.tax
+      };
 
+      return fetch('http://localhost:8091/api/v1/sales/detailquote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+    });
+
+    const responses = await Promise.all(creationPromises);
+    const allSuccessful = responses.every(res => res.ok);
+
+    if (!allSuccessful) {
+      throw new Error('Error al agregar algunos productos');
+    }
+
+    const createdProducts = await Promise.all(
+      responses.map(res => res.json())
+    );
+
+    // Actualiza ambos estados
+    setSelectedProducts(prev => [...prev, ...createdProducts]);
+    setQuotes(prevQuotes => prevQuotes.map(quote => {
+      if (quote.id === selectedQuote?.id) {
+        return {
+          ...quote,
+          details: [...quote.details, ...createdProducts]
+        };
+      }
+      return quote;
+    }));
+
+    alert('Productos agregados correctamente');
+  } catch (error) {
+    console.error('Error al agregar productos:', error);
+    alert(`Error: ${error.message}`);
+  }
+};
+/////////
+  
 
   return (
     <div className="p-6 space-y-6">
@@ -205,6 +280,8 @@ const handleDeleteProduct = async (productId) => {
         onClose={() => setOpenProducts(false)}
         products={selectedProducts}
         onDeleteProduct={handleDeleteProduct} // ¡Nueva prop!
+        quoteId={selectedQuote?.id}
+        onAddProduct={handleAddProducts}
       />
 
       <ViewQuoteModal
