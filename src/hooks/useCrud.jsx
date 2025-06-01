@@ -4,7 +4,7 @@ import { useConfirm } from "@/components/shared/alert"
 import { LuAlertOctagon  } from "react-icons/lu";
 import { OctagonAlert } from 'lucide-react';
 
-const backend_host = 'http://localhost:8095/api/v1' || process.env.NEXT_BACKEND_HOST ;
+const backend_host = 'http://localhost:8094/api' || process.env.NEXT_BACKEND_HOST ;
 
 const useCrud = (endpoint) => {
   const confirm = useConfirm()
