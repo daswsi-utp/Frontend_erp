@@ -45,7 +45,7 @@ const Planning = () => {
     <div className="p-6">
       <div className="flex gap-4 items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Plannings</h1>
-        <SimpleFormPlanning/>
+        <SimpleFormPlanning onSuccess={fetchPlanes} />
       </div>
 
       <div className="flex flex-wrap gap-6">
