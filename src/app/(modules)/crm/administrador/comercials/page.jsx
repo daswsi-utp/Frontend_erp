@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import useCrud1 from '@/hooks/useCrud1'
+import useCrud from '@/hooks/useCrud'
 
 import ActiveTable from '@/modules/crm/comercials/tables/ActiveTable'
 import InactiveTable from '@/modules/crm/comercials/tables/InactiveTable'
@@ -11,64 +11,48 @@ import InactiveTable from '@/modules/crm/comercials/tables/InactiveTable'
 const EjecutivosComerciales = () => {
   const [activeComercial, setActiveComercial] = useState([])
   const [inactiveComercial, setInactiveComercial] = useState([])
-  const { getModel: getComercials } = useCrud1('/api/v1/admin/comercials')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const { getModel: getComercials } = useCrud()
 
-  const main_route = "/api/v1/admin/comercials"
-
-  const mockComercials = [
-    {
-      id: 1,
-      first_name: "Ana",
-      last_name: "López",
-      document_number: "12345678",
-      phone: "999888777",
-      country: "Perú",
-      country_code: "pe",
-      city: "Lima",
-      email: "ana@example.com",
-      document_type: "dni",
-      gender: "female",
-      user_status: "active",
-      avatar: { url: "/avatars/1.jpg" }
-    },
-    {
-      id: 2,
-      first_name: "Carlos",
-      last_name: "Méndez",
-      document_number: "87654321",
-      phone: "999111222",
-      country: "México",
-      country_code: "mx",
-      city: "Ciudad de México",
-      email: "carlos@example.com",
-      document_type: "dni",
-      gender: "male",
-      user_status: "inactive",
-      avatar: { url: "/avatars/2.jpg" }
-    }
-  ]
 
   const loadData = async () => {
-    const getData = await getComercials(main_route)
-    const data = getData.data?.length ? getData.data : mockComercials
-    
-    setActiveComercial(
-      data.filter((item) => item.user_status === 'active')
-        .map((item, index) => ({ 
-          ...item, 
-          index: index + 1, 
-          full_name: `${item.first_name} ${item.last_name}` 
-        }))
-    )
-    setInactiveComercial(
-      data.filter((item) => item.user_status === 'inactive')
-        .map((item, index) => ({ 
-          ...item, 
-          index: index + 1, 
-          full_name: `${item.first_name} ${item.last_name}` 
-        }))
-    )
-  }
+    setLoading(true);
+    setError(null);
+    try {
+      const getData = await getComercials('/crm/members');
+      console.log('getData:', getData);
+  
+      const data = Array.isArray(getData) ? getData : getData.data;
+  
+      if (!Array.isArray(data)) {
+        throw new Error('Los datos recibidos no son un array');
+      }
+  
+      setActiveComercial(
+        data.filter(item => item.status === 1 && item.crmRole === 'ASESOR_CRM')
+          .map((item, index) => ({
+            ...item,
+            index: index + 1,
+            full_name: item.fullName
+          }))
+      );
+      setInactiveComercial(
+        data.filter(item => item.status === 0 && item.crmRole === 'ASESOR_CRM')
+          .map((item, index) => ({
+            ...item,
+            index: index + 1,
+            full_name: item.fullName
+          }))
+      );
+    } catch (err) {
+      setError('Error al cargar comerciales: ' + err.message);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   useEffect(() => {
     loadData()
@@ -95,25 +79,23 @@ const EjecutivosComerciales = () => {
               </Badge>
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="active">
             <ActiveTable
               data={activeComercial}
               loadData={loadData}
               getComercials={getComercials}
               showButtonNew={true}
-              mainRoute={main_route}
               title="Ejecutivo(a) de Ventas"
             />
           </TabsContent>
-          
+
           <TabsContent value="inactive">
             <InactiveTable
               data={inactiveComercial}
               loadData={loadData}
               getComercials={getComercials}
               showButtonNew={false}
-              mainRoute={main_route}
               title="Ejecutivo(a) de Ventas"
             />
           </TabsContent>
