@@ -5,13 +5,18 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Trash2, SquarePen, Search } from 'lucide-react'
+import { Trash2, SquarePen, Search, ShieldCheck } from 'lucide-react'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import useCrud from "@/hooks/useCrud";
+import axios from "axios"
+
 
 const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('')
+  const {getModel, insertModel, updateModel} = useCrud()
+  
 
   const filteredEmployees = useMemo(() => {
     if (!searchTerm && !searchState) return data
@@ -44,6 +49,29 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee
     VACACIONES: 'bg-orange-300 text-orange-800',
     PERMISO: 'bg-orange-300 text-orange-800',
     DESACTIVADO: 'bg-red-300 text-red-800'
+  }
+
+  const handleActivate = async (employee) => {
+    try {
+      const updatedEmployee = {
+        ...employee,
+        account: "ACTIVADO"
+      }
+      await updateModel(updatedEmployee, "/rrhh/employee")
+
+      const account = {
+        email: employee.email,
+        dni: employee.dni,
+        password: employee.dni,
+        passwordConfirmation: employee.dni,
+        roleName: employee.role.name,
+      }
+
+      await axios.post("http://localhost:8096/api/auth/activate", account)
+      console.log("Empleado activado y editado correctamente:", account)
+    } catch (error) {
+      console.error("Error activando empleado:", error)
+    }
   }
 
   return (
@@ -128,6 +156,20 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                      {employee.account?.toUpperCase() !== "ACTIVADO" && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="link" onClick={() => {
+                                handleActivate(employee);
+                              }}><ShieldCheck size={16}/></Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Activar Cuenta</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

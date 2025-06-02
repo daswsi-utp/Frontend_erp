@@ -9,7 +9,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Mail  } from "lucide-react";
 import useCrud from "@/hooks/useCrud";
 import { DialogClose } from "@radix-ui/react-dialog";
-import axios from "axios";
 import TiptapEditor from "@/components/tiptap";
 
 
@@ -52,16 +51,16 @@ const NewMail=({fetchMails})=> {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get("http://localhost:8095/api/v1/rrhh/department");
-      setDepartments(response.data);
+      const response = await getModel("/rrhh/department");
+      setDepartments(response);
     } catch (error) {
       console.error("Error fetching departments", error);
     }
   };
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:8095/api/v1/rrhh/employee");
-      setEmployees(response.data);
+      const response = await getModel("/rrhh/employee");
+      setEmployees(response);
     } catch (error) {
       console.error("Error fetching employees", error);
     }
@@ -69,11 +68,11 @@ const NewMail=({fetchMails})=> {
 
   const fetchEmployeesByDepartment = async (id) =>{
     try {
-      const response = await axios.get(`http://localhost:8095/api/v1/rrhh/employee/department/${id}`);
-      selectDestinatarios(response.data);
+      const response = await getModel(`/rrhh/employee/department/${id}`);
+      selectDestinatarios(response);
       setReadyForMail(true);
     } catch (error) {
-      console.error("Error fetching employees", error);
+      console.error("Error fetching employees by department", error);
     }
   }
 
@@ -89,7 +88,7 @@ const NewMail=({fetchMails})=> {
         ...formData,
         to: destinatarios,
       };
-      await insertModel(dataToSend, "/api/v1/manufacture/mail");
+      await insertModel(dataToSend, "/manufacture/mail");
       setReadyForMail(false);
       setFormData({});
       setMailType("GLOBAL");
