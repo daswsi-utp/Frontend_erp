@@ -1,24 +1,27 @@
 'use client';
+
 import { useForm, FormProvider } from 'react-hook-form';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import LeadForm from '@/modules/crm/leads/insert/LeadForm';
 import { useState } from 'react';
-import useCrud from '@/hooks/useCrud1';
+import useCrud from '@/hooks/useCrud';
 
 const InsertManual = () => {
   const methods = useForm({
     defaultValues: {
       phone: '',
-      product_id: '',
-      first_name: '',
-      last_name: '',
+      productId: '',  
+      firstName: '',  
+      lastName: '',   
       country: '',
-      user_id: '',
-      arrival_mean_id: ''
+      memberId: '',
+      arrivalMeanId: '',
+      clientStateId: "", 
+      countryCode: "+51" 
     }
   });
 
-  const { insertModel } = useCrud('/crm/clients');
+  const { insertModel } = useCrud();
 
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -31,9 +34,9 @@ const InsertManual = () => {
       await insertModel({
         ...data,
         whatsapp: data.phone,
-        clientStateId: 1,  // Por defecto Nuevo Cliente
-        reasonId: 1       // Por defecto razón genérica
-      });
+        clientStateId: data.clientStateId,  
+        reasonId: 1,  
+      }, '/crm/clients');
       alert('Lead registrado exitosamente');
       methods.reset();
       setShowForm(false);
