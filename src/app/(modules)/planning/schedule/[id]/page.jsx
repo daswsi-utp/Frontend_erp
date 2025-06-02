@@ -5,57 +5,45 @@ import ManageParticipants from "@/components/manage-participants-planningDialog"
 import ManageTasks from "@/components/manage-task-planningDialog";
 import ScrollAreaTasks from "@/components/scroll-area-tasks";
 import { Separator } from "@/components/ui/separator";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import useCrud from "@/hooks/useCrud";
+import { useParams } from "next/navigation"
 
-const Schedule = ({ params }) => {
-    const { id } = React.use(params)
+const Schedule = () => {
+  const params = useParams()
+  const id = params?.id
+  const { getModel } = useCrud("/planning/plan");
 
-    const planningData = {
-        "1": {
-            name: "Proyecto 1",
-            description: "ERP con 6 módulos usando Next.js y Spring",
-            dates: "01/06/2024 - 30/11/2024"
-        },
-        "2": {
-            name: "Horario eventos royal candy",
-            description: "Gestión de horarios para trabajadores",
-            dates: "15/05/2024 - 20/12/2024"
-        },
-        "3": {
-            name: "wadwadawdadwa",
-            description: "GSoy el 3",
-            dates: "15/05/2024 - 20/12/2024"
-        },
-        "4": {
-            name: "wiwiwiwiwi",
-            description: "yo soy el 4",
-            dates: "15/05/2024 - 20/12/2040"
-        }
-    };
+  const [planning, setPlanning] = useState(null);
+ 
+  const fetchPlanning = async () => {
+    try {
+      const data = await getModel(`/planning/plan/${id}`);
+      setPlanning(data);
+    } catch (err) {
+      console.error("Error al cargar el planning", err);
+    }
+  };
 
-    const planning = planningData[id] || {
-        name: "Planeación no encontrada",
-        description: "La planeación solicitada no existe",
-        dates: "N/A"
-    };
+  useEffect(() => {
+    fetchPlanning();
+  }, [id]);
 
-    return (
-        <div>
-            <div className="flex gap-4 align-top">
-                <section className="w-[25%] flex flex-col gap-2">
-                    <h1 className="text-[20px]">{planning.name}</h1>
-                    <Separator></Separator>
-                    <ManageTasks></ManageTasks>
-                    <ManageParticipants></ManageParticipants>
-                    <Separator></Separator>
-                    <ScrollAreaTasks></ScrollAreaTasks>
-                </section>
-                <section className="w-[75%]">
-                    <CalendarSchedule></CalendarSchedule>
-                </section>
-            </div>
-        </div>
-    )
-}
+  return (
+    <div className="flex flex-col lg:flex-row gap-4">
+        <section className="w-full lg:w-[25%] flex flex-col gap-2">
+            <h1 className="text-xl font-bold">{planning?.plan_name || "Cargando..."}</h1>
+            <Separator />
+            <ManageTasks />
+            <ManageParticipants />
+            <Separator />
+            <ScrollAreaTasks />
+        </section>
+        <section className="w-full lg:w-[75%]">
+            <CalendarSchedule />
+        </section>
+    </div>
+  );
+};
 
-export default Schedule
+export default Schedule;

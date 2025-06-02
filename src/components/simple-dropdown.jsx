@@ -150,7 +150,7 @@ export function SimpleDropDown({ plan, onDelete, onUpdate }) {
             <AlertDialogAction
               onClick={() => {
                 setIsDeleteAlertOpen(false);
-                onDelete?.(); // llama a la prop
+                onDelete?.();
               }}
             >
               Borrar
