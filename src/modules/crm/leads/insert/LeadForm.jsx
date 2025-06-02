@@ -1,157 +1,128 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/shared/button';
-import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import { RxInfoCircled } from 'react-icons/rx';
-import useCrud from '@/hooks/useCrud';
+import useCrud from '@/hooks/useCrud1';
+import { useState, useEffect } from 'react';
 
-const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) => {
+const LeadForm = ({ loading, showForm, setShowForm, setSearchError, searchError }) => {
   const { control, watch, setValue } = useFormContext();
   const phone = watch('phone');
   const product_id = watch('product_id');
 
-  const [searchError, setSearchError] = useState(null);
-  const [existingInOtherProducts, setExistingInOtherProducts] = useState([]);
+  const { getModel } = useCrud('');
 
   const [listProducts, setListProducts] = useState([]);
-  const [sellerList, setSellerList] = useState([]);
+  const [listSellers, setListSellers] = useState([]);
   const [listArrivalMeans, setListArrivalMeans] = useState([]);
+  const [existingInOtherProducts, setExistingInOtherProducts] = useState([]);
 
-  const { getModelData } = useCrud('');
-
-  // Cargar productos
+  // Carga productos
   const loadProducts = async () => {
     try {
-      const products = await getModelData('/crm/products');
-      setListProducts(products);
+      const products = await getModel('/crm/products');
+      setListProducts(products || []);
     } catch (error) {
-      console.error('Error loading products:', error);
+      console.error('Error cargando productos:', error);
     }
   };
 
-  // Cargar vendedores
+  // Carga vendedores
   const loadSellers = async () => {
     try {
-      const sellers = await getModelData('/crm/members');
-      // Mapear para formato Select
-      const sellersForSelect = sellers.map(seller => ({
-        value: seller.id,
-        label: seller.fullName || `${seller.firstName} ${seller.lastName}`,
-      }));
-      setSellerList(sellersForSelect);
+      const sellers = await getModel('/crm/members');
+      setListSellers(
+        (sellers || []).map(seller => ({
+          value: seller.id,
+          label: seller.fullName || `${seller.firstName} ${seller.lastName}`
+        }))
+      );
     } catch (error) {
-      console.error('Error loading sellers:', error);
+      console.error('Error cargando vendedores:', error);
     }
   };
 
-  // Cargar medios de llegada
+  // Carga medios de llegada
   const loadArrivalMeans = async () => {
     try {
-      const arrivalMeans = await getModelData('/crm/arrival_means');
-      setListArrivalMeans(arrivalMeans);
+      const arrivalMeans = await getModel('/crm/arrival_means');
+      setListArrivalMeans(arrivalMeans || []);
     } catch (error) {
-      console.error('Error loading arrival means:', error);
+      console.error('Error cargando medios de llegada:', error);
     }
   };
 
-  // Cargar datos al montar
   useEffect(() => {
     loadProducts();
     loadSellers();
     loadArrivalMeans();
   }, []);
 
-  // Verificar si el lead ya existe (simulación o puedes cambiar para backend)
+  // Verificar si el lead ya existe en backend
   const handleCheckLead = async () => {
     setSearchError(null);
     setExistingInOtherProducts([]);
+    setShowForm(false);
+
+    if (!phone || !product_id) {
+      setSearchError('Debe ingresar teléfono y seleccionar producto');
+      return;
+    }
 
     try {
-      // Aquí deberías hacer llamada a backend para buscar el lead por teléfono y producto
-      // Ejemplo con fetch o axios:
-      // const response = await fetch(`/api/v1/crm/clients/check?phone=${phone}&product_id=${product_id}`);
-      // const data = await response.json();
+      // La respuesta debe tener la estructura esperada:
+      // { existsInSameProduct: boolean, existingInOtherProducts: Array<{name, productName}> }
+      const response = await getModel(`/crm/clients/check?phone=${encodeURIComponent(phone)}&product_id=${product_id}`);
 
-      // Por ahora simulamos con datos mock (puedes eliminar esta parte)
-      // Simulación simple
-      const existingLeads = []; // <- reemplaza con datos reales
-      const existsInSameProduct = existingLeads.some(
-        lead => lead.phone === phone && lead.product_id == product_id
-      );
-
-      if (existsInSameProduct) {
+      if (response?.existsInSameProduct) {
         setSearchError('Este cliente ya está registrado en este producto');
-        setShowForm(false);
         return;
       }
 
-      const otherProducts = existingLeads.filter(
-        lead => lead.phone === phone && lead.product_id != product_id
-      );
+      if (response?.existingInOtherProducts?.length > 0) {
+        setExistingInOtherProducts(response.existingInOtherProducts);
 
-      if (otherProducts.length > 0) {
-        setExistingInOtherProducts(otherProducts);
-        const [existingLead] = otherProducts;
+        const [existingLead] = response.existingInOtherProducts;
         const nameParts = existingLead.name.split(' ');
-        setValue('first_name', nameParts[0]);
+        setValue('first_name', nameParts[0] || '');
         setValue('last_name', nameParts[1] || '');
       }
 
       setShowForm(true);
     } catch (error) {
-      console.error('Error checking lead:', error);
-      setShowForm(false);
       setSearchError('Error al buscar el cliente');
+      console.error('Error en handleCheckLead:', error);
     }
-  };
-
-  // Obtener nombre del producto para alertas
-  const getProductName = (productId) => {
-    return listProducts.find(p => p.id == productId)?.name || 'Producto';
   };
 
   return (
     <div className="space-y-4">
+      {/* Teléfono y producto */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label>Número de Teléfono</Label>
-          <br />
           <Controller
             name="phone"
             control={control}
             rules={{ required: 'El teléfono es obligatorio' }}
-            render={({ field }) => (
-              <Input {...field} placeholder="Ingrese el teléfono" />
-            )}
+            render={({ field }) => <Input {...field} placeholder="Ingrese el teléfono" />}
           />
         </div>
 
         <div>
           <Label>Producto</Label>
-          <br />
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-1">
             <Controller
               name="product_id"
               control={control}
               render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  disabled={!phone}
-                >
+                <Select onValueChange={field.onChange} value={field.value} disabled={!phone}>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccione un producto" />
                   </SelectTrigger>
@@ -165,24 +136,19 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
                 </Select>
               )}
             />
-            <Button
-              type="button"
-              onClick={handleCheckLead}
-              disabled={!phone || !product_id}
-            >
+            <Button type="button" onClick={handleCheckLead} disabled={!phone || !product_id}>
               Buscar
             </Button>
           </div>
         </div>
       </div>
 
+      {/* Mensajes de error o info */}
       {searchError && (
         <Alert variant="destructive" className="mt-4">
           <FaExclamationTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {searchError}
-          </AlertDescription>
+          <AlertDescription>{searchError}</AlertDescription>
         </Alert>
       )}
 
@@ -195,7 +161,7 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
             <ul className="list-disc pl-5 mt-1">
               {existingInOtherProducts.map((lead, index) => (
                 <li key={index}>
-                  {getProductName(lead.product_id)} (Registrado como: {lead.name})
+                  {lead.productName} (Registrado como: {lead.name})
                 </li>
               ))}
             </ul>
@@ -204,60 +170,41 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
         </Alert>
       )}
 
+      {/* Formulario con campos del cliente */}
       {showForm && !searchError && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <Label>Nombres</Label>
-              <br />
               <Controller
                 name="first_name"
                 control={control}
                 rules={{ required: 'El nombre es obligatorio' }}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Ingrese los nombres" />
-                )}
+                render={({ field }) => <Input {...field} placeholder="Ingrese los nombres" />}
               />
             </div>
 
             <div>
               <Label>Apellidos</Label>
-              <br />
               <Controller
                 name="last_name"
                 control={control}
                 rules={{ required: 'El apellido es obligatorio' }}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Ingrese los apellidos" />
-                )}
+                render={({ field }) => <Input {...field} placeholder="Ingrese los apellidos" />}
               />
             </div>
 
             <div>
               <Label>País</Label>
-              <br />
               <Controller
                 name="country"
                 control={control}
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione un país" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {/* Aquí deberías cargar países desde backend o tener una lista */}
-                      <SelectItem value="Perú">Perú</SelectItem>
-                      <SelectItem value="Colombia">Colombia</SelectItem>
-                      <SelectItem value="México">México</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => <Input {...field} placeholder="Ingrese el país" />}
               />
             </div>
 
             <div>
               <Label>Asesor Comercial</Label>
-              <br />
               <Controller
                 name="user_id"
                 control={control}
@@ -267,7 +214,7 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
                       <SelectValue placeholder="Seleccione un asesor" />
                     </SelectTrigger>
                     <SelectContent>
-                      {sellerList.map(seller => (
+                      {listSellers.map(seller => (
                         <SelectItem key={seller.value} value={seller.value}>
                           {seller.label}
                         </SelectItem>
@@ -280,7 +227,6 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
 
             <div>
               <Label>Medio de llegada</Label>
-              <br />
               <Controller
                 name="arrival_mean_id"
                 control={control}
@@ -299,16 +245,6 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
                   </Select>
                 )}
               />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="organic"
-                checked={isOrganic}
-                onCheckedChange={setIsOrganic}
-                disabled // Si no usas este campo, mejor deshabilita o elimina
-              />
-              <Label htmlFor="organic">Lead orgánico (No usado)</Label>
             </div>
           </div>
 

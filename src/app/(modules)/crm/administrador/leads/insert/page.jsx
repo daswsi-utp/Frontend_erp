@@ -31,8 +31,8 @@ const InsertManual = () => {
       await insertModel({
         ...data,
         whatsapp: data.phone,
-        clientStateId: 1,  
-        reasonId: 1 
+        clientStateId: 1,  // Por defecto Nuevo Cliente
+        reasonId: 1       // Por defecto razón genérica
       });
       alert('Lead registrado exitosamente');
       methods.reset();
