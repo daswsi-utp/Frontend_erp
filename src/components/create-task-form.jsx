@@ -4,7 +4,7 @@ import { Button } from "./ui/button"
 import ScrollAreaUsers from "./scroll-area-users"
 import useCrud from "@/hooks/useCrud"
 
-const CreateTaskForm = () => {
+const CreateTaskForm = ({ onTaskUpdate }) => {
   const [taskName, setTaskName] = useState("")
   const [taskDescription, setTaskDescription] = useState("")
   const [startDate, setStartDate] = useState("")
@@ -29,6 +29,7 @@ const CreateTaskForm = () => {
       setEndDate("")
       setSelectedIds(new Set())
       alert("Tarea creada correctamente")
+      if (onTaskUpdate) onTaskUpdate();
     } catch (error) {
       console.error("Error creando tarea:", error)
       alert("Error al crear tarea")

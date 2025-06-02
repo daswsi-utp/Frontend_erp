@@ -34,6 +34,32 @@ const Schedule = () => {
     }
   };
 
+  const fetchTasks = async () => {
+    try {
+      const tasksData = await getTasks(`/planning/task`);
+      setTasks(tasksData);
+    } catch (err) {
+      console.error("Error al cargar tareas", err);
+    }
+  };
+
+  const fetchParticipants = async () => {
+    try {
+      const participantsData = await getParticipants(`/planning/participant`);
+      setParticipants(participantsData);
+    } catch (err) {
+      console.error("Error al cargar participantes", err);
+    }
+  };
+
+  const handleParticipantUpdate = () => {
+    fetchParticipants();
+  };
+
+  const handleTaskUpdate = () => {
+    fetchTasks();
+  };
+
   useEffect(() => {
     if (id) fetchData();
   }, [id]);
@@ -43,8 +69,8 @@ const Schedule = () => {
       <section className="w-full lg:w-[25%] flex flex-col gap-2">
         <h1 className="text-xl font-bold">{planning?.plan_name || "Cargando..."}</h1>
         <Separator />
-        <ManageTasks />
-        <ManageParticipants />
+        <ManageTasks onTaskUpdate={handleTaskUpdate} />
+        <ManageParticipants onParticipantUpdate={handleParticipantUpdate} />
         <Separator />
         <ScrollAreaTasks />
       </section>

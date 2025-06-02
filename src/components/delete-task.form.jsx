@@ -4,7 +4,7 @@ import { Button } from "./shared/button"
 import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogContent } from "./ui/dialog"
 import useCrud from "@/hooks/useCrud"
 
-const DeleteTaskForm = () => {
+const DeleteTaskForm = ({ onTaskUpdate }) => {
   const [selectedTaskIds, setSelectedTaskIds] = useState(new Set())
   const [reloadTrigger, setReloadTrigger] = useState(false) // ← NUEVO
   const { deleteModel } = useCrud("/planning/task")
@@ -18,6 +18,7 @@ const DeleteTaskForm = () => {
       alert("Tareas eliminadas correctamente")
       setSelectedTaskIds(new Set())
       setReloadTrigger(prev => !prev) // ← CAMBIA trigger para recargar tareas
+      if (onTaskUpdate) onTaskUpdate();
     } catch (error) {
       console.error("Error al eliminar tareas:", error)
       alert("Error al eliminar tareas")
