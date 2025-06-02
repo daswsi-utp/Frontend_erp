@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import ScrollAreaUsers from "./scroll-area-users";
 import useCrud from "@/hooks/useCrud";
 
-const DeleteParticipant = () => {
+const DeleteParticipant = ({ onParticipantUpdate }) => {
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [refreshFlag, setRefreshFlag] = useState(false)
   const { deleteModel } = useCrud("/planning/participant")
@@ -23,6 +23,7 @@ const DeleteParticipant = () => {
       }
       setSelectedIds(new Set())
       setRefreshFlag(prev => !prev)
+      if (onParticipantUpdate) onParticipantUpdate();
     } catch (error) {
       console.error("Error eliminando participantes:", error)
     }
