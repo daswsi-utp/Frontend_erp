@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
+import useCrud from "@/hooks/useCrud";
 
 // Datos de ejemplo (deberías reemplazarlos con llamadas a tu API)
 const sampleProducts = [
@@ -31,6 +32,9 @@ const quoteStates = [
 ];
 
 const NewQuoteModal = ({ open, onClose, onSave }) => {
+
+  const { getModel } = useCrud();
+
   const [form, setForm] = useState({
     clientId: "",
     employeeId: "",
@@ -41,6 +45,7 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
     observation: ""
   });
 
+  
   const [employees, setEmployees] = useState([]); 
 
   const [products, setProducts] = useState([
@@ -132,10 +137,8 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
    useEffect(() => {
     const fetchVendedores = async () => {
       try {
-        const response = await fetch('http://localhost:8095/api/v1/rrhh/employee/position/VENDEDOR');
-        if (!response.ok) throw new Error('Error al obtener vendedores');
-        const data = await response.json();
-        setEmployees(data);
+        const response = await getModel('/rrhh/employee/position/VENDEDOR');
+        setEmployees(response);
       } catch (error) {
         console.error("Error fetching employees:", error);
       }

@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import useCrud from "@/hooks/useCrud";
 
 const Tableorders = () => {
   const [search, setSearch] = useState("");
@@ -19,33 +20,32 @@ const Tableorders = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+    const { getModel } = useCrud();
+  
+
   // Función para cargar ventas desde el backend
-  const fetchSales = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://localhost:8091/api/v1/sales/transactions");
+ const fetchSales = async () => {
+  try {
+    setLoading(true);
+    const response = await getModel('/sales/transactions');
+    
+    // Aquí se guarda la respuesta en el estado
+    setSales(response);
 
-      console.log("Respuesta recibida, status:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error en la respuesta:", errorText); // Debug
-        throw new Error(`Error ${response.status}: ${errorText}`);
-      }
+    console.log("Ventas cargadas:", response);
+    
+  } catch (error) {
+    console.error("Error fetching sales:", error);
+    toast({
+      title: "Error",
+      description: "No se pudieron cargar las ventas",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const data = await response.json();
-      setSales(data);
-    } catch (error) {
-      console.error("Error fetching sales:", error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar las ventas",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Cargar ventas al montar el componente
   useEffect(() => {

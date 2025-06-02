@@ -4,15 +4,17 @@ import { useConfirm } from "@/components/shared/alert"
 import { LuAlertOctagon  } from "react-icons/lu";
 import { OctagonAlert } from 'lucide-react';
 
-const backend_host = 'http://localhost:8091' || process.env.NEXT_BACKEND_HOST ;
+const backend_host =  process.env.NEXT_PUBLIC_BACKEND_HOST ;
 
 const useCrud = (endpoint) => {
   const confirm = useConfirm()
 
   const getModel = async (_endpoint = endpoint) => {
+
     try {
       const response = await axios.get(`${backend_host}${_endpoint}`)
       return response.data
+
     } catch (error) {
       console.error("Error fetching data:", error)
       return Promise.reject(error.response?.data || error)
@@ -104,13 +106,49 @@ const useCrud = (endpoint) => {
     }
   };
 
+  const insertMultipartModel = async (contractData, file, _endpoint = endpoint) => {
+    const confirmation = await confirm({
+      title: "Registrar nuevo contrato",
+      body: "¿Estás seguro de que quieres registrar este contrato con su archivo adjunto?",
+      cancelButton: "Cancelar",
+      actionButton: "Registrar",
+      icon: <OctagonAlert className="text-red-500 h-16 w-16 mx-auto mb-4" />,
+    });
+
+    if (!confirmation) {
+      throw new Error('Acción cancelada por el usuario');
+    }
+
+    const formData = new FormData();
+    formData.append("contract", new Blob([JSON.stringify(contractData)], { type: "application/json" }));
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(`${backend_host}${_endpoint}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.error('Error al registrar el contrato:', error);
+        return Promise.reject(error.response.data);
+      } else {
+        console.error('Network error or server is not responding:', error);
+        return Promise.reject({ message: 'Error de red o el servidor no responde' });
+      }
+    }
+    };
+
 
   return {
     getModel,
     insertModel,
     deleteModel,
     updateModel,
-    insertModelWithCallback
+    insertModelWithCallback,
+    insertMultipartModel 
   }
 }
 

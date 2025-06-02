@@ -12,18 +12,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import useCrud from "@/hooks/useCrud";
 
 const Tableorders = () => {
   const [search, setSearch] = useState("");
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { getModal } = useCrud;
 
   // Función para cargar ventas desde el backend
   const fetchSales = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8091/api/v1/sales/transactions");
+      const response = await getModal("/sales/transactions");
 
       console.log("Respuesta recibida, status:", response.status);
       

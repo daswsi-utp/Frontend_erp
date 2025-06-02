@@ -31,7 +31,7 @@ export const MODULES_CONFIG = {
         subItems: [
           { title: "Empleados", path: "/rrhh/employees" },
           { title: "Contratos", path: "/rrhh/contrats" },
-          { title: "Cargos y Departamentos", path: "/rrhh/departments" },
+          { title: "Departamentos", path: "/rrhh/departments" },
         ],
       },
       {
@@ -212,30 +212,17 @@ export const MODULES_CONFIG = {
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        path: "/manufacture",
+        path: "/rrhh",
         exact: true,
       },
-
       {
-        title: "Datos Maestros",
+        title: "Enviar Correo",
         icon: FileChartLine,
-        path: "/manufacture/masterData",
+        path: "/manufacture",
         subItems: [
           {
-            title: "Productos",
-            path: "/manufacture/masterData/manufacturingProducts",
-          },
-        ],
-      },
-
-      {
-        title: "Control de Fabricación",
-        icon: FileClock,
-        path: "/manufacture/manufactoringControl",
-        subItems: [
-          {
-            title: "Orden de producción",
-            path: "/manufacture/manufactoringControl/productionOrder",
+            title: "Send",
+            path: "/manufacture/mail/send",
           },
         ],
       },

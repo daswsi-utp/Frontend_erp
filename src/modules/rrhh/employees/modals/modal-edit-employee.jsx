@@ -37,7 +37,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange, fet
       fetchEmployees();
       onOpenChange(false);
     } catch (error) {
-      console.error("Error during create new employe", error)
+      console.error("Error during update employe", error)
     }
   };
 

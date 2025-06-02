@@ -5,11 +5,14 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import useCrud from "@/hooks/useCrud";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 
-const NewModal=({ type })=> {
+const NewDepartment=({ fetchDepartments })=> {
 
-  const [formData, setFormData] = useState({});
+  const {insertModel} = useCrud()
+  const [formData, setFormData] = useState({ state: 'ACTIVO' });
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -18,116 +21,56 @@ const NewModal=({ type })=> {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    onOpenChange(false);
+  const handleSave = async () => {
+    try {
+     console.log("Datos guardados:", formData);
+     await insertModel(formData, "/rrhh/department");
+     fetchDepartments();
+    } catch (error) {
+      console.error("Error during create new department", error)
+    }
   };
 
-  const managers = [
-    "Daniel Cabrera Saavedra",
-    "Pinwino",
-    "Estefani",
-    "Sebastian",
-    "Elvis",
-  ];
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Nuevo {type === "department" ? "Departamento" : "Cargo"}</Button>
+        <Button variant="outline">Nuevo Departamento</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nuevo {type === "department" ? "Departamento" : "Cargo"}</DialogTitle>
+          <DialogTitle>Nuevo Departamento</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {type === "department" && (
-            <>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Nombre</label>
-                <Input
-                  onChange={(e) => handleChange("name", e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Código</label>
-                <Input
-                  onChange={(e) => handleChange("code", e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Encargado</label>
-                <Select
-                  onValueChange={(value) => handleChange("manager", value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona un encargado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {managers.map((manager, index) => (
-                      <SelectItem key={index} value={manager}>
-                        {manager}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Estado</label>
-                <Select
-                  defaultValue="Activo"
-                  onValueChange={(value) => handleChange("state", value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona un encargado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                      <SelectItem value="Activo">Activo</SelectItem>
-                      <SelectItem value="Inactivo">Inactivo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
-          
-          {type === "position" && (
-            <>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Nombre</label>
-                <Input
-                  onChange={(e) => handleChange("name", e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Descripción</label>
-                <Input
-                  onChange={(e) => handleChange("description", e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm">Estado</label>
-                <Select
-                  defaultValue="Activo"
-                  onValueChange={(value) => handleChange("state", value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona un encargado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                      <SelectItem value="Activo">Activo</SelectItem>
-                      <SelectItem value="Inactivo">Inactivo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm">Nombre</label>
+            <Input onChange={(e) => handleChange("name", e.target.value)}/>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm">Código</label>
+            <Input onChange={(e) => handleChange("code", e.target.value)}/>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm">Estado</label>
+            <Select defaultValue="ACTIVO" onValueChange={(value) => handleChange("state", value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona un estado" />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="ACTIVO">Activo</SelectItem>
+                  <SelectItem value="INACTIVO">Inactivo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleSave} variant="default">Guardar cambios</Button>
+          <DialogClose className="rounded-lg border bg-gray-100 text-black px-3 py-1 font-bold" onClick={handleSave}>
+              Guardar Cambios
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-export default NewModal;
+export default NewDepartment;

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,12 +19,16 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import useCrud from "@/hooks/useCrud";
 
 const NuevaOrdenModal = () => {
   const [quotes, setQuotes] = useState([]);
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  
+  // Usamos useCrud para las operaciones
+  const { getModel, insertModel } = useCrud();
 
   const [formData, setFormData] = useState({
     quoteId: '',
@@ -34,13 +38,14 @@ const NuevaOrdenModal = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [salesRes, quotesRes] = await Promise.all([
-          fetch('http://localhost:8091/api/v1/sales/transactions'),
-          fetch('http://localhost:8091/api/v1/sales/quotes/approved')
+        // Usamos getModel para obtener las cotizaciones aprobadas
+        const [salesData, quotesData] = await Promise.all([
+          getModel('/sales/transactions'),
+          getModel('/sales/quotes/approved')
         ]);
-
-        if (salesRes.ok) setSales(await salesRes.json());
-        if (quotesRes.ok) setQuotes(await quotesRes.json());
+        
+        setSales(salesData);
+        setQuotes(quotesData);
       } catch (error) {
         toast({
           title: "Error",
@@ -57,36 +62,35 @@ const NuevaOrdenModal = () => {
     setLoading(true);
     
     try {
-      const response = await fetch(
-        `http://localhost:8091/api/v1/sales/transactions/from-quote/${formData.quoteId}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: formData.deliveryAddress
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        if (errorText.includes("ya fue convertida en venta")) {
-          throw new Error("Esta cotización ya fue utilizada. Seleccione otra.");
-        }
-        throw new Error(errorText || 'Error al crear la venta');
+      // Validación básica
+      if (!formData.quoteId || !formData.deliveryAddress) {
+        throw new Error('Por favor complete todos los campos');
       }
 
-      const createdSale = await response.json();
-      
+      // Verificar si la cotización ya fue usada
+      const isUsed = sales.some(sale => sale.quote?.id === parseInt(formData.quoteId));
+      if (isUsed) {
+        throw new Error("Esta cotización ya fue utilizada. Seleccione otra.");
+      }
+
+      // Usamos insertModel para crear la venta
+      const createdSale = await insertModel(
+  formData.deliveryAddress,
+  `/sales/transactions/from-quote/${formData.quoteId}`,
+  'text/plain' // ← importante si estás usando fetch o axios
+);
+
+
       // Actualizar lista de ventas
-      const salesRes = await fetch('http://localhost:8091/api/v1/sales/transactions');
-      if (salesRes.ok) setSales(await salesRes.json());
+      const updatedSales = await getModel('/sales/transactions');
+      setSales(updatedSales);
 
       toast({
         title: "✅ Venta creada",
         description: `Venta #${createdSale.id} registrada.`,
       });
 
+      // Reset form
       setFormData({
         quoteId: '',
         deliveryAddress: ''

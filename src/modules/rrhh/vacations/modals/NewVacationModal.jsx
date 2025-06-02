@@ -4,14 +4,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // usando Select de shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { FileText, TreePalm  } from "lucide-react";
+import { DialogClose } from "@radix-ui/react-dialog";
+import useCrud from "@/hooks/useCrud";
 
 
-const VacationNew=()=> {
+const VacationNew=({ fetchVacations })=> {
+
+  const {getModel, insertModel} = useCrud()
 
   const [formData, setFormData] = useState({});
+  const [employees, setEmployees] = useState([]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -20,9 +25,27 @@ const VacationNew=()=> {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    onOpenChange(false);
+  const fetchEmployees = async () =>{
+    try {
+      const data = await getModel("/rrhh/employee");
+      setEmployees(data);
+    } catch (error) {
+      console.error("Error during recovery employees", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      console.log("Datos guardados:", formData);
+      await insertModel(formData, "/rrhh/vacation");
+      fetchVacations();
+    } catch (error) {
+      console.error("Error during insert new vacation", error)
+    }
   };
 
   return (
@@ -43,24 +66,21 @@ const VacationNew=()=> {
             <div className="flex flex-col gap-4 col-span-2">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Empleado</label>
-                <Select onValueChange={val => handleChange('employee', val)}>
+                <Select onValueChange={val => handleChange('employee', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Employee1">Daniel Cabrera</SelectItem>
-                    <SelectItem value="Employee2">Empleado 2</SelectItem>
-                    <SelectItem value="Employee3">Empleado 3</SelectItem>
+                    {(employees.map((employee)=>(
+                      <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
+                    )))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Dias tomados</label>
-                <Input
-                  type="text"
-                  onChange={e => handleChange("startDate", e.target.value)}
-                />
+                <label className="text-sm font-medium">Dia de Solicitud</label>
+                <Input type="date" onChange={e => handleChange("requestAt", e.target.value)}/>
               </div>
             </div>
             <TreePalm size={180} className="text-primary" />
@@ -71,18 +91,12 @@ const VacationNew=()=> {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Inicio</label>
-                <Input
-                  type="date"
-                  onChange={e => handleChange("startDate", e.target.value)}
-                />
+                <Input type="date" onChange={e => handleChange("startDate", e.target.value)}/>
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dia de Fin</label>
-                <Input
-                  type="date"
-                  onChange={e => handleChange("endDate", e.target.value)}
-                />
+                <Input type="date" onChange={e => handleChange("endDate", e.target.value)}/>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -92,26 +106,21 @@ const VacationNew=()=> {
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="APROVADO">APROVADO</SelectItem>
-                    <SelectItem value="PENDIENTE">PENDIENTE</SelectItem>
-                    <SelectItem value="DESAPROVADO">DESAPROVADO</SelectItem>
+                    <SelectItem value="SOLICITADO">Solicitado</SelectItem>
+                    <SelectItem value="APROBADO">Aprobado</SelectItem>
+                    <SelectItem value="RECHAZADO">Rechazado</SelectItem>
+                    <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
+                    <SelectItem value="FINALIZADO">Finalizado</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Dia de Solicitud</label>
-                <Input
-                  type="date"
-                  onChange={e => handleChange("endDate", e.target.value)}
-                />
               </div>
             </div>
           </ScrollArea>
         </div>
-
           <DialogFooter className="mt-6">
-            <Button variant="default">Guardar Cambios</Button>
+            <DialogClose className="rounded-lg border bg-gray-100 text-black px-3 py-1 font-bold" onClick={handleSave}>
+                Guardar Cambios
+            </DialogClose>          
           </DialogFooter>
         </DialogContent>
     </Dialog>

@@ -120,7 +120,6 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button variant="destructive" onClick={() => {
-                                setSelectedEmployee(employee);
                                 deleteEmployee(employee);
                             }}><Trash2 size={16}/></Button>
                           </TooltipTrigger>

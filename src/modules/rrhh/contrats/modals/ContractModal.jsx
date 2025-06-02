@@ -18,11 +18,17 @@ const ShowContractModal = ({ open, onOpenChange, contract, onContractChange  }) 
 
           <ScrollArea className="h-[70vh] pr-2">
             <div className="w-full h-[80vh]">
-                <iframe
-                    src="https://trabajoapurimac.gob.pe/wp-content/uploads/MODELO_DE_CONTRATO_DE_TRABAJO_SUJETO_A_MODALIDAD_.pdf"
+                {contract?.key ? (
+                  <iframe
+                    src={contract.key}
                     className="w-full h-full"
                     frameBorder="0"
-                />
+                  />
+                  ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No se encontró ningún contrato para este empleado.
+                  </div>
+                )}
             </div>
           </ScrollArea>
         </DialogContent>

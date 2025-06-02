@@ -23,41 +23,39 @@ const SalesPage = () => {
   const [isLoading, setIsLoading] = useState(true); // Estado para carga
   const [openProducts, setOpenProducts] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]); 
-  const {getModel, deleteModel} = useCrud() 
+  const { getModel, insertModel, deleteModel, updateModel } = useCrud();
+  const { getModel: getProduct, insertModel: insertProduct, deleteModel: deleteProduct } = useCrud();
   //DESDE LA BASE DE DATOS
 
   const deleteQuote = async (quote) => {
       try {
-        await deleteModel (`/api/v1/sales/quotes/${quote.id}`);
+        await deleteModel (`/sales/quotes/${quote.id}`);
         await fetchQuotes ();
       } catch (error) {
         console.error(error)       
       }
   }
+
+  const formatQuote = (quote) => ({
+    id: quote.id,
+    issueDate: quote.issueDate,
+    expirationDate: quote.expirationDate,
+    state: quote.state,
+    totalAmount: quote.totalAmount,
+    paymentMethod: quote.typePayment, 
+    observation: quote.observation,
+    details: quote.details || []
+  });
+
+ 
+ ///////////////CARGAR CUOTAS//////////////
   const fetchQuotes = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8091/api/v1/sales/quotes');
-      if (!response.ok) {
-        throw new Error('Error al obtener cotizaciones');
-      }
-      const data = await response.json();
-
-      const formattedQuotes = data.map(quote => ({
-      id: quote.id,
-      issueDate: quote.issueDate,
-      expirationDate: quote.expirationDate,
-      state: quote.state,
-      totalAmount: quote.totalAmount,
-      paymentMethod: quote.typePayment, 
-      observation: quote.observation,
-      details: quote.details || []
-      // Agrega más campos si necesitas mostrar otros datos
-    }));
-
-
-      setQuotes(formattedQuotes);
+      const data = await getModel("/sales/quotes");
+      setQuotes(data.map(formatQuote));
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error al cargar cotizaciones:", error);
       alert("Error al cargar cotizaciones");
     } finally {
       setIsLoading(false);
@@ -67,60 +65,19 @@ const SalesPage = () => {
   useEffect(() => {
     fetchQuotes();
   }, []);
-
-   const handleDelete = async (quoteId) => {
-    setIsDeleting(true);
-    try {
-      const response = await fetch(`http://localhost:8091/api/v1/sales/quotes/${quoteId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al eliminar cotización');
-      }
-      
-      await fetchQuotes(); // Recarga las cotizaciones
-      setOpenDelete(false);
-    } catch (error) {
-      console.error("Error al eliminar:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+////////////////////////////////////////////////
 
  const handleCreateQuote = async (newQuoteData) => {
-  try {
-    console.log('Enviando datos:', newQuoteData); // Para depuración
-    
-    const response = await fetch('http://localhost:8091/api/v1/sales/quotes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(newQuoteData)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || `Error HTTP: ${response.status}`);
+    try {
+      const createdQuote = await insertModel(newQuoteData, "/sales/quotes");
+      setQuotes([...quotes, formatQuote(createdQuote)]);
+      setOpenNew(false);
+      alert('Cotización creada exitosamente');
+    } catch (error) {
+      console.error("Error al crear cotización:", error);
+      alert(`Error al crear cotización: ${error.message}`);
     }
-
-    const createdQuote = await response.json();
-    setQuotes([...quotes, createdQuote]);
-    await fetchQuotes();
-    setOpenNew(false);
-
-
-    
-    // Mostrar mensaje de éxito
-    alert('Cotización creada exitosamente');
-  } catch (error) {
-    console.error("Error al crear cotización:", error);
-    alert(`Error al crear cotización: ${error.message}`);
-  }
-};
+  };
 
 const handleShowProducts = (quote) => {
   // Verificación de seguridad
@@ -142,26 +99,29 @@ const handleShowProducts = (quote) => {
   // Abre el modal
   setOpenProducts(true);
 };
+
+
 const handleDeleteProduct = async (productId) => {
   try {
-    const response = await fetch(`http://localhost:8091/api/v1/sales/detailquote/${productId}`, {
-      method: 'DELETE'
-    });
-
-    if (!response.ok) throw new Error("Error al eliminar producto");
+    await deleteProduct(`/sales/detailquote/${productId}`);
     
-    // Actualiza el estado local sin recargar toda la página
-    setSelectedProducts(prev => prev.filter(p => p.id !== productId));
+    // Actualizar estado local sin recargar toda la página
+    setSelectedProducts(prevProducts => 
+      prevProducts.filter(p => p.id !== productId)
+    );
 
-    setQuotes(prevQuotes => prevQuotes.map(quote => {
-      if (quote.id === selectedQuote?.id) {
-        return {
-          ...quote,
-          details: quote.details?.filter(p => p.id !== productId)
-        };
-      }
-      return quote;
-    }));
+    // Actualizar también la lista de cotizaciones
+    setQuotes(prevQuotes => 
+      prevQuotes.map(quote => {
+        if (quote.id === selectedQuote?.id) {
+          return {
+            ...quote,
+            details: quote.details?.filter(p => p.id !== productId)
+          };
+        }
+        return quote;
+      })
+    );
 
     alert("Producto eliminado correctamente");
   } catch (error) {
@@ -173,82 +133,68 @@ const handleDeleteProduct = async (productId) => {
 //AGREGAR PRODUCTOS
 const handleAddProducts = async (newProducts) => {
   try {
-    // Para cada producto nuevo, hacemos un POST a tu API
-    const creationPromises = newProducts.map(product => {
-      const requestBody = {
+    // Validación inicial
+    if (!selectedQuote?.id) {
+      throw new Error('No se ha seleccionado una cotización válida');
+    }
+    if (!newProducts || newProducts.length === 0) {
+      throw new Error('No hay productos para agregar');
+    }
+
+    // Usamos insertModel del hook useCrud
+    const creationPromises = newProducts.map(product => 
+      insertModel( {
         quoteId: { id: selectedQuote.id },
         productId: product.productId,
         amount: product.amount,
         prize: product.prize,
         discount: product.discount,
         tax: product.tax
-      };
-
-      return fetch('http://localhost:8091/api/v1/sales/detailquote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-    });
-
-    const responses = await Promise.all(creationPromises);
-    const allSuccessful = responses.every(res => res.ok);
-
-    if (!allSuccessful) {
-      throw new Error('Error al agregar algunos productos');
-    }
-
-    const createdProducts = await Promise.all(
-      responses.map(res => res.json())
+      } ,'/sales/detailquote',)
+    );
+    
+    const createdProducts = await Promise.all(creationPromises);
+    
+    // Actualizar estados
+    setSelectedProducts(prev => [...prev, ...createdProducts]);
+    
+    setQuotes(prevQuotes => 
+      prevQuotes.map(quote => 
+        quote.id === selectedQuote.id 
+          ? { ...quote, details: [...(quote.details || []), ...createdProducts] }
+          : quote
+      )
     );
 
-    // Actualiza ambos estados
-    setSelectedProducts(prev => [...prev, ...createdProducts]);
-    setQuotes(prevQuotes => prevQuotes.map(quote => {
-      if (quote.id === selectedQuote?.id) {
-        return {
-          ...quote,
-          details: [...quote.details, ...createdProducts]
-        };
-      }
-      return quote;
-    }));
-
     alert('Productos agregados correctamente');
+    return true;
   } catch (error) {
-    console.error('Error al agregar productos:', error);
-    alert(`Error: ${error.message}`);
-  }
+  console.error('Error al agregar productos:', error);
+
+  const errorMessage =
+    error.message || // viene del Error lanzado manualmente
+    'Error desconocido al agregar productos';
+
+  alert(`Error: ${errorMessage}`);
+  return false;
+}
+
 };
 /////////
-const handleEditQuote = async (updatedQuote) => {
-  try {
-    const response = await fetch(`http://localhost:8091/api/v1/sales/quotes/${updatedQuote.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedQuote)
-    });
 
-    if (!response.ok) {
-      throw new Error('Error al actualizar cotización');
+//EDITAR CUOTA//////////////////
+ const handleEditQuote = async (updatedQuote) => {
+    try {
+      const data = await updateModel(updatedQuote, `/sales/quotes/${updatedQuote.id}`);
+      setQuotes(quotes.map(q => q.id === data.id ? formatQuote(data) : q));
+      setOpenEdit(false);
+      alert('Cotización actualizada correctamente');
+    } catch (error) {
+      console.error('Error al actualizar cotización:', error);
+      alert(error.message);
     }
-
-    const data = await response.json();
-    setQuotes(quotes.map(q => q.id === data.id ? data : q));
-    setOpenEdit(false);
-    alert('Cotización actualizada correctamente');
-  } catch (error) {
-    console.error('Error:', error);
-    alert(error.message);
-  }
-};
-
-
-
+  };
+///////////////
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -291,7 +237,7 @@ const handleEditQuote = async (updatedQuote) => {
       <DeleteQuoteModal
         open={openDelete}
         setOpen={setOpenDelete}
-        onDelete={handleDelete}
+        onDelete={deleteQuote}
         quote={selectedQuote}
         isDeleting={isDeleting}
       />
