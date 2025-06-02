@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Eye, Phone, Users, Search, BarChart2 } from 'lucide-react'
 import StatsModal from '../modals/StatsModal'
+import { data } from 'react-router-dom'
 
 const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -15,19 +16,21 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
   const filteredSellers = useMemo(() => {
     if (!searchTerm) return sellersActive
     return sellersActive.filter(seller =>
-      seller.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      seller.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       seller.phone.includes(searchTerm) ||
-      seller.team?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.country?.toLowerCase().includes(searchTerm.toLowerCase())
+      seller.teamName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      seller.address?.toLowerCase().includes(searchTerm.toLowerCase())
     )
   }, [sellersActive, searchTerm])
+
+  console.log(sellersActive)
 
   const columns = [
     { key: 'index', label: '#', className: 'w-10' },
     { key: 'fullName', label: 'Nombres' },
     { key: 'phone', label: 'Teléfono' },
     { key: 'address', label: 'Dirección' },
-    { key: 'created_at', label: 'Fecha de Registro' },
+    { key: 'createdAt', label: 'Fecha de Registro' },
     { key: 'teamName', label: 'Equipo' },
     { key: 'actions', label: 'Acciones', className: 'text-right' }
   ]
@@ -77,21 +80,21 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
               filteredSellers.map((seller) => (
                 <TableRow key={seller.id || seller.index}>
                   <TableCell>{seller.index}</TableCell>
-                  <TableCell className="font-medium">{seller.full_name}</TableCell>
+                  <TableCell className="font-medium">{seller.fullName}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
                       {seller.phone}
                     </div>
                   </TableCell>
-                  <TableCell>{seller.country}</TableCell>
+                  <TableCell>{seller.address ? seller.address : "No encontrado"}</TableCell>
                   <TableCell>
-                    {new Date(seller.created_at).toLocaleDateString()}
+                    {new Date(seller.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      {seller.team}
+                      {seller.teamName}
                     </div>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
@@ -102,9 +105,7 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
                     >
                       <BarChart2 className="h-4 w-4" />
                     </Button>
-                    {/* <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button> */}
+                    
                   </TableCell>
                 </TableRow>
               ))
