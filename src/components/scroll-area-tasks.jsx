@@ -5,6 +5,15 @@ import { Card, CardContent } from "./ui/card"
 import useCrud from "@/hooks/useCrud" // ajusta la ruta si tu archivo useCrud está en otra carpeta
 
 const ScrollAreaTasks = () => {
+
+  const colorClasses = [
+    "bg-gradient-to-r from-green-500 to-green-700",
+    "bg-gradient-to-r from-purple-500 to-purple-700",
+    "bg-gradient-to-r from-pink-500 to-pink-700",
+    "bg-gradient-to-r from-yellow-500 to-yellow-600",
+    "bg-gradient-to-r from-indigo-500 to-indigo-700",
+  ];
+
   const { getModel } = useCrud("/planning/task")
   const [tasks, setTasks] = useState([])
 
@@ -38,9 +47,12 @@ const ScrollAreaTasks = () => {
         {tasks.length === 0 ? (
           <p className="text-sm text-gray-500">No hay tareas próximas</p>
         ) : (
-          tasks.map((task) => (
+          tasks.map((task,index) => (
             <div key={task.task_id}>
-              <Card className="bg-white text-black hover:scale-105 transition">
+              <Card
+                className={`text-white hover:scale-105 transition shadow-md 
+                            ${colorClasses[index % colorClasses.length]}`}
+              >
                 <CardContent className="flex flex-col gap-2">
                   <p><strong>Tarea:</strong> {task.task_name}</p>
                   <p><strong>Inicio:</strong> {task.task_start_date}</p>

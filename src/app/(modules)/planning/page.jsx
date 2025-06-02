@@ -10,6 +10,18 @@ import { useEffect, useState } from "react"
 
 const Planning = () => {
 
+  const colorClasses = [
+    "from-blue-500 to-blue-700",
+    "from-green-500 to-green-700",
+    "from-purple-500 to-purple-700",
+    "from-pink-500 to-pink-700",
+    "from-yellow-500 to-yellow-700",
+    "from-indigo-500 to-indigo-700",
+    "from-red-500 to-red-700",
+    "from-teal-500 to-teal-700"
+  ];
+
+
   const router = useRouter()
   const { getModel, deleteModel } = useCrud("/planning/plan")
 
@@ -49,11 +61,11 @@ const Planning = () => {
       </div>
 
       <div className="flex flex-wrap gap-6">
-        {planes.map((plan) => (
+        {planes.map((plan,index) => (
           <Card
             key={plan.plan_id}
             className={`p-6 w-full sm:w-[48%] lg:w-[31%] h-auto rounded-xl shadow-md transition-all duration-300 
-                         hover:scale-105 hover:shadow-lg cursor-pointer group bg-gradient-to-r from-blue-500 to-blue-700 text-white`}
+                         hover:scale-105 hover:shadow-lg cursor-pointer group bg-gradient-to-r  ${colorClasses[index % colorClasses.length]}`}
             onClick={() => handleCardClick(plan.plan_id)}
           >
             <CardTitle className="flex justify-between items-center mb-4">
