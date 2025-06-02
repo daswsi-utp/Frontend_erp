@@ -4,15 +4,17 @@ import { useConfirm } from "@/components/shared/alert"
 import { LuAlertOctagon  } from "react-icons/lu";
 import { OctagonAlert } from 'lucide-react';
 
-const backend_host = 'http://localhost:8093' || process.env.NEXT_BACKEND_HOST ;
+const backend_host =  process.env.NEXT_PUBLIC_BACKEND_HOST ;
 
 const useCrud = (endpoint) => {
   const confirm = useConfirm()
 
   const getModel = async (_endpoint = endpoint) => {
+
     try {
       const response = await axios.get(`${backend_host}${_endpoint}`)
       return response.data
+
     } catch (error) {
       console.error("Error fetching data:", error)
       return Promise.reject(error.response?.data || error)
