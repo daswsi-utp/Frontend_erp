@@ -223,7 +223,31 @@ const handleAddProducts = async (newProducts) => {
   }
 };
 /////////
-  
+const handleEditQuote = async (updatedQuote) => {
+  try {
+    const response = await fetch(`http://localhost:8091/api/v1/sales/quotes/${updatedQuote.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedQuote)
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al actualizar cotización');
+    }
+
+    const data = await response.json();
+    setQuotes(quotes.map(q => q.id === data.id ? data : q));
+    setOpenEdit(false);
+    alert('Cotización actualizada correctamente');
+  } catch (error) {
+    console.error('Error:', error);
+    alert(error.message);
+  }
+};
+
+
 
   return (
     <div className="p-6 space-y-6">
@@ -258,14 +282,11 @@ const handleAddProducts = async (newProducts) => {
 />
 
       <EditQuoteModal 
-        open={openEdit}
-        onClose={() => setOpenEdit(false)}
-        quote={selectedQuote}
-        onSave={(updatedQuote) => {
-          setQuotes(quotes.map(q => q.id === updatedQuote.id ? updatedQuote : q));
-          setOpenEdit(false);
-        }}
-      />
+      open={openEdit}
+      onClose={() => setOpenEdit(false)}
+      quote={selectedQuote}
+      onSave={handleEditQuote} // Usa la nueva función
+/>
 
       <DeleteQuoteModal
         open={openDelete}

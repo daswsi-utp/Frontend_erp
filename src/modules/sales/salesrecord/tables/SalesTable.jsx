@@ -1,4 +1,6 @@
 "use client";
+
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -7,114 +9,131 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckCircle, Clock, XCircle, FileText, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
-const OrdenesProduccionTable = ({
-  data,
-  setSelectedOrden,
-  setOpenFacturar,
-  setOpenView
-}) => {
-  const formatDate = (dateString) => {
-    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
+const Tableorders = () => {
+  const [search, setSearch] = useState("");
+  const [sales, setSales] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  // Función para cargar ventas desde el backend
+  const fetchSales = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:8091/api/v1/sales/transactions");
+
+      console.log("Respuesta recibida, status:", response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error en la respuesta:", errorText); // Debug
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      setSales(data);
+    } catch (error) {
+      console.error("Error fetching sales:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar las ventas",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Cargar ventas al montar el componente
+  useEffect(() => {
+    fetchSales();
+  }, []);
+
+  // Función para traducir estados al español
+  const translateStatus = (status) => {
+    const statusMap = {
+      'PACKAGED': 'Empacado',
+      'SHIPPED': 'Enviado',
+      'DELIVERED': 'Entregado',
+      'IN_TRANSIT': 'En tránsito'
+    };
+    return statusMap[status] || status;
+  };
+
+  const filteredSales = sales.filter((sale) =>
+    (sale.quote?.clientName?.toLowerCase().includes(search.toLowerCase()) ||
+    sale.id?.toString().toLowerCase().includes(search.toLowerCase()))
+  );
+
+  if (loading) {
+    return <div className="flex justify-center p-8">Cargando ventas...</div>;
+  }
+
   return (
-    <div className="relative w-full max-w-[100vw] overflow-hidden">
-      <ScrollArea className="w-full">
-        <div className="min-w-max w-full">
-          <Table>
-            <TableHeader className="bg-gray-200 dark:bg-gray-900">
-              <TableRow>
-                <TableHead className="w-[100px]">ID de Orden</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+    <div className="space-y-6">
+     
+
+      <Input
+        placeholder="Buscar por cliente o ID de venta..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="max-w-sm"
+      />
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID Venta</TableHead>
+            <TableHead>ID Cotización</TableHead>
+            <TableHead>Fecha Venta</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Dirección</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredSales.length > 0 ? (
+            filteredSales.map((sale) => (
+              <TableRow key={sale.id}>
+                <TableCell className="font-medium">#{sale.id}</TableCell>
+                <TableCell>
+                  {sale.quote?.id ? `COT-${sale.quote.id}` : 'N/A'}
+                </TableCell>
+                <TableCell>
+                  {sale.saleDate ? new Date(sale.saleDate).toLocaleDateString() : 'N/A'}
+                </TableCell>
+                <TableCell>
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    sale.deliveryStatus === 'DELIVERED' ? 'bg-green-100 text-green-800' :
+                    sale.deliveryStatus === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {translateStatus(sale.deliveryStatus)}
+                  </span>
+                </TableCell>
+                <TableCell className="truncate max-w-[200px]">
+                  {sale.deliveryAddress || 'N/A'}
+                </TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button variant="outline" size="sm">Detalles</Button>
+                  <Button variant="secondary" size="sm">Factura</Button>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data?.map((orden) => (
-                <TableRow key={orden.id}>
-                  <TableCell className="font-medium">OP-{orden.id.toString().padStart(4, '0')}</TableCell>
-                  <TableCell>{orden.cliente}</TableCell>
-                  <TableCell>{formatDate(orden.fecha)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {orden.estado === "Finalizada" && <CheckCircle className="h-4 w-4 text-green-500" />}
-                      {orden.estado === "En proceso" && <Clock className="h-4 w-4 text-yellow-500" />}
-                      {orden.estado === "Cancelada" && <XCircle className="h-4 w-4 text-red-500" />}
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        orden.estado === "Finalizada" ? "bg-green-100 text-green-800" :
-                        orden.estado === "En proceso" ? "bg-yellow-100 text-yellow-800" :
-                        orden.estado === "Cancelada" ? "bg-red-100 text-red-800" :
-                        "bg-gray-100 text-gray-800"
-                      }`}>
-                        {orden.estado}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedOrden(orden);
-                                setOpenFacturar(true);
-                              }}
-                            >
-                              <FileText className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Facturar orden</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedOrden(orden);
-                                setOpenView(true);
-                              }}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Vista previa</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <ScrollBar orientation="horizontal" />
-        </div>
-      </ScrollArea>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-4">
+                No se encontraron ventas
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 };
 
-export default OrdenesProduccionTable;
+export default Tableorders;

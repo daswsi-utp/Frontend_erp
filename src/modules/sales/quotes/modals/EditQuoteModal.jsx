@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEffect, useState } from 'react';
 
-// Datos de ejemplo para selects (deberías reemplazarlos con llamadas a tu API)
 const paymentMethods = [
   { id: "CASH", name: "Efectivo" },
   { id: "TRANSFER", name: "Transferencia" },
@@ -22,11 +21,8 @@ const quoteStates = [
 const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
   const [formData, setFormData] = useState({
     id: 0,
-    issueDate: new Date().toISOString().split('T')[0],
     expirationDate: '',
     state: 'PENDING',
-    clientId: '',
-    employeeId: '',
     typePayment: '',
     observation: ''
   });
@@ -35,11 +31,8 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
     if (quote) {
       setFormData({
         id: quote.id || 0,
-        issueDate: quote.issueDate ? quote.issueDate.split('T')[0] : new Date().toISOString().split('T')[0],
         expirationDate: quote.expirationDate ? quote.expirationDate.split('T')[0] : '',
         state: quote.state || 'PENDING',
-        clientId: quote.clientId || '',
-        employeeId: quote.employeeId || '',
         typePayment: quote.typePayment || '',
         observation: quote.observation || ''
       });
@@ -64,11 +57,8 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
   const handleSubmit = () => {
     const updatedQuote = {
       id: formData.id,
-      issueDate: `${formData.issueDate}T12:00:00`, // Añade hora por defecto
-      expirationDate: `${formData.expirationDate}T12:00:00`, // Añade hora por defecto
+      expirationDate: formData.expirationDate ? `${formData.expirationDate}T00:00:00` : null,
       state: formData.state,
-      clientId: Number(formData.clientId),
-      employeeId: Number(formData.employeeId),
       typePayment: formData.typePayment,
       observation: formData.observation
     };
@@ -77,57 +67,29 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
     onClose();
   };
 
-  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Editar Cotización</DialogTitle>
+          <DialogTitle>Editar Cotización #{formData.id}</DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div>
-            <Label>ID de Cliente</Label>
-            <Input 
-              name="clientId" 
-              type="number" 
-              value={formData.clientId} 
-              onChange={handleChange} 
-            />
-          </div>
+          {/* Solo campos editables según tu API */}
           
           <div>
-            <Label>ID de Vendedor</Label>
-            <Input 
-              name="employeeId" 
-              type="number" 
-              value={formData.employeeId} 
-              onChange={handleChange} 
-            />
-          </div>
-          
-          <div>
-            <Label>Fecha de Emisión</Label>
-            <Input 
-              name="issueDate" 
-              type="date" 
-              value={formData.issueDate} 
-              onChange={handleChange} 
-            />
-          </div>
-          
-          <div>
-            <Label>Fecha de Vencimiento</Label>
+            <Label>Fecha de Vencimiento *</Label>
             <Input 
               name="expirationDate" 
               type="date" 
               value={formData.expirationDate} 
-              onChange={handleChange} 
+              onChange={handleChange}
+              required
             />
           </div>
           
           <div>
-            <Label>Estado</Label>
+            <Label>Estado *</Label>
             <Select 
               value={formData.state} 
               onValueChange={(value) => handleSelectChange('state', value)}
@@ -146,7 +108,7 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
           </div>
           
           <div>
-            <Label>Método de Pago</Label>
+            <Label>Método de Pago *</Label>
             <Select 
               value={formData.typePayment} 
               onValueChange={(value) => handleSelectChange('typePayment', value)}
@@ -169,7 +131,8 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
             <Input 
               name="observation" 
               value={formData.observation} 
-              onChange={handleChange} 
+              onChange={handleChange}
+              placeholder="Notas adicionales sobre la cotización"
             />
           </div>
         </div>
