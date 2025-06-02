@@ -1,0 +1,39 @@
+.tiptap-editor button {
+  padding: 4px 8px;
+  border: 1px solid #000000;
+  background: rgb(8, 8, 8);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tiptap-editor button.active {
+  background-color: #000000;
+  font-weight: bold;
+}
+
+.tiptap-editor h1 {
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+.tiptap-editor h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.tiptap-editor ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-editor li {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.tiptap-editor a {
+  color: #9c0202;
+  text-decoration: underline;
+}

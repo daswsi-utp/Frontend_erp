@@ -12,12 +12,12 @@ const Employees = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
-  const {getModel, deleteModel} = useCrud("/rrhh/employee")
+  const {getModel, deleteModel} = useCrud("")
   const [employees, setEmployees] = useState({});
 
   const fetchEmployees = async () =>{
     try {
-      const data = await getModel();
+      const data = await getModel( "/rrhh/employee");
       setEmployees(data);
     } catch (error) {
       console.error("error cargando empleados");

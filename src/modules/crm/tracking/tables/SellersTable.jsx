@@ -24,11 +24,11 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
 
   const columns = [
     { key: 'index', label: '#', className: 'w-10' },
-    { key: 'full_name', label: 'Nombres' },
+    { key: 'fullName', label: 'Nombres' },
     { key: 'phone', label: 'Teléfono' },
-    { key: 'country', label: 'País' },
+    { key: 'address', label: 'Dirección' },
     { key: 'created_at', label: 'Fecha de Registro' },
-    { key: 'team', label: 'Equipo' },
+    { key: 'teamName', label: 'Equipo' },
     { key: 'actions', label: 'Acciones', className: 'text-right' }
   ]
 
