@@ -15,7 +15,6 @@ const ManageParticipants = () => {
                 <DialogHeader>
                     <DialogTitle>Manejo Participantes</DialogTitle>
                 </DialogHeader>
-                <AddParticipant></AddParticipant>
                 <CreateParticipant></CreateParticipant>
                 <DeleteParticipant></DeleteParticipant>
             </DialogContent>

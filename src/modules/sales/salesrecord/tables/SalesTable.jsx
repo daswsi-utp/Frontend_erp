@@ -19,35 +19,33 @@ const Tableorders = () => {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { getModal } = useCrud;
+
+    const { getModel } = useCrud();
+  
 
   // Función para cargar ventas desde el backend
-  const fetchSales = async () => {
-    try {
-      setLoading(true);
-      const response = await getModal("/sales/transactions");
+ const fetchSales = async () => {
+  try {
+    setLoading(true);
+    const response = await getModel('/sales/transactions');
+    
+    // Aquí se guarda la respuesta en el estado
+    setSales(response);
 
-      console.log("Respuesta recibida, status:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error en la respuesta:", errorText); // Debug
-        throw new Error(`Error ${response.status}: ${errorText}`);
-      }
+    console.log("Ventas cargadas:", response);
+    
+  } catch (error) {
+    console.error("Error fetching sales:", error);
+    toast({
+      title: "Error",
+      description: "No se pudieron cargar las ventas",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const data = await response.json();
-      setSales(data);
-    } catch (error) {
-      console.error("Error fetching sales:", error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar las ventas",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Cargar ventas al montar el componente
   useEffect(() => {
@@ -76,12 +74,7 @@ const Tableorders = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Historial de Ventas</h2>
-        <Button onClick={() => window.location.href = '/sales/convertorders'}>
-          Crear Nueva Venta
-        </Button>
-      </div>
+     
 
       <Input
         placeholder="Buscar por cliente o ID de venta..."
@@ -94,7 +87,7 @@ const Tableorders = () => {
         <TableHeader>
           <TableRow>
             <TableHead>ID Venta</TableHead>
-            <TableHead>Cliente</TableHead>
+            <TableHead>ID Cotización</TableHead>
             <TableHead>Fecha Venta</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Dirección</TableHead>
@@ -107,7 +100,7 @@ const Tableorders = () => {
               <TableRow key={sale.id}>
                 <TableCell className="font-medium">#{sale.id}</TableCell>
                 <TableCell>
-                  {sale.quote?.clientName || 'Cliente no especificado'}
+                  {sale.quote?.id ? `COT-${sale.quote.id}` : 'N/A'}
                 </TableCell>
                 <TableCell>
                   {sale.saleDate ? new Date(sale.saleDate).toLocaleDateString() : 'N/A'}
