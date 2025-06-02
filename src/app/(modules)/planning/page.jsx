@@ -60,37 +60,43 @@ const Planning = () => {
         <SimpleFormPlanning onSuccess={fetchPlanes} />
       </div>
 
-      <div className="flex flex-wrap gap-6">
-        {planes.map((plan,index) => (
-          <Card
-            key={plan.plan_id}
-            className={`p-6 w-full sm:w-[48%] lg:w-[31%] h-auto rounded-xl shadow-md transition-all duration-300 
-                         hover:scale-105 hover:shadow-lg cursor-pointer group bg-gradient-to-r  ${colorClasses[index % colorClasses.length]}`}
-            onClick={() => handleCardClick(plan.plan_id)}
-          >
-            <CardTitle className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-semibold group-hover:text-white">{plan.plan_name}</h1>
-              <div onClick={(e) => e.stopPropagation()}>
-                <SimpleDropDown plan={plan} onDelete={() => handleDelete(plan.plan_id)} onUpdate={fetchPlanes} />
-              </div>
-            </CardTitle>
-            <CardDescription className="text-white/90">
-              <p className="mb-4">{plan.plan_description}</p>
-              <Separator className="mb-4 bg-white/20" />
-              <div className="space-y-2">
-                <p className="flex items-center gap-2">
-                  <span className="font-medium">Fecha inicio:</span>
-                  <span>{plan.plan_start_date}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="font-medium">Fecha Fin:</span>
-                  <span>{plan.plan_end_date}</span>
-                </p>
-              </div>
-            </CardDescription>
-          </Card>
-        ))}
-      </div>
+      {planes.length === 0 ? (
+        <div className="w-full text-center text-gray-500 dark:text-gray-400 mt-10">
+          <p className="text-lg">No hay planes creados aún.</p>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-6">
+          {planes.map((plan, index) => (
+            <Card
+              key={plan.plan_id}
+              className={`p-6 w-full sm:w-[48%] lg:w-[31%] h-auto rounded-xl shadow-md transition-all duration-300 
+                          hover:scale-105 hover:shadow-lg cursor-pointer group bg-gradient-to-r  ${colorClasses[index % colorClasses.length]}`}
+              onClick={() => handleCardClick(plan.plan_id)}
+            >
+              <CardTitle className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-semibold group-hover:text-white">{plan.plan_name}</h1>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <SimpleDropDown plan={plan} onDelete={() => handleDelete(plan.plan_id)} onUpdate={fetchPlanes} />
+                </div>
+              </CardTitle>
+              <CardDescription className="text-white/90">
+                <p className="mb-4">{plan.plan_description}</p>
+                <Separator className="mb-4 bg-white/20" />
+                <div className="space-y-2">
+                  <p className="flex items-center gap-2">
+                    <span className="font-medium">Fecha inicio:</span>
+                    <span>{plan.plan_start_date}</span>
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="font-medium">Fecha Fin:</span>
+                    <span>{plan.plan_end_date}</span>
+                  </p>
+                </div>
+              </CardDescription>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 };
