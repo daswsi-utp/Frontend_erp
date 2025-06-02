@@ -13,7 +13,7 @@ const Employees = () => {
   const [openSee, setOpenSee] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
-  const {getModel, deleteModel} = useCrud("/api/v1/manufacture/mail")
+  const {getModel, deleteModel} = useCrud("/manufacture/mail")
   const [mails, setMails] = useState({});
 
   const fetchMails = async () =>{

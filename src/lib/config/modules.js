@@ -7,6 +7,7 @@ import {
   TicketsPlane,
   FileChartLine,
   FileClock,
+  Mails,
 } from "lucide-react";
 import { ROLES } from '@/lib/config/roles'
 
@@ -32,14 +33,6 @@ export const MODULES_CONFIG = {
           { title: "Empleados", path: "/rrhh/employees" },
           { title: "Contratos", path: "/rrhh/contrats" },
           { title: "Departamentos", path: "/rrhh/departments" },
-        ],
-      },
-      {
-        title: "Asistencia",
-        icon: Contact,
-        path: "/rrhh/attendance",
-        subItems: [
-          { title: "Registrar Asistencia", path: "/rrhh/departmentAttendance" },
         ],
       },
       {
@@ -214,7 +207,7 @@ export const MODULES_CONFIG = {
     name: "Manufactura",
     path: "/manufacture",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_MANUFACTURE],
-    icon: BadgeDollarSign,
+    icon: Mails,
     navItems: [
       {
         title: "Dashboard",
