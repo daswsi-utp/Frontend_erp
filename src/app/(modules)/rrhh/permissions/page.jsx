@@ -1,84 +1,67 @@
 "use client"
-
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PermisionsTable from "@/modules/rrhh/permisions/tables/PermisionsTable";
 import PermisionNew from "@/modules/rrhh/permisions/modals/NewPermision";
 import PermisionEdit from "@/modules/rrhh/permisions/modals/EditPermision";
-import DeletePermisionModal from "@/modules/rrhh/permisions/modals/DeletePermision";
-
-const permisions = [
-  {
-    id: 1,
-    employee: {
-      id: 1,
-      firstName: "Daniel",
-      lastName: "Cabrera"
-    },
-    startDate: '2025-04-21',
-    endDate: '2026-04-21',
-    daysTaken: '70',
-    status: 'APROVADO',
-    requestedAt: '2004-10-20',
-    type: 'ENFERMEDAD'
-  },
-  {
-    id: 2,
-    employee: {
-      id: 2,
-      firstName: "Miriam",
-      lastName: "Estremadollo"
-    },
-    startDate: '2026-04-21',
-    endDate: '2027-04-21',
-    daysTaken: '70',
-    status: 'PENDIENTE',
-    requestedAt: '2025-04-20',
-    type: 'MATERNIDAD'
-  },
-  {
-    id: 3,
-    employee: {
-      id: 1,
-      firstName: "Daniel",
-      lastName: "Cabrera"
-    },
-    startDate: '2027-04-21',
-    endDate: '2028-04-21',
-    daysTaken: '70',
-    status: 'DESAPROVADO',
-    requestedAt: '2004-10-20',
-    type: 'LUTO'
-  }
-];
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import useCrud from "@/hooks/useCrud";
 
 const Permisions = () => {
 
     const [selectedPermision, setSelectedPermision] = useState(null);
     const [openEdit, setOpenEdit] = useState(false);
-    const [openDelete, setOpenDelete] = useState(false);
+
+    const {getModel, deleteModel} = useCrud("/rrhh/permission")
+    const [permisions, setPermisions] = useState([]);
+    
+    const fetchPermissions = async () =>{
+      try {
+        const data = await getModel();
+        setPermisions(data);
+      } catch (error) {
+        console.error("Error recovery permisions");
+      }
+    }
+
+    const deletePermission = async (permission) =>{
+    try {
+      console.log(`/rrhh/permission/${permission.id}`)
+      await deleteModel(`/rrhh/permission/${permission.id}`);
+      await fetchPermissions();
+    } catch (error) {
+      console.error("Error during delete permission", error)
+    }
+  }
+
+    useEffect(() => {
+      fetchPermissions();
+    }, []);
+
 
     return (
       <>
         <div className="w-full flex justify-between items-center mb-2">
           <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Registrar Permisos</h1>
-          <PermisionNew/>
+          <PermisionNew
+            fetchPermissions={fetchPermissions}
+          />
         </div>
-        <PermisionsTable
-          permisions={permisions}
-          setSelectedPermision={setSelectedPermision}
-          setOpenDelete={setOpenDelete}
-          setOpenEdit={setOpenEdit}
-        />
-        <PermisionEdit
-          open={openEdit}
-          onOpenChange={setOpenEdit}
-          permision={selectedPermision}
-        />
-        <DeletePermisionModal
-          open={openDelete}
-          onOpenChange={setOpenDelete}
-          permision={selectedPermision}
-        />
+        <Card>
+          <CardContent>
+            <PermisionsTable
+              permisions={permisions}
+              setSelectedPermision={setSelectedPermision}
+              setOpenEdit={setOpenEdit}
+              deletePermission={deletePermission}
+            />
+            <PermisionEdit
+              open={openEdit}
+              onOpenChange={setOpenEdit}
+              permision={selectedPermision}
+              fetchPermissions={fetchPermissions}
+            />
+          </CardContent>
+        </Card>
       </>
     );
 };

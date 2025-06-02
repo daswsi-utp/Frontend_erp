@@ -18,14 +18,9 @@ export default function ProtectedRoute({ children, allowedRoles, requiredPermiss
  useEffect(() => {
   if (!loading && isClient) {
    if (!user) {
-    redirect('/login')
+    router.replace(`/login`)
     return
    }
-
-   // if (allowedRoles && !allowedRoles.includes(user.role)) {
-   //   redirect('/unauthorized')
-   //   return
-   // }
 
    if (user.role === ROLES.ADMIN && pathname !== '/') {
     redirect('/')
@@ -50,6 +45,12 @@ export default function ProtectedRoute({ children, allowedRoles, requiredPermiss
      redirect('/unauthorized')
      return
     }
+
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+     router.replace('/unauthorized')
+     return
+    }
+
    }
   }
  }, [user, loading, allowedRoles, pathname, requiredPermissions, isClient])
@@ -57,6 +58,8 @@ export default function ProtectedRoute({ children, allowedRoles, requiredPermiss
  if (loading || !isClient) {
   return <Spinner />
  }
+
+
 
  return children
 }

@@ -7,6 +7,7 @@ import {
   TicketsPlane,
   FileChartLine,
   FileClock,
+  Mails,
 } from "lucide-react";
 import { ROLES } from '@/lib/config/roles'
 
@@ -32,14 +33,6 @@ export const MODULES_CONFIG = {
           { title: "Empleados", path: "/rrhh/employees" },
           { title: "Contratos", path: "/rrhh/contrats" },
           { title: "Departamentos", path: "/rrhh/departments" },
-        ],
-      },
-      {
-        title: "Asistencia",
-        icon: Contact,
-        path: "/rrhh/attendance",
-        subItems: [
-          { title: "Registrar Asistencia", path: "/rrhh/departmentAttendance" },
         ],
       },
       {
@@ -152,11 +145,7 @@ export const MODULES_CONFIG = {
         path: "/sales/quotes",
         subItems: [
           { title: "Cotizaciones", path: "/sales/quotes" },
-          { title: "Nueva Corización", path: "/sales/newQuote" },
-          {
-            title: "Aprobación De Cotizaciones",
-            path: "/sales/approvalofquotations",
-          },
+
         ],
       },
 
@@ -165,14 +154,11 @@ export const MODULES_CONFIG = {
         icon: BadgeDollarSign,
         path: "/sales/registrationrequest",
         subItems: [
-          {
-            title: "Ingresar órdenes de clientes",
-            path: "/sales/registrationrequest",
-          },
-          { title: "Convetir a Órden", path: "/sales/convertorders" },
-          { title: "Tabla de Pedidos", path: "/sales/Tableorders" },
+          { title: "Pedidos", path: "/sales/convertorders"},
+
         ],
       },
+
     ],
   },
 
@@ -214,35 +200,22 @@ export const MODULES_CONFIG = {
     name: "Manufactura",
     path: "/manufacture",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_MANUFACTURE],
-    icon: BadgeDollarSign,
+    icon: Mails,
     navItems: [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        path: "/manufacture",
+        path: "/rrhh",
         exact: true,
       },
-
       {
-        title: "Datos Maestros",
+        title: "Enviar Correo",
         icon: FileChartLine,
-        path: "/manufacture/masterData",
+        path: "/manufacture",
         subItems: [
           {
-            title: "Productos",
-            path: "/manufacture/masterData/manufacturingProducts",
-          },
-        ],
-      },
-
-      {
-        title: "Control de Fabricación",
-        icon: FileClock,
-        path: "/manufacture/manufactoringControl",
-        subItems: [
-          {
-            title: "Orden de producción",
-            path: "/manufacture/manufactoringControl/productionOrder",
+            title: "Send",
+            path: "/manufacture/mail/send",
           },
         ],
       },
