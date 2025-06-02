@@ -19,8 +19,8 @@ export default function AuthGuard({ children }) {
   const [authorized, setAuthorized] = useState(null) // null: no decidido, true: ok, false: no autorizado
 
   useEffect(() => {
-    const token = localStorage.getItem('auth-token')
-    const user = localStorage.getItem('current_user')
+    const token = localStorage.getItem('authTokens')
+    const user = localStorage.getItem('user')
 
     if (protectedRoutes.some(route => pathname.startsWith(route))) {
       if (!token || !user) {
