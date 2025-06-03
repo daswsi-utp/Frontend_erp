@@ -15,14 +15,14 @@ import ModalAssignLeads from '@/modules/crm/teams/modals/ModalAssignLeads'
 import ModalAssignLeadsBadgeGeneral from '@/modules/crm/teams/modals/ModalAssignLeadsBadgeGeneral'
 
 const MyTeam = () => {
-  const { getModelData: getMyTeam, getModelData: getCourses } = useCrud('')
+  const { getModel: getMyTeam, getModel: getCourses } = useCrud()
 
   const [showModal, setShowModal] = useState(false)
   const [typeModal, setTypeModal] = useState('')
   const [currentUser, setCurrentUser] = useState(null)
 
   const [currentTeam, setCurrentTeam] = useState([])
-  const [listCourses, setListCourses] = useState([])
+  const [listProducts, setListProducts] = useState([])
 
   const handleShowModal = (type, member) => {
     setTypeModal(type)
@@ -36,17 +36,28 @@ const MyTeam = () => {
 
   const loadData = async () => {
     try {
-      const { comercials } = await getMyTeam('/api/v2/general/comercials')
-      const filteredData = comercials.filter((item) => ![48, 2, 1].includes(item.id))
-      const sortedData = filteredData.sort((a, b) => b.role_id - a.role_id)
+      const getData = await getMyTeam('/crm/members')
+      const comercials = Array.isArray(getData) ? getData : getData.data
+  
+      const filteredData = comercials.filter(item => ![48].includes(item.id))
+  
+      const sortedData = filteredData.sort((a, b) => {
+        if (a.crmRole === 'COORDINATOR_CRM' && b.crmRole !== 'COORDINATOR_CRM') return -1;
+        if (b.crmRole === 'COORDINATOR_CRM' && a.crmRole !== 'COORDINATOR_CRM') return 1;
+        return a.crmRole.localeCompare(b.crmRole);
+      });
+  
       setCurrentTeam(sortedData)
-
-      const { courses } = await getCourses('/api/v2/general/courses/active')
-      setListCourses(courses)
+  
+      const productsData = await getCourses('/crm/products/active')
+      const products = Array.isArray(productsData) ? productsData : productsData.products || []
+  
+      setListProducts(products)
     } catch (error) {
       console.error('Error al cargar los datos:', error)
     }
   }
+  
 
   useEffect(() => {
     loadData()
@@ -72,9 +83,9 @@ const MyTeam = () => {
               currentTeam.map((member, index) => (
                 <TableRow key={member.id}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{member.first_name} {member.last_name}</TableCell>
+                  <TableCell>{member.fullName}</TableCell>
                   <TableCell>
-                    {member.role_id === 5 ? (
+                    {member.crmRole === "COORDINATOR_CRM" ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Badge variant="outline" className="cursor-default">
@@ -138,7 +149,7 @@ const MyTeam = () => {
         showModal={showModal && typeModal === 'new_leads'}
         onOpenChange={handleCloseModal}
         comercial={currentUser}
-        listCourses={listCourses}
+        listProducts={listProducts}
         typeModal={typeModal}
         open={showModal && typeModal === 'new_leads'}
       />
@@ -146,7 +157,7 @@ const MyTeam = () => {
         showModal={showModal && typeModal === 'new_leads_general'}
         onOpenChange={handleCloseModal}
         comercial={currentUser}
-        courses={listCourses}
+        products={listProducts}
         typeModal={typeModal}
         open={showModal && typeModal === 'new_leads_general'}
       />

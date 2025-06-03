@@ -4,38 +4,35 @@ import { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import useCrud1 from '@/hooks/useCrud1'
+import useCrud from '@/hooks/useCrud'
 
 import ActiveTable from '@/modules/crm/comercials/tables/ActiveTable'
 import InactiveTable from '@/modules/crm/comercials/tables/InactiveTable'
 
-
 const CoordinadoresVentas = () => {
   const [activeCoordinators, setActiveCoordinators] = useState([])
   const [inactiveCoordinators, setInactiveCoordinators] = useState([])
-  const { getModel: getCoordinators } = useCrud1('/api/v1/admin/coordinators')
-
-  const main_route = "/api/v1/admin/coordinators"
+  const { getModel: getCoordinators } = useCrud()
 
   const loadData = async () => {
-    const getData = await getCoordinators(main_route)
-    const data = getData.data || []
+    const getData = await getCoordinators('/crm/members')
+    const data = Array.isArray(getData) ? getData : getData.data;
 
     setActiveCoordinators(
-      data.filter(item => item.user_status === 'active')
+      data.filter(item => item.status === 1 && item.crmRole === 'COORDINATOR_CRM')
         .map((item, index) => ({
           ...item,
           index: index + 1,
-          full_name: `${item.first_name} ${item.last_name}`
+          full_name: `${item.fullName}`
         }))
     )
 
     setInactiveCoordinators(
-      data.filter(item => item.user_status === 'inactive')
+      data.filter(item => item.status === 0 && item.crmRole === 'COORDINATOR_CRM')
         .map((item, index) => ({
           ...item,
           index: index + 1,
-          full_name: `${item.first_name} ${item.last_name}`
+          full_name: `${item.fullName}`
         }))
     )
   }
@@ -70,7 +67,6 @@ const CoordinadoresVentas = () => {
             <ActiveTable
               data={activeCoordinators}
               loadData={loadData}
-              mainRoute={main_route}
               showButtonNew={true}
               title="Coordinador(a) de Ventas"
             />
@@ -80,7 +76,6 @@ const CoordinadoresVentas = () => {
             <InactiveTable
               data={inactiveCoordinators}
               loadData={loadData}
-              mainRoute={main_route}
               showButtonNew={false}
               title="Coordinador(a) de Ventas"
             />

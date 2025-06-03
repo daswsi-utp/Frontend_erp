@@ -24,37 +24,31 @@ const ShowUserModal = ({ open, onOpenChange, user, titleHeader = "Usuario" }) =>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium">Documento</p>
+              <p className="text-sm font-medium">Dirección</p>
               <p className="text-sm">
-                {user.document_type}: {user.document_number}
+                {user.address}
               </p>
             </div>
             <div>
               <p className="text-sm font-medium">Contacto</p>
-              <p className="text-sm">{user.phone} | {user.email}</p>
+              <p className="text-sm">{user.phone} </p>
             </div>
           </div>
-
-          <div>
-            <p className="text-sm font-medium">Ubicación</p>
-            <div className="flex items-center gap-2 text-sm">
-              <ReactCountryFlag
-                countryCode={user.country_code}
-                svg
-                style={{ width: '1em', height: '1em' }}
-              />
-              {user.city}, {user.country}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium">Equipo</p>
+              <p className="text-sm">{user.teamName} </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium">Estado</p>
+              <Badge
+                variant={user.status === 0 ? "default" : "destructive"}
+              >
+                {user.status === 1 ? "ACTIVO" : "INACTIVO"}
+              </Badge>
             </div>
           </div>
-
-          <div>
-            <p className="text-sm font-medium">Estado</p>
-            <Badge 
-              variant={user.user_status === "active" ? "default" : "destructive"}
-            >
-              {user.user_status === "active" ? "ACTIVO" : "INACTIVO"}
-            </Badge>
-          </div>
+         
         </div>
       </DialogContent>
     </Dialog>

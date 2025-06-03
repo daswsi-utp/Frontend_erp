@@ -1,97 +1,157 @@
 'use client';
+
 import { useFormContext, Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/shared/button';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { FaExclamationTriangle } from "react-icons/fa";
-import { RxInfoCircled } from "react-icons/rx";
-import { mockProducts, mockSellers, mockArrivalMeans, mockCountries, mockExistingLeads } from './config/mockData';
-import { useState } from 'react';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import { RxInfoCircled } from 'react-icons/rx';
+import useCrud from '@/hooks/useCrud';
+import { useState, useEffect } from 'react';
 
-const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) => {
+const LeadForm = ({ loading, showForm, setShowForm, setSearchError, searchError }) => {
   const { control, watch, setValue } = useFormContext();
   const phone = watch('phone');
-  const product_id = watch('product_id');
-  const [searchError, setSearchError] = useState(null);
+  const productId = watch('productId');  // Modificado a productId
+
+  const { getModel } = useCrud();
+
+  const [listProducts, setListProducts] = useState([]);
+  const [listSellers, setListSellers] = useState([]);
+  const [listArrivalMeans, setListArrivalMeans] = useState([]);
   const [existingInOtherProducts, setExistingInOtherProducts] = useState([]);
+  const [listClientStates, setListClientStates] = useState([]);
 
-  const listProducts = mockProducts;
-  const listArrivalMeans = mockArrivalMeans;
-  const sellerList = mockSellers.map(seller => ({
-    value: seller.id,
-    label: `${seller.first_name} ${seller.last_name}`
-  }));
+  const loadClientStates = async () => {
+    try {
+      const clientStates = await getModel('/crm/client_states');
+      const statesArray = Array.isArray(clientStates) ? clientStates : clientStates.data || [];
 
-  const handleCheckLead = () => {
+      setListClientStates(statesArray);
+    } catch (error) {
+      console.error('Error cargando estados de cliente:', error);
+    }
+  };
+
+  const loadProducts = async () => {
+    try {
+      const products = await getModel('/crm/products');
+      const productsArray = Array.isArray(products) ? products : products.data || [];
+
+      setListProducts(
+        (productsArray || []).map(product => ({
+          id: product.id,
+          name: product.name,
+          pricePen: product.pricePen,
+          priceDollar: product.priceDollar,
+          description: product.description,
+        }))
+      );
+    } catch (error) {
+      console.error('Error cargando productos:', error);
+    }
+  };
+
+  const loadSellers = async () => {
+    try {
+      const sellers = await getModel('/crm/members');
+      const sellerArray = Array.isArray(sellers) ? sellers : sellers.data || [];
+
+      setListSellers(
+        (sellerArray || []).map(seller => ({
+          id: seller.id,
+          comercial: seller.fullName || `${seller.firstName} ${seller.lastName}`
+        }))
+      );
+    } catch (error) {
+      console.error('Error cargando vendedores:', error);
+    }
+  };
+
+  const loadArrivalMeans = async () => {
+    try {
+      const arrivalMeans = await getModel('/crm/arrival_means');
+      setListArrivalMeans(arrivalMeans || []);
+    } catch (error) {
+      console.error('Error cargando medios de llegada:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+    loadSellers();
+    loadArrivalMeans();
+    loadClientStates();
+  }, []);
+
+  const handleCheckLead = async () => {
     setSearchError(null);
     setExistingInOtherProducts([]);
+    setShowForm(false);
 
-    const existsInSameProduct = mockExistingLeads.some(
-      lead => lead.phone === phone && lead.product_id == product_id
-    );
-
-    if (existsInSameProduct) {
-      setSearchError('Este cliente ya está registrado en este producto');
-      setShowForm(false);
+    if (!phone || !productId) {
+      setSearchError('Debe ingresar teléfono y seleccionar producto');
       return;
     }
 
-    const otherProducts = mockExistingLeads.filter(
-      lead => lead.phone === phone && lead.product_id != product_id
-    );
+    try {
+      const response = await getModel(`/crm/clients/check?phone=${encodeURIComponent(phone)}&productId=${productId}`);
 
-    if (otherProducts.length > 0) {
-      setExistingInOtherProducts(otherProducts);
+      if (response === "Cliente ya registrado en este producto") {
+        setSearchError('Este cliente ya está registrado en este producto');
+        return;
+      }
 
-      const [existingLead] = otherProducts;
-      setValue('first_name', existingLead.name.split(' ')[0]);
-      setValue('last_name', existingLead.name.split(' ')[1] || '');
+      if (response?.existingInOtherProducts?.length > 0) {
+        setExistingInOtherProducts(response.existingInOtherProducts);
+
+        const [existingLead] = response.existingInOtherProducts;
+        const nameParts = existingLead.name.split(' ');
+        setValue('first_name', nameParts[0] || '');
+        setValue('last_name', nameParts[1] || '');
+      }
+
+      setShowForm(true);
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        setSearchError('Este cliente ya está registrado en este producto');
+      } else {
+        setSearchError('cliente ya está registrado');
+      }
+      console.error('Error en handleCheckLead:', error);
     }
-
-    setShowForm(true);
   };
 
-  const getProductName = (productId) => {
-    return listProducts.find(p => p.id == productId)?.name || 'Producto';
-  };
+
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label>Número de Teléfono</Label>
-          <br />
           <Controller
             name="phone"
             control={control}
             rules={{ required: 'El teléfono es obligatorio' }}
-            render={({ field }) => (
-              <Input {...field} placeholder="Ingrese el teléfono" />
-            )}
+            render={({ field }) => <Input {...field} placeholder="Ingrese el teléfono" />}
           />
         </div>
 
         <div>
           <Label>Producto</Label>
-          <br />
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-1">
             <Controller
-              name="product_id"
+              name="productId"  // Modificado a productId
               control={control}
               render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  disabled={!phone}
-                >
+                <Select onValueChange={field.onChange} value={field.value} disabled={!phone}>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccione un producto" />
                   </SelectTrigger>
                   <SelectContent>
-                    {listProducts.map(product => (
+                    {listProducts.map((product, index) => (
                       <SelectItem key={product.id} value={product.id}>
                         {product.name}
                       </SelectItem>
@@ -100,11 +160,7 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
                 </Select>
               )}
             />
-            <Button
-              type="button"
-              onClick={handleCheckLead}
-              disabled={!phone || !product_id}
-            >
+            <Button type="button" onClick={handleCheckLead} disabled={!phone || !productId}>
               Buscar
             </Button>
           </div>
@@ -115,9 +171,7 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
         <Alert variant="destructive" className="mt-4">
           <FaExclamationTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {searchError}
-          </AlertDescription>
+          <AlertDescription>{searchError}</AlertDescription>
         </Alert>
       )}
 
@@ -130,7 +184,7 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
             <ul className="list-disc pl-5 mt-1">
               {existingInOtherProducts.map((lead, index) => (
                 <li key={index}>
-                  {getProductName(lead.product_id)} (Registrado como: {lead.name})
+                  {lead.productName} (Registrado como: {lead.name})
                 </li>
               ))}
             </ul>
@@ -144,75 +198,47 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <Label>Nombres</Label>
-              <br />
-
               <Controller
-                name="first_name"
+                name="firstName"  // Asegúrate de que sea firstName
                 control={control}
                 rules={{ required: 'El nombre es obligatorio' }}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Ingrese los nombres" />
-                )}
+                render={({ field }) => <Input {...field} placeholder="Ingrese los nombres" />}
               />
             </div>
 
             <div>
               <Label>Apellidos</Label>
-              <br />
-
               <Controller
-                name="last_name"
+                name="lastName"  // Asegúrate de que sea lastName
                 control={control}
                 rules={{ required: 'El apellido es obligatorio' }}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Ingrese los apellidos" />
-                )}
+                render={({ field }) => <Input {...field} placeholder="Ingrese los apellidos" />}
               />
             </div>
 
             <div>
               <Label>País</Label>
-              <br />
-
               <Controller
                 name="country"
                 control={control}
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione un país" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockCountries.map(country => (
-                        <SelectItem key={country.code} value={country.name}>
-                          {country.name} ({country.phone_code})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => <Input {...field} placeholder="Ingrese el país" />}
               />
             </div>
 
             <div>
               <Label>Asesor Comercial</Label>
-              <br />
-
               <Controller
-                name="user_id"
+                name="memberId"  // Asegúrate de que sea memberId
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccione un asesor" />
                     </SelectTrigger>
                     <SelectContent>
-                      {sellerList.map(seller => (
-                        <SelectItem key={seller.value} value={seller.value}>
-                          {seller.label}
+                      {listSellers.map(seller => (
+                        <SelectItem key={seller.id} value={seller.id}>
+                          {seller.comercial}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -223,10 +249,8 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
 
             <div>
               <Label>Medio de llegada</Label>
-              <br />
-
               <Controller
-                name="arrival_mean_id"
+                name="arrivalMeanId"  // Asegúrate de que sea arrivalMeanId
                 control={control}
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
@@ -245,13 +269,26 @@ const LeadForm = ({ loading, showForm, setShowForm, isOrganic, setIsOrganic }) =
               />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="organic"
-                checked={isOrganic}
-                onCheckedChange={setIsOrganic}
+            <div>
+              <Label>Estado del Cliente</Label>
+              <Controller
+                name="clientStateId"  // Asegúrate de que sea clientStateId
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione un estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {listClientStates.map(state => (
+                        <SelectItem key={state.id} value={state.id}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               />
-              <Label htmlFor="organic">Lead orgánico</Label>
             </div>
           </div>
 

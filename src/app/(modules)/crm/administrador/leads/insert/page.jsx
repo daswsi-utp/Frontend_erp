@@ -1,40 +1,51 @@
 'use client';
+
 import { useForm, FormProvider } from 'react-hook-form';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import LeadForm from '@/modules/crm/leads/insert/LeadForm';
 import { useState } from 'react';
+import useCrud from '@/hooks/useCrud';
 
 const InsertManual = () => {
-  // Añade valores por defecto para todos los campos
   const methods = useForm({
     defaultValues: {
       phone: '',
-      product_id: '',
-      first_name: '',
-      last_name: '',
+      productId: '',  
+      firstName: '',  
+      lastName: '',   
       country: '',
-      user_id: '',
-      arrival_mean_id: ''
+      memberId: '',
+      arrivalMeanId: '',
+      clientStateId: "", 
+      countryCode: "+51" 
     }
   });
-  
-  const [isOrganic, setIsOrganic] = useState(false);
+
+  const { insertModel } = useCrud();
+
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [searchError, setSearchError] = useState(null);
 
   const onSubmit = async (data) => {
     setLoading(true);
-    console.log('Datos del formulario:', {
-      ...data,
-      is_organic: isOrganic ? 'yes' : 'no'
-    });
-    
-    setTimeout(() => {
-      setLoading(false);
+    setSearchError(null);
+    try {
+      await insertModel({
+        ...data,
+        whatsapp: data.phone,
+        clientStateId: data.clientStateId,  
+        reasonId: 1,  
+      }, '/crm/clients');
+      alert('Lead registrado exitosamente');
       methods.reset();
       setShowForm(false);
-      alert('Lead registrado exitosamente (simulación)');
-    }, 1500);
+    } catch (error) {
+      alert('Error al registrar el lead');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,8 +60,8 @@ const InsertManual = () => {
               loading={loading}
               showForm={showForm}
               setShowForm={setShowForm}
-              isOrganic={isOrganic}
-              setIsOrganic={setIsOrganic}
+              setSearchError={setSearchError}
+              searchError={searchError}
             />
           </form>
         </FormProvider>
