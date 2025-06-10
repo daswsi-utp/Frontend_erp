@@ -10,7 +10,7 @@ import { UserCircle } from "lucide-react";
 import useCrud from "@/hooks/useCrud";
 import { positions } from "../data/positions";
 
-const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange, fetchEmployees  }) =>{
+const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) =>{
   if (!employee) return null;
 
   const {getModel, updateModel} = useCrud()
@@ -34,7 +34,6 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange, fet
     try {
       console.log("Datos actualizados:", formData);
       await updateModel(formData, "/rrhh/employee");
-      fetchEmployees();
       onOpenChange(false);
     } catch (error) {
       console.error("Error during update employe", error)

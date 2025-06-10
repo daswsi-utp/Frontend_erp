@@ -19,6 +19,7 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee
   
 
   const filteredEmployees = useMemo(() => {
+    if (!data) return []
     if (!searchTerm && !searchState) return data
     return data.filter(employee => {
       const matchesName =
