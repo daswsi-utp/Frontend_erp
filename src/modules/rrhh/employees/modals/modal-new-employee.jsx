@@ -11,7 +11,7 @@ import useCrud from "@/hooks/useCrud";
 import { positions } from "../data/positions";
 import { DialogClose } from "@radix-ui/react-dialog";
 
-const NewEmployee=({fetchEmployees})=> {
+const NewEmployee=({})=> {
 
   const {getModel, insertModel} = useCrud()
   const [departments, setDepartments] = useState([]);
@@ -29,7 +29,6 @@ const NewEmployee=({fetchEmployees})=> {
     try {
       console.log("Datos guardados:", formData);
       await insertModel(formData, "/rrhh/employee");
-      fetchEmployees();
     } catch (error) {
       console.error("Error during create new employe", error)
     }

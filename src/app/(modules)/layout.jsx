@@ -6,7 +6,6 @@ import { ModeToggle } from "@/components/mode-toogle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/providers/UserContext";
 import { AlertDialogProvider } from "@/components/shared/alert";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from "react";
 
 
@@ -14,7 +13,6 @@ import React, { useState } from "react";
 export default function ModulesLayout({ children }) {
 
     const { user } = useAuth();
-    const [queryClient] = useState(() => new QueryClient());
 
 
     return (
@@ -34,9 +32,7 @@ export default function ModulesLayout({ children }) {
                     </header>
                     <main className="flex-1 overflow-auto p-6">
                       <AlertDialogProvider>
-                        <QueryClientProvider client={queryClient}>
                           {children}
-                        </QueryClientProvider>
                       </AlertDialogProvider>
                     </main>
                 </div>
