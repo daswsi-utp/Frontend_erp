@@ -26,18 +26,15 @@ export default function InventoryForm({ initialData, onSubmit }) {
     estado_stock: "",
   });
 
-  const { getModel: getProviders } = useCrud("/logistic/providers");
-  const { getModel: getBranches } = useCrud("/logistic/branches");
-  const { getModel: getInventory } = useCrud("/logistic/inventory");
-  const { addItem: addProduct } = useCrud("/logistic/products");
+  const { getModel, postModel } = useCrud(""); // Base path vacía, usamos rutas completas
 
   const [providers, setProviders] = useState([]);
   const [branches, setBranches] = useState([]);
 
   useEffect(() => {
     if (initialData?.id) {
-      getInventory(initialData.id)
-        .then((invData) =>
+      getModel(`/logistic/inventory/${initialData.id}`)
+        .then((invData) => {
           setForm((prev) => ({
             ...prev,
             ...initialData,
@@ -46,8 +43,8 @@ export default function InventoryForm({ initialData, onSubmit }) {
             stock_maximo: invData.stock_maximo,
             ubicacion: invData.ubicacion,
             estado_stock: invData.estado_stock,
-          }))
-        )
+          }));
+        })
         .catch(console.error);
     } else if (initialData) {
       setForm((prev) => ({ ...prev, ...initialData }));
@@ -55,8 +52,20 @@ export default function InventoryForm({ initialData, onSubmit }) {
   }, [initialData]);
 
   useEffect(() => {
-    getProviders().then(setProviders).catch(console.error);
-    getBranches().then(setBranches).catch(console.error);
+    const fetchData = async () => {
+      try {
+        const [prov, suc] = await Promise.all([
+          getModel("/logistic/providers"),
+          getModel("/logistic/branches"),
+        ]);
+        setProviders(prov);
+        setBranches(suc);
+      } catch (error) {
+        console.error("Error cargando proveedores o sucursales:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -68,8 +77,8 @@ export default function InventoryForm({ initialData, onSubmit }) {
     e.preventDefault();
 
     try {
-      // Crear producto primero
-      const newProduct = await addProduct({
+      // Crear producto
+      const newProduct = await postModel("/logistic/products", {
         sku: form.sku,
         nombre: form.nombre,
         marca: form.marca,
@@ -77,8 +86,8 @@ export default function InventoryForm({ initialData, onSubmit }) {
         proveedor: form.proveedor,
       });
 
-      // Luego enviar datos de inventario al callback
-      onSubmit({
+      // Enviar datos del inventario
+      await onSubmit({
         producto_id: newProduct.id,
         stock: parseInt(form.stock),
         stock_minimo: parseInt(form.stock_minimo),
@@ -87,6 +96,21 @@ export default function InventoryForm({ initialData, onSubmit }) {
         estado_stock: form.estado_stock,
         sucursal_nombre: form.sucursal_nombre,
       });
+
+      // Limpiar el formulario
+      setForm({
+        sku: "",
+        nombre: "",
+        marca: "",
+        precio: "",
+        proveedor: "",
+        stock: "",
+        stock_minimo: "",
+        stock_maximo: "",
+        ubicacion: "",
+        sucursal_nombre: "",
+        estado_stock: "",
+      });
     } catch (error) {
       console.error("Error al crear producto o inventario:", error);
     }
@@ -94,10 +118,10 @@ export default function InventoryForm({ initialData, onSubmit }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Campos básicos del producto */}
+      {/* Campos del producto */}
       {["sku", "nombre", "marca"].map((field) => (
         <div key={field}>
-          <Label>{field}</Label>
+          <Label>{field.toUpperCase()}</Label>
           <Input
             name={field}
             value={form[field] || ""}
@@ -107,7 +131,6 @@ export default function InventoryForm({ initialData, onSubmit }) {
         </div>
       ))}
 
-      {/* Select de sucursal */}
       <div>
         <Label>Sucursal</Label>
         <Select
@@ -129,7 +152,6 @@ export default function InventoryForm({ initialData, onSubmit }) {
         </Select>
       </div>
 
-      {/* Select de proveedor */}
       <div>
         <Label>Proveedor</Label>
         <Select
@@ -143,7 +165,7 @@ export default function InventoryForm({ initialData, onSubmit }) {
           </SelectTrigger>
           <SelectContent>
             {providers.map((p) => (
-              <SelectItem key={p.id} value={p.nombre}>
+              <SelectItem key={p.id_proveedor || p.id} value={p.nombre}>
                 {p.nombre}
               </SelectItem>
             ))}
@@ -154,7 +176,7 @@ export default function InventoryForm({ initialData, onSubmit }) {
       {/* Campos del inventario */}
       {["ubicacion", "stock", "stock_minimo", "stock_maximo"].map((field) => (
         <div key={field}>
-          <Label>{field}</Label>
+          <Label>{field.replace("_", " ").toUpperCase()}</Label>
           <Input
             type={field === "ubicacion" ? "text" : "number"}
             name={field}
@@ -165,12 +187,13 @@ export default function InventoryForm({ initialData, onSubmit }) {
         </div>
       ))}
 
-      {/* Campo precio */}
+      {/* Precio */}
       <div>
-        <Label>Precio</Label>
+        <Label>PRECIO</Label>
         <Input
           type="number"
           name="precio"
+          step="0.01"
           value={form.precio || ""}
           onChange={handleChange}
           required
