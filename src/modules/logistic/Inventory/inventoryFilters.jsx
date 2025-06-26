@@ -26,10 +26,7 @@ export default function InventoryFilters({ onFilter }) {
     sucursal: "",
   });
 
-  const { getModel: getProducts } = useCrud("/api/v1/logistic/products");
-  const { getModel: getInventory } = useCrud("/api/v1/logistic/inventory");
-  const { getModel: getProviders } = useCrud("/api/v1/logistic/providers");
-  const { getModel: getBranches } = useCrud("/api/v1/logistic/branches");
+  const { getModel } = useCrud(""); // Centraliza las llamadas usando rutas completas
 
   const [marcas, setMarcas] = useState([]);
   const [proveedores, setProveedores] = useState([]);
@@ -39,17 +36,23 @@ export default function InventoryFilters({ onFilter }) {
   const estados = ["Bajo", "Regular", "Alto"];
 
   useEffect(() => {
-    async function fetchData() {
-      const productos = await getProducts();
-      const inventario = await getInventory();
-      const proveedores = await getProviders();
-      const sucursales = await getBranches();
+    const fetchData = async () => {
+      try {
+        const [productos, inventario, proveedoresRes, sucursalesRes] = await Promise.all([
+          getModel("/logistic/products"),
+          getModel("/logistic/inventory"),
+          getModel("/logistic/providers"),
+          getModel("/logistic/branches"),
+        ]);
 
-      setMarcas([...new Set(productos.map(p => p.marca))]);
-      setProveedores(proveedores.map(p => p.nombre));
-      setUbicaciones([...new Set(inventario.map(i => i.ubicacion))]);
-      setSucursales(sucursales.map(s => s.nombre));
-    }
+        setMarcas([...new Set(productos.map(p => p.marca))]);
+        setProveedores(proveedoresRes.map(p => p.nombre));
+        setUbicaciones([...new Set(inventario.map(i => i.ubicacion))]);
+        setSucursales(sucursalesRes.map(s => s.nombre));
+      } catch (error) {
+        console.error("Error cargando filtros del inventario:", error);
+      }
+    };
 
     fetchData();
   }, []);
@@ -58,8 +61,9 @@ export default function InventoryFilters({ onFilter }) {
     const updated = { ...filters, [field]: value };
     setFilters(updated);
 
+    // Filtrado inmediato para campos de texto
     if (field === "sku" || field === "nombre") {
-      onFilter(updated); // Filtrado inmediato
+      onFilter(updated);
     }
   };
 
@@ -236,7 +240,9 @@ export default function InventoryFilters({ onFilter }) {
         <Button variant="outline" onClick={resetFilters}>
           Quitar filtros
         </Button>
-        <Button onClick={() => onFilter(filters)}>Filtrar</Button>
+        <Button onClick={() => onFilter(filters)}>
+          Filtrar
+        </Button>
       </div>
     </div>
   );
