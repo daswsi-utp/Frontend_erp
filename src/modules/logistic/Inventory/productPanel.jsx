@@ -11,15 +11,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import useCrud from "@/hooks/useCrud";
 
 export default function ProductosPanel() {
-  const {
-    getModel: getProductos,
-    insertModel: insertProducto,
-    updateModel: updateProducto,
-    deleteModel: deleteProducto,
-  } = useCrud("/logistic/products");
-
-  const { getModel: getProveedores } = useCrud("/logistic/providers");
-
+  const { getModel, postModel, putModel, deleteModel } = useCrud("");
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [form, setForm] = useState(initialForm());
@@ -44,8 +36,8 @@ export default function ProductosPanel() {
   const loadData = async () => {
     try {
       const [prodData, provData] = await Promise.all([
-        getProductos(),
-        getProveedores(),
+        getModel("/logistic/products"),
+        getModel("/logistic/providers"),
       ]);
       setProductos(prodData);
       setProveedores(provData);
@@ -71,15 +63,13 @@ export default function ProductosPanel() {
 
     try {
       if (editando && form.id) {
-        await updateProducto(payload, `/${form.id}`);
+        await putModel(`/logistic/products/${form.id}`, payload);
       } else {
-        await insertProducto(payload);
+        await postModel("/logistic/products", payload);
       }
 
-      setDialogOpen(false);
-      setForm(initialForm());
-      setEditando(false);
-      loadData();
+      handleDialogClose();
+      await loadData();
     } catch (error) {
       console.error("Error al guardar el producto", error);
     }
@@ -100,11 +90,17 @@ export default function ProductosPanel() {
 
   const handleDelete = async (id) => {
     try {
-      await deleteProducto(`/${id}`);
-      loadData();
+      await deleteModel(`/logistic/products/${id}`);
+      await loadData();
     } catch (error) {
-      console.error("Error al eliminar", error);
+      console.error("Error al eliminar producto", error);
     }
+  };
+
+  const handleDialogClose = () => {
+    setForm(initialForm());
+    setEditando(false);
+    setDialogOpen(false);
   };
 
   const getProveedorNombre = (id) => {
@@ -118,7 +114,12 @@ export default function ProductosPanel() {
         <CardTitle>📦 Gestión de Productos</CardTitle>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>+ Nuevo producto</Button>
+            <Button onClick={() => {
+              handleDialogClose();
+              setDialogOpen(true);
+            }}>
+              + Nuevo producto
+            </Button>
           </DialogTrigger>
           <DialogContent>
             <form onSubmit={handleSubmit} className="grid gap-4">
@@ -140,11 +141,20 @@ export default function ProductosPanel() {
               </div>
               <div>
                 <Label>Precio</Label>
-                <Input type="number" name="precio" value={form.precio} onChange={handleChange} required />
+                <Input
+                  type="number"
+                  name="precio"
+                  value={form.precio}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div>
                 <Label>Proveedor</Label>
-                <Select value={form.proveedor} onValueChange={(v) => setForm({ ...form, proveedor: v })}>
+                <Select
+                  value={form.proveedor}
+                  onValueChange={(v) => setForm({ ...form, proveedor: v })}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona un proveedor" />
                   </SelectTrigger>
@@ -159,7 +169,7 @@ export default function ProductosPanel() {
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={handleDialogClose}>
                   Cancelar
                 </Button>
                 <Button type="submit">{editando ? "Actualizar" : "Guardar"}</Button>
