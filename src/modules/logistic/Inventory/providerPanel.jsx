@@ -11,70 +11,78 @@ import useCrud from "@/hooks/useCrud";
 import React, { useEffect, useState } from "react";
 
 export default function ProveedoresPanel() {
-  const {getModel} = useCrud("")
-  const [providers, setProviders] = useState({});
+  const { getModel, deleteModel, postModel, putModel } = useCrud("");
+  const [providers, setProviders] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editando, setEditando] = useState(false);
 
-  const fetchProviders = async () =>{
+  const [form, setForm] = useState({
+    id_proveedor: null,
+    nombre: "",
+    contacto: "",
+    telefono: "",
+    email: "",
+    direccion: "",
+  });
+
+  const fetchProviders = async () => {
     try {
-      const data = await getModel( "/logistic/providers");
+      const data = await getModel("/logistic/providers");
       setProviders(data);
     } catch (error) {
-      console.error("error cargando empleados");
+      console.error("Error cargando proveedores", error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchProviders();
   }, []);
-  const {
-    items: proveedores = [],
-    currentItem: form,
-    editing: editando,
-    addItem,
-    updateItem,
-    deleteItem,
-    startEdit,
-    cancelEdit,
-    setCurrentItem,
-  } = useCrud("/logistic/providers");
 
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  function initialForm() {
-    return {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editando) {
+        await putModel(`/logistic/providers/${form.id_proveedor}`, form);
+      } else {
+        await postModel("/logistic/providers", form);
+      }
+      await fetchProviders();
+      handleDialogClose();
+    } catch (error) {
+      console.error("Error al guardar proveedor", error);
+    }
+  };
+
+  const handleEdit = (proveedor) => {
+    setForm(proveedor);
+    setEditando(true);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteModel(`/logistic/providers/${id}`);
+      await fetchProviders();
+    } catch (error) {
+      console.error("Error al eliminar proveedor", error);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setForm({
       id_proveedor: null,
       nombre: "",
       contacto: "",
       telefono: "",
       email: "",
       direccion: "",
-    };
-  }
-
-  const handleChange = (e) => {
-    setCurrentItem({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (editando) {
-      updateItem(form);
-    } else {
-      addItem(form);
-    }
-
-    setCurrentItem(initialForm());
-    cancelEdit();
+    });
+    setEditando(false);
     setDialogOpen(false);
-  };
-
-  const handleEdit = (proveedor) => {
-    startEdit(proveedor);
-    setDialogOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    deleteItem(id);
   };
 
   return (
@@ -85,9 +93,8 @@ export default function ProveedoresPanel() {
           <DialogTrigger asChild>
             <Button
               onClick={() => {
-                setCurrentItem(initialForm());
-                cancelEdit();
-                setDialogOpen(true); // se asegura que el diálogo se abra
+                handleDialogClose();
+                setDialogOpen(true);
               }}
             >
               + Nuevo proveedor
@@ -100,26 +107,26 @@ export default function ProveedoresPanel() {
               </h2>
               <div>
                 <Label>Nombre</Label>
-                <Input name="nombre" value={form?.nombre || ""} onChange={handleChange} required />
+                <Input name="nombre" value={form.nombre} onChange={handleChange} required />
               </div>
               <div>
                 <Label>Contacto</Label>
-                <Input name="contacto" value={form?.contacto || ""} onChange={handleChange} />
+                <Input name="contacto" value={form.contacto} onChange={handleChange} />
               </div>
               <div>
                 <Label>Teléfono</Label>
-                <Input name="telefono" value={form?.telefono || ""} onChange={handleChange} />
+                <Input name="telefono" value={form.telefono} onChange={handleChange} />
               </div>
               <div>
                 <Label>Email</Label>
-                <Input type="email" name="email" value={form?.email || ""} onChange={handleChange} />
+                <Input type="email" name="email" value={form.email} onChange={handleChange} />
               </div>
               <div>
                 <Label>Dirección</Label>
-                <Textarea name="direccion" value={form?.direccion || ""} onChange={handleChange} />
+                <Textarea name="direccion" value={form.direccion} onChange={handleChange} />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={handleDialogClose}>
                   Cancelar
                 </Button>
                 <Button type="submit">{editando ? "Actualizar" : "Guardar"}</Button>
@@ -141,7 +148,7 @@ export default function ProveedoresPanel() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {providers?.map((p) => (
+            {providers.map((p) => (
               <TableRow key={p.id_proveedor}>
                 <TableCell>{p.nombre}</TableCell>
                 <TableCell>{p.contacto}</TableCell>
@@ -149,8 +156,16 @@ export default function ProveedoresPanel() {
                 <TableCell>{p.email}</TableCell>
                 <TableCell>{p.direccion}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="sm" onClick={() => handleEdit(p)}>Editar</Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id_proveedor)}>Eliminar</Button>
+                  <Button size="sm" onClick={() => handleEdit(p)}>
+                    Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(p.id_proveedor)}
+                  >
+                    Eliminar
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
