@@ -131,6 +131,7 @@ const LeadForm = ({ loading, showForm, setShowForm, setSearchError, searchError 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label>Número de Teléfono</Label>
+          <br/>
           <Controller
             name="phone"
             control={control}
@@ -140,7 +141,8 @@ const LeadForm = ({ loading, showForm, setShowForm, setSearchError, searchError 
         </div>
 
         <div>
-          <Label>Producto</Label>
+          <Label>Productos</Label>
+          <br/>
           <div className="flex gap-2 mt-1">
             <Controller
               name="productId"  // Modificado a productId

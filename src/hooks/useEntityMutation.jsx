@@ -1,12 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/components/ui/use-toast'
-import { ToastAction } from '@/components/ui/toast'
+import { ToastAction } from '@/components/shared/toast'
 import useCrud from '@/hooks/useCrud'
 import { AlertCircle, Info, CheckCircle } from 'lucide-react'
+
 
 const entityTranslations = {
   products: "productos",
   contract: "contrato",
+  leads: "lead",
+  clients: "cliente",
+  area: "área"
 }
 
 const useEntityMutation = (entityName) => {
@@ -16,33 +20,42 @@ const useEntityMutation = (entityName) => {
 
   const mutation = useMutation({
     mutationFn: async ({ action, entity, apiPath }) => {
-      const formData = new FormData()
+      let payloadToSend = entity
+      let isMultipart = false
 
-      if (action === 'create' || action === 'update') {
-        if (Array.isArray(entity.brochures) && entity.brochures.length > 0) {
-          entity.brochures.forEach((brochure, index) => {
-            formData.append(`brochures[${index}][file]`, brochure.file)
-            formData.append(`brochures[${index}][status]`, brochure.status)
-          })
-        }
+      if (
+        (action === 'create' || action === 'update') &&
+        Array.isArray(entity?.brochures) &&
+        entity.brochures.length > 0
+      ) {
+        isMultipart = true
+        const formData = new FormData()
+
+        entity.brochures.forEach((brochure, index) => {
+          formData.append(`brochures[${index}][file]`, brochure.file)
+          formData.append(`brochures[${index}][status]`, brochure.status)
+        })
+
         for (const key in entity) {
           if (key !== 'brochures') {
             formData.append(`${entityName}[${key}]`, entity[key])
           }
         }
+
+        payloadToSend = formData
       }
 
       switch (action) {
         case 'create':
-          return await insertModel(formData, apiPath)
+          return await insertModel(payloadToSend, apiPath)
         case 'update':
-          return await updateModel(formData, apiPath)
+          return await updateModel(payloadToSend, apiPath)
         case 'delete':
           return await deleteModel(apiPath)
         case 'custom':
-          return await insertModel(formData, apiPath)
+          return await insertModel(payloadToSend, apiPath)
         case 'custom_update':
-          return await updateModel(formData, apiPath)
+          return await updateModel(payloadToSend, apiPath)
         default:
           throw new Error('Invalid action')
       }
@@ -100,7 +113,7 @@ const useEntityMutation = (entityName) => {
       const errorMessage = error?.errors ? error.errors.join(', ') : 'Asegúrate de tener lo requerido'
       toast({
         title: "Ocurrió un error!!",
-        description: `No se pudo ${action === 'create' ? 'crear' : action === 'update' || action === 'custom_update'  ? 'actualizar' : action === 'delete' ? 'eliminar' : 'completar la acción, '}${errorMessage}.`,
+        description: `No se pudo ${action === 'create' ? 'crear' : action === 'update' || action === 'custom_update' ? 'actualizar' : action === 'delete' ? 'eliminar' : 'completar la acción, '}${errorMessage}.`,
         action: <ToastAction altText="Cerrar">Cerrar</ToastAction>,
         variant: "destructive",
         icon: <AlertCircle className="text-red-500" />,
@@ -111,7 +124,7 @@ const useEntityMutation = (entityName) => {
 
       toast({
         title: "Operación exitosa",
-        description: `El ${translatedEntityName} se ha ${action === 'create' ? 'creado' : action === 'update' || action === 'custom_update'   ? 'actualizado' : action === 'delete' ? 'eliminado' : 'procesado'} correctamente.`,
+        description: `El ${translatedEntityName} se ha ${action === 'create' ? 'creado' : action === 'update' || action === 'custom_update' ? 'actualizado' : action === 'delete' ? 'eliminado' : 'procesado'} correctamente.`,
         action: <ToastAction altText="Cerrar">Cerrar</ToastAction>,
         variant: "success",
         icon: <CheckCircle className="text-green-500" />,
