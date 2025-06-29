@@ -4,44 +4,46 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import LeadForm from '@/modules/crm/leads/insert/LeadForm';
 import { useState } from 'react';
-import useCrud from '@/hooks/useCrud';
+import useEntityMutation from '@/hooks/useEntityMutation';
 
 const InsertManual = () => {
   const methods = useForm({
     defaultValues: {
       phone: '',
-      productId: '',  
-      firstName: '',  
-      lastName: '',   
+      productId: '',
+      firstName: '',
+      lastName: '',
       country: '',
       memberId: '',
       arrivalMeanId: '',
-      clientStateId: "", 
-      countryCode: "+51" 
+      clientStateId: "",
+      countryCode: "+51"
     }
-  });
+  })
 
-  const { insertModel } = useCrud();
+  const [loading, setLoading] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+  const [searchError, setSearchError] = useState(null)
+  const mutation = useEntityMutation('lead')
 
-  const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [searchError, setSearchError] = useState(null);
 
   const onSubmit = async (data) => {
     setLoading(true);
     setSearchError(null);
     try {
-      await insertModel({
-        ...data,
-        whatsapp: data.phone,
-        clientStateId: data.clientStateId,  
-        reasonId: 1,  
-      }, '/crm/clients');
-      alert('Lead registrado exitosamente');
+      await mutation.mutateAsync({
+        action: 'create',
+        entity: {
+          ...data,
+          whatsapp: data.phone,
+          clientStateId: data.clientStateId,
+          reasonId: 1,
+        },
+        apiPath: '/crm/clients'
+      });
       methods.reset();
       setShowForm(false);
     } catch (error) {
-      alert('Error al registrar el lead');
       console.error(error);
     } finally {
       setLoading(false);
@@ -56,7 +58,7 @@ const InsertManual = () => {
       <CardContent>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <LeadForm 
+            <LeadForm
               loading={loading}
               showForm={showForm}
               setShowForm={setShowForm}
