@@ -12,7 +12,7 @@ import Modal from '@/components/shared/modal';
 import useCrud from '@/hooks/useCrud';
 import useEntityMutation from '@/hooks/useEntityMutation';
 
-const ModalReassignLead = ({ open, setOpen, lead, setLead }) => {
+const ModalReassignLead = ({ open, setOpen, lead, setLead, updateClientLocally }) => {
   const { getModel: getProducts } = useCrud("/crm/products");
   const { getModel: getComercials } = useCrud("/crm/members");
   const mutation = useEntityMutation("clients");
@@ -62,6 +62,14 @@ const ModalReassignLead = ({ open, setOpen, lead, setLead }) => {
           productId: Number(selectedProduct),
         },
       });
+
+      if (typeof updateClientLocally === 'function') {
+        updateClientLocally({
+          ...lead,
+          memberId: Number(selectedComercial),
+          productId: Number(selectedProduct),
+        });
+      }
 
       handleClose();
     } catch (error) {
