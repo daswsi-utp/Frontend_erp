@@ -9,32 +9,30 @@ import {
 import { Button } from "@/components/shared/button";
 import { Label } from "@/components/ui/label";
 import Modal from '@/components/shared/modal';
-import useCrud1 from '@/hooks/useCrud1';
+import useCrud from '@/hooks/useCrud';
+import useEntityMutation from '@/hooks/useEntityMutation';
 
 const ModalReassignLead = ({ open, setOpen, lead, setLead }) => {
-  const { getModel: getProducts } = useCrud1();
-  const { getModel: getComercials } = useCrud1();
-  const { updateModel: reassignLead } = useCrud1();
+  const { getModel: getProducts } = useCrud("/crm/products");
+  const { getModel: getComercials } = useCrud("/crm/members");
+  const mutation = useEntityMutation("clients");
 
   const [products, setProducts] = useState([]);
   const [comercials, setComercials] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedComercial, setSelectedComercial] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedComercial, setSelectedComercial] = useState('');
 
   const loadData = async () => {
     try {
-      const mockProducts = [
-        { id: 1, name: "Curso de React" },
-        { id: 2, name: "Curso de Next.js" },
-        { id: 3, name: "Curso de Node.js" },
-      ];
-      const mockComercials = [
-        { id: 1, first_name: "Ana", last_name: "López" },
-        { id: 2, first_name: "Carlos", last_name: "Méndez" },
-      ];
+      const fetchedProducts = await getProducts();
+      const fetchedComercials = await getComercials();
+      setProducts(fetchedProducts);
+      setComercials(fetchedComercials);
 
-      setProducts(mockProducts);
-      setComercials(mockComercials);
+      if (lead) {
+        setSelectedProduct(String(lead.productId || ''));
+        setSelectedComercial(String(lead.memberId || ''));
+      }
     } catch (error) {
       console.error("Error loading data:", error);
       setProducts([]);
@@ -45,22 +43,30 @@ const ModalReassignLead = ({ open, setOpen, lead, setLead }) => {
   const handleClose = () => {
     setOpen(false);
     setLead(null);
-    setSelectedProduct(null);
-    setSelectedComercial(null);
+    setSelectedProduct('');
+    setSelectedComercial('');
   };
 
   const handleSubmitReassignLead = async () => {
     try {
       if (!selectedComercial || !selectedProduct) {
-        alert("Por favor selecciona un comercial y un producto");
+        alert("Por favor selecciona un asesor y un producto");
         return;
       }
-      alert(
-        `Simulación de reasignación: Lead con ID ${lead.id} reasignado a ${selectedComercial} para el producto ${selectedProduct}`
-      );
+
+      await mutation.mutateAsync({
+        action: 'update',
+        apiPath: `/crm/clients/${lead.id}/reassign`,
+        entity: {
+          memberId: Number(selectedComercial),
+          productId: Number(selectedProduct),
+        },
+      });
+
       handleClose();
     } catch (error) {
       console.error("Error reassigning lead:", error);
+      alert("Ocurrió un error al reasignar el cliente.");
     }
   };
 
@@ -74,54 +80,50 @@ const ModalReassignLead = ({ open, setOpen, lead, setLead }) => {
     <Modal
       open={open}
       setOpen={setOpen}
-      size="xl"
-      title={`Reasignar el Cliente: ${lead?.full_name}`}
+      size="sm"
+      title={`Reasignar Cliente: ${lead?.fullName || `${lead?.firstName || ''} ${lead?.lastName || ''}`}`}
       callBack={handleSubmitReassignLead}
     >
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="comercial" className="text-right">
-            Comercial
-          </Label>
+      <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="comercial">Seleccione Asesor a asignar</Label>
           <Select onValueChange={setSelectedComercial} value={selectedComercial}>
-            <SelectTrigger className="col-span-3">
-              <SelectValue placeholder="Selecciona Comercial" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Seleccionar asesor" />
             </SelectTrigger>
             <SelectContent>
               {comercials.map((comercial) => (
-                <SelectItem key={comercial.id} value={comercial.id}>
-                  {`${comercial.first_name} ${comercial.last_name}`}
+                <SelectItem key={comercial.id} value={String(comercial.id)}>
+                  {comercial.fullName || `${comercial.firstName || ''} ${comercial.lastName || ''}`.trim()}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="product" className="text-right">
-            Producto
-          </Label>
+        <div className="space-y-2">
+          <Label htmlFor="product">Seleccione Producto a asignar</Label>
           <Select onValueChange={setSelectedProduct} value={selectedProduct}>
-            <SelectTrigger className="col-span-3">
-              <SelectValue placeholder="Selecciona Curso" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Seleccionar producto" />
             </SelectTrigger>
             <SelectContent>
               {products.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
+                <SelectItem key={product.id} value={String(product.id)}>
                   {product.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        
-        <div className="flex justify-end gap-4 mt-6">
+
+        <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-zinc-700">
           <Button
             variant="secondary"
             onClick={handleSubmitReassignLead}
             size="sm"
           >
-            Reasignar Lead
+            Reasignar Cliente
           </Button>
         </div>
       </div>
