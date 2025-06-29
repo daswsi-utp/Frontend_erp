@@ -11,64 +11,48 @@ import { Button } from '@/components/shared/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import ResultsTable from '@/modules/crm/leads/search/tables/ResultsTable'
-import useCrud from '@/hooks/useCrud'
+import useFetchLeads from '@/modules/crm/leads/search/hooks/useFetchLeads'
 
 const Search = () => {
-  const { getModel: searchLead } = useCrud('')
-
   const [searchParams, setSearchParams] = useState("")
-  const [searchResult, setSearchResult] = useState([])
-  const [searching, setSearching] = useState(false)
   const [checkboxValues, setCheckboxValues] = useState({
     phone: true,
     whatsapp: false,
-    job_tittle: false,
-    company_position: false
+    job_title: false,
+    company_position: false,
+    email: false,
   })
 
+  const selectedFilters = Object.entries(checkboxValues)
+    .filter(([_, value]) => value)
+    .map(([key]) => key)
+
+  const {
+    mutate: triggerSearch,
+    data: searchResult = [],
+    isPending: searching,
+  } = useFetchLeads()
+
   const handleCheckboxChange = (name) => {
-    setCheckboxValues(prevState => ({
-      ...prevState,
-      [name]: !prevState[name]
+    setCheckboxValues(prev => ({
+      ...prev,
+      [name]: !prev[name],
     }))
   }
 
   const handleKeySearching = (event) => {
     if (event.key === 'Enter' && searchParams.length > 3) {
-      event.preventDefault();
-      onSubmitSearch();
+      event.preventDefault()
+      onSubmitSearch()
     }
   }
 
-  const onSubmitSearch = async () => {
-    setSearching(true)
-
-    try {
-      const params = new URLSearchParams()
-      params.append('search_params', searchParams)
-
-      const selectedFilters = Object.entries(checkboxValues)
-        .filter(([_, value]) => value)
-        .map(([key]) => key)
-
-      if (selectedFilters.length === 0) {
-        throw new Error('Debe seleccionar al menos un filtro')
-      }
-
-      selectedFilters.forEach(filter => {
-        params.append('search_filters', filter)
-      })
-
-      const fullUrl = `/crm/clients/search?${params.toString()}`
-      console.log("📡 URL final:", fullUrl)
-
-      const { results } = await searchLead(fullUrl)
-      setSearchResult(results || [])
-    } catch (error) {
-      console.error("Search error:", error)
-    } finally {
-      setSearching(false)
+  const onSubmitSearch = () => {
+    if (!searchParams || searchParams.length <= 3 || selectedFilters.length === 0) {
+      return
     }
+
+    triggerSearch({ searchParams, filters: selectedFilters })
   }
 
   return (
@@ -78,8 +62,9 @@ const Search = () => {
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
+          {/* Filtros */}
           <div className="space-y-2">
-            <Label htmlFor="filters">Filtros:</Label>
+            <Label>Filtros:</Label>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -89,6 +74,7 @@ const Search = () => {
                 />
                 <Label htmlFor="phone">Por Teléfono</Label>
               </div>
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="whatsapp"
@@ -97,37 +83,66 @@ const Search = () => {
                 />
                 <Label htmlFor="whatsapp">Por Whatsapp</Label>
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="job_title"
+                  checked={checkboxValues.job_title}
+                  onCheckedChange={() => handleCheckboxChange('job_title')}
+                />
+                <Label htmlFor="job_title">Por Cargo</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="company_position"
+                  checked={checkboxValues.company_position}
+                  onCheckedChange={() => handleCheckboxChange('company_position')}
+                />
+                <Label htmlFor="company_position">Por Puesto</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="email"
+                  checked={checkboxValues.email}
+                  onCheckedChange={() => handleCheckboxChange('email')}
+                />
+                <Label htmlFor="email">Por Email</Label>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-2">
+          {/* Input de búsqueda y botón */}
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               type="text"
               value={searchParams}
-              placeholder="Buscar por celular y/o nombre de cliente probar 999888777"
-              onKeyDown={handleKeySearching}
+              placeholder="Buscar por celular, nombre, email o cargo"
               onChange={e => setSearchParams(e.target.value)}
+              onKeyDown={handleKeySearching}
               className="flex-1"
             />
             <Button
               onClick={onSubmitSearch}
-              disabled={searchParams.length <= 3 || !Object.values(checkboxValues).includes(true)}
+              disabled={searchParams.length <= 3 || selectedFilters.length === 0}
               loading={searching}
             >
               Buscar
             </Button>
           </div>
 
+          {/* Resultados */}
           <div className="mt-4">
-            {searchResult.length ? (
-              <ResultsTable leads={searchResult} />
-            ) : searching ? (
+            {searching ? (
               <div className="flex flex-col items-center justify-center gap-2 py-4">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
                 <p className="text-sm text-muted-foreground">
                   Buscando en los registros, espera un momento por favor.
                 </p>
               </div>
+            ) : searchResult.length > 0 ? (
+              <ResultsTable leads={searchResult} />
             ) : (
               <p className="text-sm text-muted-foreground">Sin resultados</p>
             )}
