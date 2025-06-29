@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { IconHandClick, IconHistory, IconReplaceFilled } from '@tabler/icons-react'
 
-import useCrud1 from '@/hooks/useCrud1'
+import useCrud from '@/hooks/useCrud'
 import { getArrivalMean, getBadgeClientState } from '@/lib/auxiliarFunctions'
 import Modal from '@/components/shared/modal'
 import ModalHistoryLead from '../modals/ModalHistoryLead'
@@ -31,7 +31,7 @@ const columns = [
 ]
 
 const ResultsTable = ({ leads }) => {
-  const { getModel: getHistoryLead } = useCrud1("")
+  const { getModel: getHistoryLead } = useCrud("")
   const currentUser = JSON.parse(localStorage.getItem('current_user')) || { id: null }
   
   const [dataHistory, setDataHistory] = useState({})
