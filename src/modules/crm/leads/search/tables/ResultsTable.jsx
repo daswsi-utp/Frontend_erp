@@ -21,7 +21,7 @@ import ModalReassignLead from '../modals/ModalReassignLead'
 
 const columns = [
   { key: 'full_name', label: 'Cliente' },
-  { key: 'country', label: 'País' },
+  // { key: 'country', label: 'País' },
   { key: 'phone', label: 'Teléfono' },
   { key: 'memberName', label: 'Asesor Encargado' },
   { key: 'arrivalMeanName', label: 'Procedencia' },
@@ -86,7 +86,7 @@ const ResultsTable = ({ leads }) => {
             {leads.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>{`${item.firstName || ''} ${item.lastName || ''}`.trim()}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <Tooltip>
                     <TooltipTrigger>
                       <span className="text-2xl">
@@ -97,10 +97,15 @@ const ResultsTable = ({ leads }) => {
                     </TooltipTrigger>
                     <TooltipContent>{item.country}</TooltipContent>
                   </Tooltip>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>{item.phone}</TableCell>
                 <TableCell>{item.memberName}</TableCell>
-                <TableCell>{getArrivalMean(item.arrivalMeanName)}</TableCell>
+                <TableCell>
+                  {typeof item.arrivalMeanId === 'number'
+                    ? getArrivalMean(item.arrivalMeanId)
+                    : <Badge variant="info">No definido</Badge>}
+                </TableCell>
+
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger>
@@ -114,10 +119,11 @@ const ResultsTable = ({ leads }) => {
                   </Tooltip>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getBadgeClientState(item.clientStateName)?.variant || "default"}>
-                    {getBadgeClientState(item.clientStateName)?.text || item.clientStateName || "Desconocido"}
-                  </Badge>
+                  {typeof item.clientStateId === 'number'
+                    ? getBadgeClientState(item.clientStateId)
+                    : <Badge variant="secondary">No definido</Badge>}
                 </TableCell>
+
                 <TableCell className="flex gap-1">
                   <Tooltip>
                     <TooltipTrigger asChild>
