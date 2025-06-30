@@ -10,14 +10,15 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import useCrud from "@/hooks/useCrud";
 import axios from "axios"
+import useEntityMutation from '@/hooks/useEntityMutation'
 
 
-const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee }) => {
+const EmployeesTable = ({ data, isLoading, setSelectedEmployee, setOpenEdit, deleteEmployee }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('')
   const {getModel, insertModel, updateModel} = useCrud()
+  const employeeMutation = useEntityMutation('empleado')
   
-
   const filteredEmployees = useMemo(() => {
     if (!data) return []
     if (!searchTerm && !searchState) return data
@@ -58,7 +59,12 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee
         ...employee,
         account: "ACTIVADO"
       }
-      await updateModel(updatedEmployee, "/rrhh/employee")
+      employeeMutation.mutate({
+        action: 'update',
+        id: updatedEmployee.id,
+        entity: updatedEmployee,
+        apiPath: '/rrhh/employee'
+      })
 
       const account = {
         email: employee.email,
@@ -73,6 +79,14 @@ const EmployeesTable = ({ data, setSelectedEmployee, setOpenEdit, deleteEmployee
     } catch (error) {
       console.error("Error activando empleado:", error)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="w-full py-10 flex justify-center items-center">
+        <p className="text-gray-500 dark:text-gray-300">Cargando empleados...</p>
+      </div>
+    )
   }
 
   return (

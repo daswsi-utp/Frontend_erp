@@ -4,27 +4,24 @@ import EmployeesTable from "@/modules/rrhh/employees/tables/employees-table";
 import EditEmployeeModal from "@/modules/rrhh/employees/modals/modal-edit-employee";
 import NewEmployee from "@/modules/rrhh/employees/modals/modal-new-employee";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import useCrud from "@/hooks/useCrud";
-import useFetchEmployees from "@/app/hooks/rrhh/useFetchEmployees";
-import { useQueryClient } from "@tanstack/react-query";
+import useEntityMutation from "@/hooks/useEntityMutation";
+import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
 
 
 const Employees = () => {
+  const employeeMutation = useEntityMutation('empleado')
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
-  const queryClient = useQueryClient();
-  const {deleteModel} = useCrud("")
-  const { data: employeesData, isLoading, error } = useFetchEmployees()
-
-  const reload = async (employee) =>{
-    await queryClient.invalidateQueries(['employees']);
-  }
+  const { data, isLoading } = useFetchEmployees()
 
   const deleteEmployee = async (employee) =>{
     try {
-      console.log(`/rrhh/employee/${employee.id}`)
-      await deleteModel(`/rrhh/employee/${employee.id}`);
-      await queryClient.invalidateQueries(['employees']);
+      employeeMutation.mutate({
+        action: 'delete',
+        id: employee.id,
+        entity: {},
+        apiPath: `/rrhh/employee/${employee.id}`
+      })
     } catch (error) {
       console.error("Error during delete employee", error)
     }
@@ -39,7 +36,8 @@ const Employees = () => {
       <Card>
         <CardContent>
           <EmployeesTable
-            data={employeesData}
+            data={data?.rows || [] }
+            isLoading={isLoading}
             setSelectedEmployee={setSelectedEmployee}
             setOpenEdit={setOpenEdit}
             deleteEmployee={deleteEmployee}

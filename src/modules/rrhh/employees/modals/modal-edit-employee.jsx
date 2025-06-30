@@ -9,14 +9,17 @@ import React, { useEffect, useState } from "react";
 import { UserCircle } from "lucide-react";
 import useCrud from "@/hooks/useCrud";
 import { positions } from "../data/positions";
+import useEntityMutation from "@/hooks/useEntityMutation";
+import useFetchDepartments from "../../hooks/useFetchDepartments";
+import useFetchRoles from "../../hooks/useFetchRoles";
 
 const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) =>{
   if (!employee) return null;
 
-  const {getModel, updateModel} = useCrud()
-  const [departments, setDepartments] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const employeeMutation = useEntityMutation('empleado')
   const [formData, setFormData] = useState(employee ?? {});
+  const { data: departments } = useFetchDepartments();
+  const { data: roles} = useFetchRoles();
 
   if (employee && employee.id !== formData.id) {
     setFormData({ ...employee });
@@ -33,34 +36,18 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
   const handleSave = async () => {
     try {
       console.log("Datos actualizados:", formData);
-      await updateModel(formData, "/rrhh/employee");
+      employeeMutation.mutate({
+        action: 'update',
+        entity: formData,
+        apiPath: '/rrhh/employee'
+      })
       onOpenChange(false);
     } catch (error) {
       console.error("Error during update employe", error)
     }
   };
 
-  const fetchDepartments = async () =>{
-    try {
-      const data = await getModel("/rrhh/department");
-      setDepartments(data);
-    } catch (error) {
-      console.error("Error during recovery departments");
-    }
-  }
-  const fetchRoles = async () =>{
-    try {
-      const data = await getModel("/rrhh/role");
-      setRoles(data);
-    } catch (error) {
-      console.error("Error during recovery roles");
-    }
-  }
-
-  useEffect(() => {
-    fetchDepartments();
-    fetchRoles();
-  }, []);
+  
 
   return (
     <div className="relative h-full max-h-screen overflow-hidden">
@@ -125,7 +112,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments?.map((department)=>(
+                    {departments?.rows?.map((department)=>(
                       <SelectItem key={department.id} value={department.id}>{department.name}</SelectItem>
                     ))}
                     </SelectContent>
@@ -140,7 +127,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {roles?.map((role)=>(
+                    {roles?.rows?.map((role)=>(
                       <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
                     ))}
                     </SelectContent>
