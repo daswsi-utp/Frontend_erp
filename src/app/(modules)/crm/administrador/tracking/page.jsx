@@ -6,22 +6,32 @@ import useCrud from '@/hooks/useCrud';
 
 
 const PageTracking = () => {
-  const { getModel } = useCrud();
-  const [sellers, setSellers] = useState([]);
+  const { getModel: getMembers } = useCrud()
+  const [sellers, setSellers] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getMembers(`/crm/members/role/ASESOR_CRM`);
+      setSellers(data);
+    } catch (err) {
+      setError('Error al cargar los datos');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchSellers = async () => {
-      try {
-        const data = await getModel(`/crm/members/role/asesor_crm`); 
-        setSellers(data); 
-        console.log("Sellers data:", data);
-      } catch (error) {
-        console.error("Error fetching sellers:", error);
-      }
-    };
+    loadData();
+  }, []); 
 
-    fetchSellers()
-  }, [getModel])
+  if (loading) return <p>Cargando asesores...</p>;
+  if (error) return <p>{error}</p>;
+  
   return (
     <Card>
       <CardHeader>

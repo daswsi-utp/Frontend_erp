@@ -16,14 +16,13 @@ import ReactCountryFlag from 'react-country-flag'
 import ShowUserModal from '../modals/ShowUserModal'
 import NewUserModal from '../modals/NewUserModal'
 import UpdateUserModal from '../modals/UpdateUserModal'
-import useCrud1 from '@/hooks/useCrud1'
+import useCrud from '@/hooks/useCrud'
 
 const UsersTable = ({
   data = [],
   columns = [],
   loadData,
   showButtonNew = false,
-  mainRoute,
   titleHeader = "Usuario"
 }) => {
   const [selectedUser, setSelectedUser] = useState(null)
@@ -33,11 +32,11 @@ const UsersTable = ({
     edit: false
   })
   
-  const { updateModel } = useCrud1(mainRoute)
+  const { updateModel } = useCrud('')
 
   const toggleUserStatus = async (userId, action) => {
     try {
-      await updateModel({}, `${mainRoute}/${userId}/${action}_access`)
+      await updateModel({}, `/crm/members/${userId}/${action}_access`)
       loadData()
     } catch (error) {
       console.error("Error changing user status:", error)
@@ -62,14 +61,7 @@ const UsersTable = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        {showButtonNew && (
-          <Button onClick={() => handleOpenModal('new')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo {titleHeader}
-          </Button>
-        )}
-      </div>
+      
 
       <div className="rounded-md border">
         <Table>
@@ -90,8 +82,8 @@ const UsersTable = ({
               data.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.index}</TableCell>
-                  <TableCell className="font-medium">{user.full_name}</TableCell>
-                  <TableCell>{user.document_number}</TableCell>
+                  <TableCell className="font-medium">{user.fullName}</TableCell>
+                  <TableCell>{user.crmRole}</TableCell>
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -100,7 +92,7 @@ const UsersTable = ({
                         svg
                         style={{ width: '1.5em', height: '1.5em' }}
                       />
-                      {user.country}
+                      {user.address || "No encontrado"}
                     </div>
                   </TableCell>
                   <TableCell className="flex justify-end gap-2">
@@ -112,26 +104,19 @@ const UsersTable = ({
                       <Eye className="h-4 w-4" />
                     </Button>
 
+                   
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleOpenModal('edit', user)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={user.user_status === "active" 
+                      className={user.status === 1
                         ? "text-red-600 hover:text-red-700" 
                         : "text-green-600 hover:text-green-700"}
                       onClick={() => toggleUserStatus(
                         user.id, 
-                        user.user_status === "active" ? 'remove' : 'set'
+                        user.status === 1 ? 'remove' : 'set'
                       )}
                     >
-                      {user.user_status === "active" ? (
+                      {user.status === 1 ? (
                         <PowerOff className="h-4 w-4" />
                       ) : (
                         <Power className="h-4 w-4" />
@@ -151,7 +136,7 @@ const UsersTable = ({
         </Table>
       </div>
 
-      {/* User Modals */}
+      
       <ShowUserModal
         open={modalState.show}
         onOpenChange={(open) => handleCloseModal('show')}
@@ -159,22 +144,8 @@ const UsersTable = ({
         titleHeader={titleHeader}
       />
 
-      <NewUserModal
-        open={modalState.new}
-        onOpenChange={(open) => handleCloseModal('new')}
-        refreshData={loadData}
-        titleHeader={titleHeader}
-        mainRoute={mainRoute}
-      />
 
-      <UpdateUserModal
-        open={modalState.edit}
-        onOpenChange={(open) => handleCloseModal('edit')}
-        user={selectedUser}
-        refreshData={loadData}
-        titleHeader={titleHeader}
-        mainRoute={mainRoute}
-      />
+     
     </div>
   )
 }
