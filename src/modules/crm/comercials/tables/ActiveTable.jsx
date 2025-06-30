@@ -4,14 +4,14 @@ import UsersTable from './UsersTable'
 
 const columns = [
  { key: 'index', label: '#', className: 'w-10' },
- { key: "full_name", label: 'Nombres Completos' },
- { key: 'document_number', label: 'Nº de Documento' },
+ { key: "fullName", label: 'Nombres Completos' },
+ { key: 'crmRole', label: 'Rol' },
  { key: 'phone', label: 'Teléfono' },
- { key: 'country', label: 'País' },
+ { key: 'address', label: 'Dirección' },
  { key: 'actions', label: 'Acciones', className: 'text-right' }
 ]
 
-const ActiveTable = ({ data, loadData, showButtonNew, mainRoute }) => {
+const ActiveTable = ({ data, loadData, showButtonNew }) => {
  return (
   <div className="space-y-4">
    <Badge variant="outline" className="text-green-600 border-green-600">
@@ -23,7 +23,6 @@ const ActiveTable = ({ data, loadData, showButtonNew, mainRoute }) => {
     columns={columns}
     loadData={loadData}
     showButtonNew={showButtonNew}
-    mainRoute={mainRoute}
     titleHeader="Ejecutivo"
    />
   </div>

@@ -11,10 +11,10 @@ import { Button } from '@/components/shared/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import ResultsTable from '@/modules/crm/leads/search/tables/ResultsTable'
-import useCrud1 from '@/hooks/useCrud1'
+import useCrud from '@/hooks/useCrud'
 
 const Search = () => {
-  const { searchModel: searchLead } = useCrud1('/api/v1/admin/leads/search')
+  const { getModel: searchLead } = useCrud('')
 
   const [searchParams, setSearchParams] = useState("")
   const [searchResult, setSearchResult] = useState([])
@@ -38,27 +38,38 @@ const Search = () => {
       event.preventDefault();
       onSubmitSearch();
     }
-  };
+  }
 
   const onSubmitSearch = async () => {
-    setSearching(true);
-    
+    setSearching(true)
+
     try {
-      const params = new URLSearchParams();
-      params.append('search_params', searchParams);
-      
-      Object.entries(checkboxValues).forEach(([key, value]) => {
-        if (value) params.append('search_filters', key);
-      });
-  
-      const { results } = await searchLead(params.toString());
-      setSearchResult(results);
+      const params = new URLSearchParams()
+      params.append('search_params', searchParams)
+
+      const selectedFilters = Object.entries(checkboxValues)
+        .filter(([_, value]) => value)
+        .map(([key]) => key)
+
+      if (selectedFilters.length === 0) {
+        throw new Error('Debe seleccionar al menos un filtro')
+      }
+
+      selectedFilters.forEach(filter => {
+        params.append('search_filters', filter)
+      })
+
+      const fullUrl = `/crm/clients/search?${params.toString()}`
+      console.log("📡 URL final:", fullUrl)
+
+      const { results } = await searchLead(fullUrl)
+      setSearchResult(results || [])
     } catch (error) {
-      console.error("Search error:", error);
+      console.error("Search error:", error)
     } finally {
-      setSearching(false);
+      setSearching(false)
     }
-  };
+  }
 
   return (
     <Card className="w-full">
@@ -71,37 +82,21 @@ const Search = () => {
             <Label htmlFor="filters">Filtros:</Label>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="phone" 
+                <Checkbox
+                  id="phone"
                   checked={checkboxValues.phone}
                   onCheckedChange={() => handleCheckboxChange('phone')}
                 />
                 <Label htmlFor="phone">Por Teléfono</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="whatsapp" 
+                <Checkbox
+                  id="whatsapp"
                   checked={checkboxValues.whatsapp}
                   onCheckedChange={() => handleCheckboxChange('whatsapp')}
                 />
                 <Label htmlFor="whatsapp">Por Whatsapp</Label>
               </div>
-              {/* <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="job_tittle" 
-                  checked={checkboxValues.job_tittle}
-                  onCheckedChange={() => handleCheckboxChange('job_tittle')}
-                />
-                <Label htmlFor="job_tittle">Por Profesión</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="company_position" 
-                  checked={checkboxValues.company_position}
-                  onCheckedChange={() => handleCheckboxChange('company_position')}
-                />
-                <Label htmlFor="company_position">Por Cargo</Label>
-              </div> */}
             </div>
           </div>
 
@@ -114,9 +109,9 @@ const Search = () => {
               onChange={e => setSearchParams(e.target.value)}
               className="flex-1"
             />
-            <Button 
-              onClick={onSubmitSearch} 
-              disabled={searchParams.length <= 3}
+            <Button
+              onClick={onSubmitSearch}
+              disabled={searchParams.length <= 3 || !Object.values(checkboxValues).includes(true)}
               loading={searching}
             >
               Buscar
