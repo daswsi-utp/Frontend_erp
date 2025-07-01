@@ -5,13 +5,13 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import useCrud from "@/hooks/useCrud";
 import { DialogClose } from "@radix-ui/react-dialog";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 
-const NewDepartment=({ fetchDepartments })=> {
+const NewDepartment=({ })=> {
 
-  const {insertModel} = useCrud()
+  const departmentMutation = useEntityMutation('department')
   const [formData, setFormData] = useState({ state: 'ACTIVO' });
 
   const handleChange = (field, value) => {
@@ -24,8 +24,11 @@ const NewDepartment=({ fetchDepartments })=> {
   const handleSave = async () => {
     try {
      console.log("Datos guardados:", formData);
-     await insertModel(formData, "/rrhh/department");
-     fetchDepartments();
+     departmentMutation.mutate({
+        action: 'create',
+        entity: formData,
+        apiPath: `/rrhh/department`
+      })
     } catch (error) {
       console.error("Error during create new department", error)
     }

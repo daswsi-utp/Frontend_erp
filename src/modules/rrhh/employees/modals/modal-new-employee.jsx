@@ -7,16 +7,18 @@ import { Input } from "@/components/ui/input";
 import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { UserCircle } from "lucide-react";
-import useCrud from "@/hooks/useCrud";
 import { positions } from "../data/positions";
 import { DialogClose } from "@radix-ui/react-dialog";
+import useEntityMutation from "@/hooks/useEntityMutation";
+import useFetchDepartments from "../../hooks/useFetchDepartments";
+import useFetchRoles from "../../hooks/useFetchRoles";
 
-const NewEmployee=({fetchEmployees})=> {
+const NewEmployee=({})=> {
 
-  const {getModel, insertModel} = useCrud()
-  const [departments, setDepartments] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const employeeMutation = useEntityMutation('employee')
   const [formData, setFormData] = useState({ state: 'ACTIVO' });
+  const { data: departments } = useFetchDepartments();
+  const { data: roles} = useFetchRoles();
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -28,34 +30,15 @@ const NewEmployee=({fetchEmployees})=> {
   const handleSave = async () => {
     try {
       console.log("Datos guardados:", formData);
-      await insertModel(formData, "/rrhh/employee");
-      fetchEmployees();
+      employeeMutation.mutate({
+        action: 'create',
+        entity: formData,
+        apiPath: '/rrhh/employee'
+      })
     } catch (error) {
       console.error("Error during create new employe", error)
     }
   };
-
-  const fetchDepartments = async () =>{
-    try {
-      const data = await getModel("/rrhh/department");
-      setDepartments(data);
-    } catch (error) {
-      console.error("Error during recovery departments");
-    }
-  }
-  const fetchRoles = async () =>{
-    try {
-      const data = await getModel("/rrhh/role");
-      setRoles(data);
-    } catch (error) {
-      console.error("Error during recovery roles");
-    }
-  }
-
-  useEffect(() => {
-    fetchDepartments();
-    fetchRoles();
-  }, []);
 
   return (
     <Dialog>
@@ -121,7 +104,7 @@ const NewEmployee=({fetchEmployees})=> {
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments?.map((department)=>(
+                    {departments?.rows?.map((department)=>(
                       <SelectItem key={department.id} value={department.id}>{department.name}</SelectItem>
                     ))}
                     </SelectContent>
@@ -136,7 +119,7 @@ const NewEmployee=({fetchEmployees})=> {
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {roles?.map((role)=>(
+                    {roles?.rows?.map((role)=>(
                       <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
                     ))}
                     </SelectContent>

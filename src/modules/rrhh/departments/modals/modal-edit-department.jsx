@@ -5,12 +5,12 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import useCrud from "@/hooks/useCrud";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
-const EditModal=({ open, onOpenChange, onItemChange, item, fetchDepartments })=> {
+const EditModal=({ open, onOpenChange, onItemChange, item })=> {
   if (!item) return null;
 
-  const {updateModel} = useCrud()
+  const departmentMutation = useEntityMutation('department')
   const [formData, setFormData] = useState({ ...item });
 
   if (item && item.id !== formData.id) {
@@ -28,8 +28,11 @@ const EditModal=({ open, onOpenChange, onItemChange, item, fetchDepartments })=>
   const handleSave = async () => {
     try {
       console.log("Datos actualizados:", formData);
-      await updateModel(formData, "/rrhh/department");
-      fetchDepartments();
+      departmentMutation.mutate({
+        action: 'update',
+        entity: formData,
+        apiPath: '/rrhh/department'
+      })
       onOpenChange(false);
     } catch (error) {
       console.error("Error during update department", error)
