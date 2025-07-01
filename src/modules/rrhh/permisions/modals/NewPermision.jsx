@@ -8,13 +8,14 @@ import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Ambulance   } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
-import useCrud from "@/hooks/useCrud";
+import useEntityMutation from "@/hooks/useEntityMutation";
+import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
 
-const PermisionNew=({ fetchPermissions })=> {
+const PermisionNew=({ })=> {
 
-  const {getModel, insertModel} = useCrud()
+  const permissionMutation = useEntityMutation('permission')
+  const { data: employees } = useFetchEmployees()
   const [formData, setFormData] = useState({});
-  const [employees, setEmployees] = useState([]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -23,24 +24,14 @@ const PermisionNew=({ fetchPermissions })=> {
     }));
   };
 
-  const fetchEmployees = async () =>{
-    try {
-      const data = await getModel("/rrhh/employee");
-      setEmployees(data);
-    } catch (error) {
-      console.error("Error during recovery employees", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
   const handleSave = async () => {
     try {
       console.log("Datos guardados:", formData);
-      await insertModel(formData, "/rrhh/permission");
-      fetchPermissions();
+      permissionMutation.mutate({
+        action: 'create',
+        entity: formData,
+        apiPath: '/rrhh/permission'
+      })
     } catch (error) {
       console.error("Error during insert new vacation", error)
     }
@@ -69,7 +60,7 @@ const PermisionNew=({ fetchPermissions })=> {
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(employees.map((employee)=>(
+                    {(employees?.rows.map((employee)=>(
                       <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
                     )))}
                   </SelectContent>

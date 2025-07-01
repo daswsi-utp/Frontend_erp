@@ -17,7 +17,7 @@ const EmployeesTable = ({ data, isLoading, setSelectedEmployee, setOpenEdit, del
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('')
   const {getModel, insertModel, updateModel} = useCrud()
-  const employeeMutation = useEntityMutation('empleado')
+  const employeeMutation = useEntityMutation('employee')
   
   const filteredEmployees = useMemo(() => {
     if (!data) return []

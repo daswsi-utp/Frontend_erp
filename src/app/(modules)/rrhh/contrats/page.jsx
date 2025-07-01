@@ -5,51 +5,42 @@ import ShowContractModal from "@/modules/rrhh/contrats/modals/ContractModal";
 import ContractNew from "@/modules/rrhh/contrats/modals/ContractNew";
 import ContractEdit from "@/modules/rrhh/contrats/modals/ContractEdit";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import useCrud from "@/hooks/useCrud";
+import useFetchContracts from "@/modules/rrhh/hooks/useFetchContracts";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 
 const Contracts = () => {
+
   const [selectedContract, setSelectedContract] = useState(null);
-  const [selectedFile, setSelectedFile] = useState("");
   const [openEdit, setOpenEdit] = useState(false);
   const [openContract, setOpenContract] = useState(false);
-
-  const {getModel, deleteModel} = useCrud("/rrhh/contract")
-  const [contracts, setContracts] = useState([]);
-
-  const fetchContracts = async () =>{
-    try {
-      const data = await getModel();
-      setContracts(data);
-    } catch (error) {
-      console.error("Error recovery contracts");
-    }
-  }
+  const {data} = useFetchContracts();
+  const contractMutation = useEntityMutation('contract');
 
   const deleteContract = async (contract) =>{
     try {
       console.log(`/rrhh/contract/${contract.id}`)
-      await deleteModel(`/rrhh/contract/${contract.id}`);
-      await fetchContracts();
+      contractMutation.mutate({
+        action: 'delete',
+        id: contract.id,
+        entity: {},
+        apiPath: `/rrhh/contract/${contract.id}`
+      })
     } catch (error) {
       console.error("Error during delete contract", error)
     }
   }
 
-  useEffect(() => {
-    fetchContracts();
-  }, []);
-
   return (
     <>
       <div className="w-full flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">Contratos de la Organizacion</h1>
-        <ContractNew fetchContracts={fetchContracts}/>
+        <ContractNew/>
       </div>
       <Card>
         <CardContent>
           <ContractsTable
-            contracts={contracts}
+            contracts={data?.rows || [] }
             setSelectedContract={setSelectedContract}
             deleteContract={deleteContract}
             setOpenContract={setOpenContract}

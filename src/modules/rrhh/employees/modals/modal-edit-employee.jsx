@@ -16,7 +16,7 @@ import useFetchRoles from "../../hooks/useFetchRoles";
 const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) =>{
   if (!employee) return null;
 
-  const employeeMutation = useEntityMutation('empleado')
+  const employeeMutation = useEntityMutation('employee')
   const [formData, setFormData] = useState(employee ?? {});
   const { data: departments } = useFetchDepartments();
   const { data: roles} = useFetchRoles();

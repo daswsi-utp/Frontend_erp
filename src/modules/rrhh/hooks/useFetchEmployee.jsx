@@ -13,7 +13,7 @@ const useFetchEmployees = () => {
   }
 
   return useQuery({
-    queryKey: ['empleado'],
+    queryKey: ['employee'],
     queryFn: fetchEmployees,
   })
 }

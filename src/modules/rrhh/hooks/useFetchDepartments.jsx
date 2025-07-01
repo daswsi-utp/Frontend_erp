@@ -13,7 +13,7 @@ const useFetchDepartments = () => {
   }
 
   return useQuery({
-    queryKey: ['departamento'],
+    queryKey: ['department'],
     queryFn: fetchDepartments,
   })
 }

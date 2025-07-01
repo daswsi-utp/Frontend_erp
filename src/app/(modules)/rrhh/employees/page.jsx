@@ -9,7 +9,7 @@ import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
 
 
 const Employees = () => {
-  const employeeMutation = useEntityMutation('empleado')
+  const employeeMutation = useEntityMutation('employee')
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
   const { data, isLoading } = useFetchEmployees()

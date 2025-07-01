@@ -15,7 +15,7 @@ import useFetchRoles from "../../hooks/useFetchRoles";
 
 const NewEmployee=({})=> {
 
-  const employeeMutation = useEntityMutation('empleado')
+  const employeeMutation = useEntityMutation('employee')
   const [formData, setFormData] = useState({ state: 'ACTIVO' });
   const { data: departments } = useFetchDepartments();
   const { data: roles} = useFetchRoles();
