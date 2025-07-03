@@ -10,13 +10,16 @@ import { Mail  } from "lucide-react";
 import useCrud from "@/hooks/useCrud";
 import { DialogClose } from "@radix-ui/react-dialog";
 import TiptapEditor from "@/components/tiptap";
+import useFetchDepartments from "@/modules/rrhh/hooks/useFetchDepartments";
+import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 
-const NewMail=({fetchMails})=> {
-
-  const {getModel, insertModel} = useCrud()
-  const [departments, setDepartments] = useState([]);
-  const [employees, setEmployees] = useState([]);
+const NewMail=({})=> {
+  const mailMutation = useEntityMutation('mail')
+  const {getModel} = useCrud()
+  const { data: departments } = useFetchDepartments();
+  const { data: employees} = useFetchEmployees();
   const [employeesDepartment, setEmployeesDepartment] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -33,7 +36,7 @@ const NewMail=({fetchMails})=> {
   };
 
   const buildEmailArrayFromEmployees = (employees) => {
-    return employees.map(emp => emp.email);
+    return employees?.rows.map(emp => emp.email);
   };
 
   const buildEmailArrayFromSingleEmployee = (employee) => {
@@ -48,23 +51,6 @@ const NewMail=({fetchMails})=> {
     const users = buildEmailArrayFromSingleEmployee(employee);
     setDestinatarios(users);
   }
-
-  const fetchDepartments = async () => {
-    try {
-      const response = await getModel("/rrhh/department");
-      setDepartments(response);
-    } catch (error) {
-      console.error("Error fetching departments", error);
-    }
-  };
-  const fetchEmployees = async () => {
-    try {
-      const response = await getModel("/rrhh/employee");
-      setEmployees(response);
-    } catch (error) {
-      console.error("Error fetching employees", error);
-    }
-  };
 
   const fetchEmployeesByDepartment = async (id) =>{
     try {
@@ -88,11 +74,14 @@ const NewMail=({fetchMails})=> {
         ...formData,
         to: destinatarios,
       };
-      await insertModel(dataToSend, "/manufacture/mail");
+      mailMutation.mutate({
+        action: 'create',
+        entity: dataToSend,
+        apiPath: '/manufacture/mail'
+      })
       setReadyForMail(false);
       setFormData({});
       setMailType("GLOBAL");
-      fetchMails();
     } catch (error) {
       console.error("Error during send emails", error);
       setReadyForMail(false);
@@ -100,11 +89,6 @@ const NewMail=({fetchMails})=> {
       setMailType("GLOBAL");
     }
   }
-
-  useEffect(() => {
-    fetchDepartments();
-    fetchEmployees();
-  }, []);
 
   return (
     <Dialog>
@@ -152,7 +136,7 @@ const NewMail=({fetchMails})=> {
                         <SelectValue placeholder="Seleccione Departamento" />
                       </SelectTrigger>
                       <SelectContent>
-                        {departments.map((dept) => (
+                        {departments?.rows.map((dept) => (
                           <SelectItem key={dept.id} value={dept.id.toString()}>
                             {dept.name}
                           </SelectItem>
@@ -170,14 +154,14 @@ const NewMail=({fetchMails})=> {
                 {mailType === "PERSONAL" && (
                   <div className="mt-2">
                     <Select onValueChange={(id) => {
-                      const employee = employees.find((e) => e.id.toString() === id);
+                      const employee = employees?.rows.find((e) => e.id.toString() === id);
                       setSelectedEmployee(employee);
                     }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione Empleado" />
                       </SelectTrigger>
                       <SelectContent>
-                        {employees.map((emp) => (
+                        {employees?.rows.map((emp) => (
                           <SelectItem key={emp.id} value={emp.id.toString()}>
                             {emp.firstName} {emp.lastName}
                           </SelectItem>

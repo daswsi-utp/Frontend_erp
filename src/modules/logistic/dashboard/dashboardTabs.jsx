@@ -9,8 +9,9 @@ import {
 
 import MetricsPanel from "./metricsPanel";
 import InventoryPanel from "../Inventory/inventoryPanel";
-import ProductFormPanel from "../Inventory/productsFormPanel";
-import ProductEditPanel from "../Inventory/productEditPanel";
+import ProductPanel from "../Inventory/productPanel";
+import ShoppingPanel from "../Inventory/shoppingPanel";
+import ProveedoresPanel from "../Inventory/providerPanel";
 
 export default function DashboardTabs() {
     return (
@@ -18,8 +19,9 @@ export default function DashboardTabs() {
             <TabsList className="mb-4">
                 <TabsTrigger value="metricas">📊 Métricas</TabsTrigger>
                 <TabsTrigger value="productos">📦 Inventario</TabsTrigger>
-                <TabsTrigger value="editarProductos">⚙️ Crear Productos</TabsTrigger>
-                <TabsTrigger value="editarExistente">⚙️ Editar Productos</TabsTrigger>
+                <TabsTrigger value="compras">🛒 Abastecimiento</TabsTrigger>
+                <TabsTrigger value="gestionarProductos">⚙️ Productos</TabsTrigger>
+                <TabsTrigger value="proveedores">🏢 Proveedores</TabsTrigger>
             </TabsList>
 
             <TabsContent value="metricas">
@@ -30,12 +32,16 @@ export default function DashboardTabs() {
                 <InventoryPanel />
             </TabsContent>
 
-            <TabsContent value="editarProductos">
-                <ProductFormPanel />
+            <TabsContent value="gestionarProductos">
+                <ProductPanel />
             </TabsContent>
 
-            <TabsContent value="editarExistente">
-                <ProductEditPanel />
+            <TabsContent value="compras">
+                <ShoppingPanel />
+            </TabsContent>
+
+            <TabsContent value="proveedores">
+                <ProveedoresPanel />
             </TabsContent>
         </Tabs>
     );

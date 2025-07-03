@@ -3,36 +3,39 @@ import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogContent } from 
 import { Button } from "./ui/button"
 import ScrollAreaUsers from "./scroll-area-users"
 import useCrud from "@/hooks/useCrud"
+import useEntityMutation from "@/hooks/useEntityMutation"
 
-const CreateTaskForm = () => {
+const CreateTaskForm = ({ planId, onTaskUpdate , participants = []}) => {
   const [taskName, setTaskName] = useState("")
   const [taskDescription, setTaskDescription] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [selectedIds, setSelectedIds] = useState(new Set())
   const { insertModel } = useCrud("/planning/task")
+  const taskMutation = useEntityMutation('task')
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      const taskPayload = {
+    const selectedParticipantId = Array.from(selectedIds)[0] // Solo uno
+    
+
+    taskMutation.mutate({
+      action: 'create',
+      entity: {
         task_name: taskName,
+        plan_id: planId,
+        participant_id: selectedParticipantId,
         task_description: taskDescription,
         task_start_date: startDate,
         task_end_date: endDate,
-        participant_ids: Array.from(selectedIds),
+      },
+      apiPath: '/planning/task/create'
+    },{
+      onSuccess: () => {
+        onTaskUpdate?.()
       }
-      await insertModel(taskPayload, "/planning/task/create")
-      setTaskName("")
-      setTaskDescription("")
-      setStartDate("")
-      setEndDate("")
-      setSelectedIds(new Set())
-      alert("Tarea creada correctamente")
-    } catch (error) {
-      console.error("Error creando tarea:", error)
-      alert("Error al crear tarea")
-    }
+    })
   }
 
   return (
@@ -63,6 +66,14 @@ const CreateTaskForm = () => {
               onChange={(e) => setTaskDescription(e.target.value)}
               className="w-full p-2 border rounded"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Asignar participante</label>
+            <ScrollAreaUsers
+              selectedIds={selectedIds}
+              setSelectedIds={setSelectedIds}
+              participants={participants}
             />
           </div>
           <div>

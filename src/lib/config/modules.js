@@ -8,23 +8,18 @@ import {
   FileChartLine,
   FileClock,
   Mails,
+  PackageSearch,
 } from "lucide-react";
 import { ROLES } from '@/lib/config/roles'
 
 
 export const MODULES_CONFIG = {
   rrhh: {
-    name: "Recursos Humanos",
-    path: "/rrhh",
+    name: "RRHH",
+    path: "/rrhh/employees",
     icon: UsersRound,
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_RRHH],
     navItems: [
-      {
-        title: "Dashboard",
-        icon: LayoutDashboard,
-        path: "/rrhh",
-        exact: true,
-      },
       {
         title: "Gestión de Empleados",
         icon: UsersRound,
@@ -162,19 +157,23 @@ export const MODULES_CONFIG = {
     ],
   },
 
-  customers: {
+  logistic: {
     name: "Logistic",
-    path: "/logistic",
+    path: "/logistic/product",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_LOGISTIC],
     icon: BadgeDollarSign,
-    // navItems: [
-    //   {
-    //     title: "Pedidos",
-    //     icon: BadgeDollarSign,
-    //     path: "/sales/orders",
-    //     subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
-    //   },
-    // ],
+    navItems: [
+      {
+        title: "Gestion de Productos",
+        icon: PackageSearch,
+        path: "/logistic/product",
+        subItems: [
+          { title: "Productos", path: "/logistic/product" },
+
+        ],
+      },
+
+    ],
   },
   planning: {
     name: "Planning",
@@ -197,17 +196,11 @@ export const MODULES_CONFIG = {
   },
 
   manufacture: {
-    name: "Manufactura",
-    path: "/manufacture",
+    name: "Noticias",
+    path: "/manufacture/mail/send",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_MANUFACTURE],
     icon: Mails,
     navItems: [
-      {
-        title: "Dashboard",
-        icon: LayoutDashboard,
-        path: "/rrhh",
-        exact: true,
-      },
       {
         title: "Enviar Correo",
         icon: FileChartLine,

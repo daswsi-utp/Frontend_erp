@@ -7,29 +7,17 @@ import { Input } from "@/components/ui/input";
 import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Ambulance   } from "lucide-react";
-import useCrud from "@/hooks/useCrud";
+import useEntityMutation from "@/hooks/useEntityMutation";
+import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
 
 
 const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPermissions })=> {
   if (!permision) return null;
 
-  const {getModel, updateModel} = useCrud()
+  const permissionMutation = useEntityMutation('permission')
+  const { data: employees } = useFetchEmployees()
   
   const [formData, setFormData] = useState({ ...permision });
-  const [employees, setEmployees] = useState([]);
-
-  const fetchEmployees = async () =>{
-    try {
-      const data = await getModel("/rrhh/employee");
-      setEmployees(data);
-    } catch (error) {
-      console.error("Error during recovery employees", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
 
   const handleChange = (field, value) => {
     const updated = { ...formData, [field]: value };
@@ -42,8 +30,11 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPe
   const handleSave = async () => {
     try {
       console.log("Datos actualizados:", formData);
-      await updateModel(formData, "/rrhh/permission");
-      fetchPermissions();
+      permissionMutation.mutate({
+        action: 'update',
+        entity: formData,
+        apiPath: '/rrhh/permission'
+      })
       onOpenChange(false);
     } catch (error) {
       console.error("Error during update vacation", error)
@@ -70,7 +61,7 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPe
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(employees.map((employee)=>(
+                    {(employees?.rows.map((employee)=>(
                       <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
                     )))}
                   </SelectContent>

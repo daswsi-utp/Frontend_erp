@@ -4,7 +4,7 @@ import CreateParticipant from "./form-create-par"
 import AddParticipant from "./form-add-par"
 import DeleteParticipant from "./form-delete-par"
 
-const ManageParticipants = () => {
+const ManageParticipants = ({ onParticipantUpdate }) => {
     return (
 
         <Dialog>
@@ -15,8 +15,8 @@ const ManageParticipants = () => {
                 <DialogHeader>
                     <DialogTitle>Manejo Participantes</DialogTitle>
                 </DialogHeader>
-                <CreateParticipant></CreateParticipant>
-                <DeleteParticipant></DeleteParticipant>
+                <CreateParticipant onParticipantUpdate={onParticipantUpdate} ></CreateParticipant>
+                <DeleteParticipant onParticipantUpdate={onParticipantUpdate} ></DeleteParticipant>
             </DialogContent>
         </Dialog>
 

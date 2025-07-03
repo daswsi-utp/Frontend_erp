@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import useCrud from "@/hooks/useCrud";
 
-const CreateParticipant = () => {
+const CreateParticipant = ({ onParticipantUpdate }) => {
   const [formData, setFormData] = useState({
     participant_name: "",
     participant_last_name: "",
@@ -39,6 +39,7 @@ const CreateParticipant = () => {
         participant_email: "",
         participant_phone: "",
       });
+      if (onParticipantUpdate) onParticipantUpdate();
     } catch (error) {
       console.error("Error al registrar el participante:", error);
     }
