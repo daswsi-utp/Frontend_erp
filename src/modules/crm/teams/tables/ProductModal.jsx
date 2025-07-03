@@ -1,25 +1,15 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Label } from '@/components/ui/label'
 import useCrud from '@/hooks/useCrud'
 
-const ProductModal = ({ showModal, typeModal, handleClose, product }) => {
-  const { getModelData: getSalespersons, insertModelWithConfirmation: assignLeads } = useCrud('')
-
+const ProductModal = ({ showModal, handleClose, product }) => {
+  const { getModel: getSalespersons, insertModelWithConfirmation: assignLeads } = useCrud('')
+  
   const [salespersons, setSalespersons] = useState([])
   const [loading, setLoading] = useState(false)
   const [bag, setBag] = useState(0)
@@ -32,20 +22,24 @@ const ProductModal = ({ showModal, typeModal, handleClose, product }) => {
   }, [showModal, product])
 
   const loadData = async () => {
-    setLoading(true)
-    const { salespersons, clients_bag } = await getSalespersons(
-      `/api/v2/admin/products/${product.code}/salespersons?leads_type=${typeModal}`
-    )
-    setSalespersons(salespersons)
-    setBag(clients_bag)
+    setLoading(true);
+    try {
+      const { members, clients_bag } = await getSalespersons(`/crm/leads/members-and-bags/${product.code}`)
+      setSalespersons(members)
+      setBag(clients_bag) // Clientes libres
+      console.log('Salespersons:', members)
+      console.log('Bag (clientes libres):', clients_bag)
 
-    // Inicializa asignaciones en 0
-    setAssignments(
-      salespersons.reduce((acc, sp) => {
-        acc[sp.user_id] = 0
-        return acc
-      }, {})
-    )
+      // Inicializa asignaciones en 0
+      setAssignments(
+        members.reduce((acc, sp) => {
+          acc[sp.user_id] = 0
+          return acc
+        }, {})
+      )
+    } catch (error) {
+      console.error('Error fetching salespersons:', error)
+    }
     setLoading(false)
   }
 
@@ -75,7 +69,7 @@ const ProductModal = ({ showModal, typeModal, handleClose, product }) => {
 
     await assignLeads(
       { data: finalData },
-      `/api/v2/admin/products/${product.code}/assign_leads?leads_type=${typeModal}`,
+      `/api/v2/admin/products/${product.code}/assign_leads`,
       null
     )
     handleClose()
@@ -92,14 +86,15 @@ const ProductModal = ({ showModal, typeModal, handleClose, product }) => {
           <p>Cargando...</p>
         ) : (
           <>
+            <p><strong>Clientes libres: </strong>{bag}</p> {/* Mostrar la cantidad de clientes libres */}
+
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>#</TableHead>
                   <TableHead>Comercial</TableHead>
-                  <TableHead>{typeModal === 'new_leads' ? 'Total NC' : 'Total BH'}</TableHead>
+                  <TableHead>{'Total NC'}</TableHead>
                   <TableHead>Total de Leads</TableHead>
-                  <TableHead>{typeModal === 'new_leads' ? 'Bolsa NC' : 'Bolsa BH'}</TableHead>
                   <TableHead>Asignar Clientes</TableHead>
                 </TableRow>
               </TableHeader>
@@ -108,11 +103,8 @@ const ProductModal = ({ showModal, typeModal, handleClose, product }) => {
                   <TableRow key={sp.user_id}>
                     <TableCell>{idx + 1}</TableCell>
                     <TableCell>{sp.full_name}</TableCell>
-                    <TableCell className="text-center">
-                      {typeModal === 'new_leads' ? sp.total_nc : sp.total_bh}
-                    </TableCell>
+                    <TableCell className="text-center">{sp.total_nc}</TableCell>
                     <TableCell className="text-center">{sp.total_leads}</TableCell>
-                    <TableCell className="text-center">{remainingBag}</TableCell>
                     <TableCell>
                       <Input
                         type="number"
@@ -125,10 +117,9 @@ const ProductModal = ({ showModal, typeModal, handleClose, product }) => {
                 ))}
               </TableBody>
             </Table>
+
             <DialogFooter className="space-x-2">
-              <Button variant="outline" onClick={handleClose}>
-                Cerrar
-              </Button>
+              <Button variant="outline" onClick={handleClose}>Cerrar</Button>
               <Button onClick={handleSubmit}>Asignar</Button>
             </DialogFooter>
           </>

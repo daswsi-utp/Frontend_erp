@@ -1,5 +1,5 @@
 import React from 'react'
-import { TbEye, TbTrash, TbEdit } from "react-icons/tb"
+import { TbEye, TbAccessible } from "react-icons/tb"
 import GeneralTooltip from '@/components/shared/generalTooltip'
 import { Badge } from '@/components/ui/badge'
 
@@ -60,13 +60,13 @@ const columns = (handleShow, handleProduct) => [
           content={`Leads producto ${row?.original.name}`}
           triggerContent={
             <span className="bg-yellow-600 text-white rounded-full p-1 cursor-pointer">
-              <TbEye size={20} />
+              <TbAccessible size={20} />
             </span>
           }
           onClick={() => handleProduct(row?.original)}
         />
 
-        <GeneralTooltip
+        {/* <GeneralTooltip
           content={`Ver el producto ${row?.original.name}`}
           triggerContent={
             <span className="bg-blue-600 text-white rounded-full p-1 cursor-pointer">
@@ -74,7 +74,7 @@ const columns = (handleShow, handleProduct) => [
             </span>
           }
           onClick={() => handleShow(row?.original)}
-        />
+        /> */}
 
       </div>
     ),

@@ -11,14 +11,14 @@ const TableProducts = ({ handleOpenModal, data, fetchData, pagination, setPagina
 
   const handleShow = (product) => {
     setProduct(product)
-    setTypeModal('show')  // Tipo de modal para ver el producto
-    handleOpenModal('show', product)  // Abrir el modal de ver producto
+    setTypeModal('show')  
+    handleOpenModal('show', product)  
   }
 
   const handleProduct = (product) => {
     setProduct(product)
-    setTypeModal('edit')  // Tipo de modal para editar el producto
-    handleOpenModal('edit', product)  // Abrir el modal de editar producto
+    setTypeModal('new_clients')  
+    handleOpenModal('new_clients', product)  
   }
 
 

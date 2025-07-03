@@ -12,7 +12,7 @@ import ModalShowProduct from '@/modules/crm/teams/modals/ModalShowProduct'
 
 const Products = () => {
   const [typeModal, setTypeModal] = useState('')
-  const [product, setProduct] = useState(null) // Asegúrate de que 'product' esté bien definido
+  const [product, setProduct] = useState(null) 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -75,7 +75,7 @@ const Products = () => {
         />
       )}
 
-      {typeModal === 'edit' && (
+      {typeModal === 'new_clients' && (
         <ProductModal
           showModal={isModalOpen}
           typeModal={typeModal}
