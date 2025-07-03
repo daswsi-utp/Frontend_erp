@@ -7,115 +7,125 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
 } from '@/components/ui/dialog'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tooltip } from '@/components/ui/tooltip'
-
 import useCrud from '@/hooks/useCrud'
+import useEntityMutation from '@/hooks/useEntityMutation'
 
-const ModalAssignLeads = ({ comercial, listCourses, open, onOpenChange, typeModal }) => {
+const ModalAssignLeads = ({ comercial, open, onOpenChange }) => {
   const currentUser = JSON.parse(localStorage.getItem('user'))
-  const { getModelData: getCourses } = useCrud('')
-  const { insertModelWithConfirmation: assignLeads } = useCrud('')
-
-  const [courses, setCourses] = useState([])
-  const [totalsByCourse, setTotalsByCourse] = useState({})
+  const { getModel: getProducts } = useCrud('')
+  const { insertModel: assignLeads } = useCrud('')
+  const { mutateAsync } = useEntityMutation('leads')
+  const [products, setProducts] = useState([])
   const [totalLeadsAssigned, setTotalLeadsAssigned] = useState({})
-  const [loadListLeads, setLoadListLeads] = useState(false)
 
   useEffect(() => {
     if (comercial && comercial.id) {
-      loadCourse(comercial.id)
+      loadProducts(comercial.id)
     }
   }, [comercial])
 
-  const loadCourse = async (userId) => {
+  const loadProducts = async (memberId) => {
     try {
-      const { courses, totals_by_course } = await getCourses(`/api/v2/general/courses?user_id=${userId}`)
-      setCourses(courses)
-      setTotalsByCourse(totals_by_course)
+      const productsData = await getProducts(`/crm/members/${memberId}/leads`)
+      setProducts(productsData)
     } catch (error) {
-      console.error('Error al cargar los datos:', error)
+      console.error('Error al cargar los productos:', error)
     }
   }
 
-  const onChangeCalculateLeads = (e, courseId) => {
-    const value = Math.min(e.target.value, totalsByCourse[courseId]?.total_clients_nc || 0)
-    setTotalLeadsAssigned((prev) => ({ ...prev, [courseId]: value }))
+  const onChangeCalculateLeads = (e, productName) => {
+    const value = Math.min(e.target.value, products.find(p => p.productName === productName)?.availableLeads || 0)
+    setTotalLeadsAssigned((prev) => ({ ...prev, [productName]: value }))
   }
 
   const handleSubmitAssignLeads = async (e) => {
     e.preventDefault()
 
-    const leads_assign = Object.entries(totalLeadsAssigned).map(([courseId, totalLeads]) => ({
-      course_id: courseId,
-      totalLeads: totalLeads,
-      user_id: comercial.id,
-      assigner_name: `${currentUser.first_name} ${currentUser.last_name}`,
-    }))
+    const leadsAssign = Object.entries(totalLeadsAssigned).map(([productName, totalLeads]) => {
+      const product = products.find(p => p.productName === productName)
+      return {
+        productName,
+        totalLeads,
+        productId: product.productId, // Aquí agregamos el productId
+        userId: comercial.id,
+        assignerName: `${currentUser.email}`,
+      }
+    })
 
-    await assignLeads(leads_assign, '/api/v1/general/leads/assign_to_user', () => onOpenChange(false))
-    setTotalLeadsAssigned({})
+    console.log('Leads a asignar:', leadsAssign)
+
+    try {
+      await mutateAsync({
+        action: 'update',
+        entity: leadsAssign,
+        apiPath: `/crm/members/${comercial.id}/assign-leads`,
+      })
+      await loadProducts(comercial.id)
+      setTotalLeadsAssigned({})
+      onOpenChange(false)
+    } catch (error) {
+      console.error('Error al asignar leads:', error)
+    }
   }
 
-  if (!comercial) return null
- 
+
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>
-            Asignar Leads al comercial {comercial.first_name} {comercial.last_name}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmitAssignLeads} noValidate>
-          <div className="space-y-6 mt-4">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2">Curso</th>
-                  <th className="text-left p-2">Total</th>
-                  <th className="text-left p-2">Sin Asignar NC</th>
-                  <th className="text-left p-2">Asignar Client</th>
-                </tr>
-              </thead>
-              <tbody>
-                {courses &&
-                  courses.map(([courseId, courseName]) => (
-                    <tr key={courseId} className="border-b hover:bg-muted">
-                      <td className="p-2">{courseName}</td>
-                      <td className="p-2">{totalsByCourse[courseId]?.total_clients}</td>
-                      <td className="p-2">{totalsByCourse[courseId]?.total_clients_nc}</td>
-                      <td className="p-2">
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-4xl bg-gray-800 text-white rounded-lg shadow-lg p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-center mb-4">
+              Asignar Leads al comercial {comercial?.fullName}
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmitAssignLeads} noValidate>
+            <div className="space-y-6 mt-4">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b bg-gray-700">
+                    <th className="text-left p-3 text-gray-300">Producto</th>
+                    <th className="text-left p-3 text-gray-300">Leads Totales</th>
+                    <th className="text-left p-3 text-gray-300">Leads Disponibles</th>
+                    <th className="text-left p-3 text-gray-300">Asignar Leads</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.productName} className="border-b hover:bg-gray-700">
+                      <td className="p-3">{product.productName}</td>
+                      <td className="p-3">{product.totalLeads}</td>
+                      <td className="p-3">{product.availableLeads}</td>
+                      <td className="p-3">
                         <Input
                           type="number"
                           min={0}
-                          max={totalsByCourse[courseId]?.total_clients_nc}
-                          value={totalLeadsAssigned[courseId] || 0}
-                          onChange={(e) => onChangeCalculateLeads(e, courseId)}
+                          max={product.availableLeads}
+                          value={totalLeadsAssigned[product.productName] || 0}
+                          onChange={(e) => onChangeCalculateLeads(e, product.productName)}
+                          className="w-20 p-2 border border-gray-600 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
-          </div>
-          <DialogFooter className="mt-6 flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={Object.keys(totalLeadsAssigned).length === 0}>
-              Asignar
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+                </tbody>
+              </table>
+            </div>
+            <DialogFooter className="mt-6 flex justify-end space-x-4">
+              <Button variant="outline" onClick={() => onOpenChange(false)} className="text-gray-300 border-gray-500 hover:bg-gray-700">
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={Object.keys(totalLeadsAssigned).length === 0} className="bg-blue-600 hover:bg-blue-700 text-white">
+                Asignar
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 

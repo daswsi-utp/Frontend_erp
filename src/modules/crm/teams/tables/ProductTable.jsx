@@ -1,57 +1,52 @@
-'use client'
+import React, { useMemo } from 'react'
+import DataTable from '@/components/shared/data_table'
+import columns from './columns'
+import useEntityMutation from '@/hooks/useEntityMutation'
+import { useNavigate } from 'react-router-dom'
 
-import React from 'react'
-import {
- Table,
- TableBody,
- TableCell,
- TableHead,
- TableHeader,
- TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
+const TableProducts = ({ handleOpenModal, data, fetchData, pagination, setPagination, setProduct, setTypeModal, totalPages, search, setSearch, searchFields, setSearchFields }) => {
+  const { mutateAsync } = useEntityMutation('products')
+  // const navigate = useNavigate()
+ 
 
-const ProductTable = ({ products = [], handleOpenModal }) => {
- return (
-  <Table>
-   <TableHeader>
-    <TableRow>
-     <TableHead>#</TableHead>
-     <TableHead>Nombre</TableHead>
-     <TableHead>Código</TableHead>
-     <TableHead>Precio</TableHead>
-     <TableHead>Acciones</TableHead>
-    </TableRow>
-   </TableHeader>
-   <TableBody>
-    {(!products || products.length === 0) ? (
-     <TableRow>
-      <TableCell colSpan={5} className="text-center">
-       No hay productos
-      </TableCell>
-     </TableRow>
-    ) : (
-     products.map((product, index) => (
-      <TableRow key={product.id}>
-       <TableCell>{index + 1}</TableCell>
-       <TableCell>{product.name}</TableCell>
-       <TableCell>{product.code}</TableCell>
-       <TableCell>{product.price}</TableCell>
-       <TableCell>
-        <Button
-         size="sm"
-         variant="outline"
-         onClick={() => handleOpenModal('edit', product)}
-        >
-         Editar
-        </Button>
-       </TableCell>
-      </TableRow>
-     ))
-    )}
-   </TableBody>
-  </Table>
- )
+  const handleShow = (product) => {
+    setProduct(product)
+    setTypeModal('show')  
+    handleOpenModal('show', product)  
+  }
+
+  const handleProduct = (product) => {
+    setProduct(product)
+    setTypeModal('new_clients')  
+    handleOpenModal('new_clients', product)  
+  }
+
+
+ 
+  const columnsWithActions = useMemo(() => columns( handleShow,handleProduct), [ handleShow, handleProduct])
+
+  const sortedData = useMemo(() => {
+    if (!data) return []
+    return data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) 
+  }, [data])
+
+  return (
+    <div>
+      <DataTable
+        columns={columnsWithActions}
+        data={sortedData}
+        fetchData={() => fetchData(pagination)}
+        pagination={pagination}
+        setPagination={setPagination}
+        totalPages={totalPages}
+        search={search}
+        setSearch={setSearch}
+        searchFields={searchFields}
+        setSearchFields={setSearchFields}
+        searchableFields={['name', 'code']}
+      />
+    </div>
+  )
 }
 
-export default ProductTable
+export default TableProducts

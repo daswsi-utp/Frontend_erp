@@ -1,61 +1,89 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import useCrud from '@/hooks/useCrud'
-
+import React, { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { TbPlus } from 'react-icons/tb'
+import TableProducts from '@/modules/crm/teams/tables/ProductTable'
+import useFetchProducts from '@/modules/crm/teams/hooks/useFetchProducts'
 import ProductModal from '@/modules/crm/teams/tables/ProductModal'
-import ProductTable from '@/modules/crm/teams/tables/ProductTable'
+import ModalShowProduct from '@/modules/crm/teams/modals/ModalShowProduct'
+
 
 const Products = () => {
-  const { getModelData: getProducts } = useCrud('')
-
-  const [products, setProducts] = useState(null)
-  const [product, setProduct] = useState(null)
-  const [showModal, setShowModal] = useState(false)
   const [typeModal, setTypeModal] = useState('')
+  const [product, setProduct] = useState(null) 
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
+  const [search, setSearch] = useState('')
+  const [searchFields, setSearchFields] = useState(['name'])
 
-  const handleClose = () => {
-    setProduct(null)
+  const handleOpenModal = (type, data = null) => {
+    setIsModalOpen(true)
+    setTypeModal(type)
+    setProduct(data)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
     setTypeModal('')
-    setShowModal(false)
+    setProduct(null)
   }
 
-  const handleOpenModal = (typeModal, product) => {
-    setProduct(product)
-    setTypeModal(typeModal)
-    setShowModal(true)
-  }
+  const { data: fetchProducts, refetch: refetchProducts } = useFetchProducts({
+    pagination,
+    search,
+    searchFields,
+  })
 
-  const loadData = async () => {
-    const { products } = await getProducts('/api/v2/general/products/active')
-    setProducts(products)
-  }
 
-  useEffect(() => {
-    loadData()
-  }, [])
+  const totalPages = Math.ceil((fetchProducts?.rowCount || 0) / pagination.pageSize)
 
   return (
-    <>
-      <Card>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-1">
+      <Card className="col-span-1 lg:col-span-1">
         <CardHeader>
-          <CardTitle>Lista de Productos Activos</CardTitle>
+          <CardTitle>Listado de Productos</CardTitle>
         </CardHeader>
-        <CardContent>
-          <ProductTable products={products} handleOpenModal={handleOpenModal} />
+        <CardContent className="px-4">
+
+          <TableProducts
+            handleOpenModal={handleOpenModal}
+            fetchData={refetchProducts}
+            data={fetchProducts?.rows || []} 
+            pagination={pagination}
+            setPagination={setPagination}
+            setProduct={setProduct}
+            setTypeModal={setTypeModal}
+            search={search}
+            setSearch={setSearch}
+            searchFields={searchFields}
+            setSearchFields={setSearchFields}
+            totalPages={totalPages}
+          />
         </CardContent>
       </Card>
 
-      {product && (
-        <ProductModal
-          showModal={showModal}
-          typeModal={typeModal}
-          handleClose={handleClose}
+      {typeModal === 'show' && (
+        <ModalShowProduct
+          showModal={isModalOpen}
+          handleClose={handleCloseModal}
           product={product}
         />
       )}
-    </>
+
+      {typeModal === 'new_clients' && (
+        <ProductModal
+          showModal={isModalOpen}
+          typeModal={typeModal}
+          handleClose={handleCloseModal}
+          product={product}
+        />
+      )}
+    </div>
   )
 }
 

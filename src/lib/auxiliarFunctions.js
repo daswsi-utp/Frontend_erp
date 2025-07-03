@@ -194,17 +194,17 @@ export const getBadgeClientState = (state_id) => {
   if (state !== undefined) {
     switch (state.slug) {
       case "NC":
-        return <Badge variant="info"> {state.name} </Badge>;
+        return <Badge variant="nc"> {state.name} </Badge>;
       case "CI":
-        return <Badge className="bg-it_button"> {state.name} </Badge>;
+        return <Badge variant="ci"> {state.name} </Badge>;
       case "CP":
-        return <Badge className="bg-cp_button"> {state.name} </Badge>;
+        return <Badge cvariant="cp"> {state.name} </Badge>;
       case "NI":
-        return <Badge className="bg-ni_button"> {state.name} </Badge>;
+        return <Badge variant="ni"> {state.name} </Badge>;
       case "EF":
-        return <Badge className="bg-ni_button"> {state.name} </Badge>;
+        return <Badge variant="ef"> {state.name} </Badge>;
       case "M":
-        return <Badge className="bg-m_button"> {state.name} </Badge>;
+        return <Badge variant="m"> {state.name} </Badge>;
       default:
         return <Badge variant="info"> {state.name} </Badge>;
     }

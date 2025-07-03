@@ -97,6 +97,17 @@ const useCrud = (endpoint) => {
     }
   }
 
+  const searchModel = async (queryString, _endpoint = endpoint) => {
+    try {
+      const response = await axios.get(`${backend_host}${_endpoint}?${queryString}`)
+      return response.data
+    } catch (error) {
+      console.error("Error en búsqueda:", error)
+      return Promise.reject(error.response?.data || error)
+    }
+  }
+  
+
   const insertModelWithCallback = async (data, _endpoint = endpoint) => {
     try {
       const response = await axios.post(_endpoint, data);
@@ -151,7 +162,8 @@ const useCrud = (endpoint) => {
     deleteModel,
     updateModel,
     insertModelWithCallback,
-    insertMultipartModel 
+    insertMultipartModel,
+    searchModel 
   }
 }
 

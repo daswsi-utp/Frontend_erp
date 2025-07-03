@@ -6,7 +6,7 @@ import { uniqBy } from "@/lib/auxiliarFunctions";
 import Papa from 'papaparse';
 import LeadsImportTable from "@/modules/crm/leads/import/tables/LeadsImportTable";
 import AppDropzone from "@/components/Dropzones/AppDropzone";
-import useCrud1 from "@/hooks/useCrud1";
+import useCrud from "@/hooks/useCrud";
 
 const acceptParams = {
   'text/csv': ['.csv']
@@ -20,7 +20,6 @@ const dataTable = {
     { label: "Teléfono", key: "phone" },
     { label: "WhatsAPP", key: "whatsapp" },
     { label: "Pais", key: "country" },
-    { label: "Ciudad", key: "ciudad" },
     { label: "Curso de Interés", key: "course" },
     { label: "id curso", key: "course_id" }
   ],
@@ -38,7 +37,7 @@ const LeadsManualImport = () => {
   const [showTable, setShowTable] = useState(false)
   const [productsAvailable, setProductsAvailable] = useState([])
 
-  const { getModel } = useCrud1()
+  const { getModel } = useCrud()
 
   const parseFiles = (_files) => {
     const filesData = []
@@ -73,18 +72,27 @@ const LeadsManualImport = () => {
     setShowTable(true)
   }
 
-  const loadData = async () => {
+  const loadProducts = async () => {
     try {
-      const response = await getModel("/api/v1/general/products/active")
-      setProductsAvailable(response.products || [])
+      const products = await getModel('/crm/products') 
+      const productsArray = Array.isArray(products) ? products : products.data || []
+      setProductsAvailable(
+        productsArray.map((product) => ({
+          id: product.id,
+          name: product.name,
+          pricePen: product.pricePen,
+          priceDollar: product.priceDollar,
+          description: product.description,
+        }))
+      )
     } catch (error) {
-      console.error("Error loading products:", error)
-      setProductsAvailable([])
+      console.error('Error cargando productos:', error)
+      setProductsAvailable([]) 
     }
   }
-
+  
   useEffect(() => {
-    loadData()
+    loadProducts()
   }, [])
 
   return (
@@ -104,8 +112,8 @@ const LeadsManualImport = () => {
           {realFiles && realFiles.length > 0 && (
             <Button
               size="sm"
-              variant="primary"
-              className="float-right mt-4"
+              variant="process"
+              className="float-right"
               onClick={() => processData()}
             >
               Procesar Datos

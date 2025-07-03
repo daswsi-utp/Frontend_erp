@@ -17,7 +17,9 @@ const InsertManual = () => {
       memberId: '',
       arrivalMeanId: '',
       clientStateId: "",
-      countryCode: "+51"
+      countryCode: "",
+      phoneCode: '',
+      
     }
   })
 
@@ -31,16 +33,25 @@ const InsertManual = () => {
     setLoading(true);
     setSearchError(null);
     try {
+
+      const cleanedPhone = data.phone.replace(/\D/g, '');
+    
+      const test = data.phoneCode ? `${data.phoneCode}${cleanedPhone}`: `+51${cleanedPhone}`; // Default si no hay phoneCode
+
+
       await mutation.mutateAsync({
         action: 'create',
         entity: {
           ...data,
-          whatsapp: data.phone,
+          whatsapp:  data.phone,
           clientStateId: data.clientStateId,
           reasonId: 1,
+          countryCode: data.countryCode, 
+          phone: test ,
         },
-        apiPath: '/crm/clients'
-      });
+        apiPath: '/crm/clients'     
+
+      })
       methods.reset();
       setShowForm(false);
     } catch (error) {

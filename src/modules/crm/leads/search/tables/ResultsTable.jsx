@@ -21,19 +21,19 @@ import ModalReassignLead from '../modals/ModalReassignLead'
 
 const columns = [
   { key: 'full_name', label: 'Cliente' },
-  { key: 'country', label: 'País' },
+  // { key: 'country', label: 'País' },
   { key: 'phone', label: 'Teléfono' },
-  { key: 'comercial', label: 'Asesor Encargado' },
-  { key: 'arrival_mean', label: 'Procedencia' },
-  { key: 'product', label: 'producto' },
-  { key: 'client_state', label: 'Estado' },
+  { key: 'memberName', label: 'Asesor Encargado' },
+  { key: 'arrivalMeanName', label: 'Procedencia' },
+  { key: 'productName', label: 'Producto' },
+  { key: 'clientStateName', label: 'Estado' },
   { key: 'actions', label: 'Acciones' },
 ]
 
 const ResultsTable = ({ leads }) => {
   const { getModel: getHistoryLead } = useCrud("")
   const currentUser = JSON.parse(localStorage.getItem('current_user')) || { id: null }
-  
+
   const [dataHistory, setDataHistory] = useState({})
   const [showModalHistory, setShowModalHistory] = useState(false)
   const [showModalReassign, setShowModalReassign] = useState(false)
@@ -61,7 +61,7 @@ const ResultsTable = ({ leads }) => {
           }
         ],
         full_name: item.full_name,
-        product: item.product_name
+        product: item.productName
       };
 
       setDataHistory([mockHistoryData]);
@@ -70,9 +70,10 @@ const ResultsTable = ({ leads }) => {
       console.error("Error loading history:", error);
     }
   };
+
   return (
     <>
-      <div className="rounded-md border">
+      <div className="overflow-auto rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -84,39 +85,45 @@ const ResultsTable = ({ leads }) => {
           <TableBody>
             {leads.map((item) => (
               <TableRow key={item.id}>
-                <TableCell>{item.full_name}</TableCell>
-                <TableCell>
+                <TableCell>{`${item.firstName || ''} ${item.lastName || ''}`.trim()}</TableCell>
+                {/* <TableCell>
                   <Tooltip>
                     <TooltipTrigger>
                       <span className="text-2xl">
-                        {item.country_code && (
-                          <span className={`fi fi-${item.country_code.toLowerCase()}`} />
+                        {item.countryCode && (
+                          <span className={`fi fi-${item.countryCode.toLowerCase()}`} />
                         )}
                       </span>
                     </TooltipTrigger>
                     <TooltipContent>{item.country}</TooltipContent>
                   </Tooltip>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>{item.phone}</TableCell>
-                <TableCell>{item.comercial}</TableCell>
-                <TableCell>{getArrivalMean(item.arrival_mean)}</TableCell>
+                <TableCell>{item.memberName}</TableCell>
+                <TableCell>
+                  {typeof item.arrivalMeanId === 'number'
+                    ? getArrivalMean(item.arrivalMeanId)
+                    : <Badge variant="info">No definido</Badge>}
+                </TableCell>
+
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger>
                       <Badge variant="outline">
-                        {item.product_code}
+                        {item.productCode || 'N/A'}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {`${item.product_name} (${item.product_status === 'inactive' ? 'producto Inactivo' : 'producto Activo'})`}
+                      {item.productName || 'Producto desconocido'}
                     </TooltipContent>
                   </Tooltip>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getBadgeClientState(item.client_state)?.variant || "default"}>
-                    {getBadgeClientState(item.client_state)?.text || "Unknown"}
-                  </Badge>
+                  {typeof item.clientStateId === 'number'
+                    ? getBadgeClientState(item.clientStateId)
+                    : <Badge variant="secondary">No definido</Badge>}
                 </TableCell>
+
                 <TableCell className="flex gap-1">
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -131,7 +138,7 @@ const ResultsTable = ({ leads }) => {
                     <TooltipContent>Ver historial completo</TooltipContent>
                   </Tooltip>
 
-                  {currentUser.id === item.user_id && (
+                  {currentUser.id === item.memberId && (
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button

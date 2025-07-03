@@ -7,14 +7,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const ChartStatsUserByProduct = ({ stats, totalUniqueClients }) => {
+
   const chartData = {
-    labels: stats.map(s => `${s.client_state_name} (${s.client_state_slug})`),
+    labels: stats.map(s => `${s.clientState} (${s.clientStateSlug})`),  
     datasets: [{
-      data: stats.map(s => s.calls_count),
-      backgroundColor: stats.map(s => s.color),
+      data: stats.map(s => s.callsCount),  
+      backgroundColor: stats.map(s => s.color),  
       borderWidth: 1
     }]
-  }
+  };
 
   const chartOptions = {
     responsive: true,
@@ -31,7 +32,7 @@ const ChartStatsUserByProduct = ({ stats, totalUniqueClients }) => {
       tooltip: {
         callbacks: {
           label: function(context) {
-            const total = context.dataset.data.reduce((a, b) => a + b, 0)
+            const total = context.dataset.data.reduce((a, b) => a + b, 0) 
             const value = context.raw
             const percentage = ((value / total) * 100).toFixed(2)
             return `${context.label}: ${value} (${percentage}%)`
@@ -44,7 +45,7 @@ const ChartStatsUserByProduct = ({ stats, totalUniqueClients }) => {
   const calculatePercent = (value, total) => 
     total > 0 ? ((value / total) * 100).toFixed(2) : '0.00'
 
-  const totalCalls = stats.reduce((sum, s) => sum + s.calls_count, 0)
+  const totalCalls = stats.reduce((sum, s) => sum + s.callsCount, 0)
 
   return (
     <Card className="h-full">
@@ -52,7 +53,6 @@ const ChartStatsUserByProduct = ({ stats, totalUniqueClients }) => {
         <CardTitle>Resumen de desempeño</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100%-60px)]">
-        {/* Gráfico */}
         <div className="h-[350px] lg:h-full">
           <Pie 
             data={chartData} 
@@ -72,17 +72,17 @@ const ChartStatsUserByProduct = ({ stats, totalUniqueClients }) => {
             </TableHeader>
             <TableBody>
               {stats.map((stat) => (
-                <TableRow key={stat.client_state_id}>
+                <TableRow key={stat.clientStateId}>
                   <TableCell className="flex items-center">
                     <span 
                       className="inline-block w-3 h-3 rounded-full mr-2" 
                       style={{ backgroundColor: stat.color }}
                     />
-                    {stat.client_state_name}
+                    {stat.clientState}
                   </TableCell>
-                  <TableCell className="text-right">{stat.calls_count}</TableCell>
+                  <TableCell className="text-right">{stat.callsCount}</TableCell>
                   <TableCell className="text-right">
-                    {calculatePercent(stat.calls_count, totalCalls)}%
+                    {calculatePercent(stat.callsCount, totalCalls)}%
                   </TableCell>
                 </TableRow>
               ))}

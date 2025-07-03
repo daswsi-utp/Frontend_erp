@@ -21,7 +21,6 @@ const EjecutivosComerciales = () => {
     setError(null);
     try {
       const getData = await getComercials('/crm/members');
-      console.log('getData:', getData);
   
       const data = Array.isArray(getData) ? getData : getData.data;
   
