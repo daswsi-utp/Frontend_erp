@@ -12,7 +12,7 @@ import { FaAtlassian } from "react-icons/fa";
 import { FaCrown } from "react-icons/fa";
 import useCrud from '@/hooks/useCrud'
 import ModalAssignLeads from '@/modules/crm/teams/modals/ModalAssignLeads'
-import ModalAssignLeadsBadgeGeneral from '@/modules/crm/teams/modals/ModalAssignLeadsBadgeGeneral'
+// import ModalAssignLeadsBadgeGeneral from '@/modules/crm/teams/modals/ModalAssignLeadsBadgeGeneral'
 
 const MyTeam = () => {
   const { getModel: getMyTeam, getModel: getCourses } = useCrud()
@@ -49,7 +49,7 @@ const MyTeam = () => {
   
       setCurrentTeam(sortedData)
   
-      const productsData = await getCourses('/crm/products/active')
+      const productsData = await getCourses('/crm/products')
       const products = Array.isArray(productsData) ? productsData : productsData.products || []
   
       setListProducts(products)
@@ -119,7 +119,7 @@ const MyTeam = () => {
                       </TooltipTrigger>
                       <TooltipContent>Asignar nuevos leads</TooltipContent>
                     </Tooltip>
-                    <Tooltip>
+                    {/* <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           size="sm"
@@ -130,7 +130,7 @@ const MyTeam = () => {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>Asignar nuevos leads general</TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                   </TableCell>
                 </TableRow>
               ))
@@ -153,14 +153,14 @@ const MyTeam = () => {
         typeModal={typeModal}
         open={showModal && typeModal === 'new_leads'}
       />
-      <ModalAssignLeadsBadgeGeneral
+      {/* <ModalAssignLeadsBadgeGeneral
         showModal={showModal && typeModal === 'new_leads_general'}
         onOpenChange={handleCloseModal}
         comercial={currentUser}
         products={listProducts}
         typeModal={typeModal}
         open={showModal && typeModal === 'new_leads_general'}
-      />
+      /> */}
     </Card>
   )
 }

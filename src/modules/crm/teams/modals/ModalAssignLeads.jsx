@@ -7,70 +7,62 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tooltip } from '@/components/ui/tooltip'
 
 import useCrud from '@/hooks/useCrud'
 
-const ModalAssignLeads = ({ comercial, listCourses, open, onOpenChange, typeModal }) => {
+const ModalAssignLeads = ({ comercial, open, onOpenChange }) => {
   const currentUser = JSON.parse(localStorage.getItem('user'))
-  const { getModelData: getCourses } = useCrud('')
-  const { insertModelWithConfirmation: assignLeads } = useCrud('')
+  const { getModel: getProducts } = useCrud('')
+  const { insertModel: assignLeads } = useCrud('')
 
-  const [courses, setCourses] = useState([])
-  const [totalsByCourse, setTotalsByCourse] = useState({})
+  const [products, setProducts] = useState([])
   const [totalLeadsAssigned, setTotalLeadsAssigned] = useState({})
-  const [loadListLeads, setLoadListLeads] = useState(false)
 
   useEffect(() => {
     if (comercial && comercial.id) {
-      loadCourse(comercial.id)
+      loadProducts(comercial.id)
     }
   }, [comercial])
 
-  const loadCourse = async (userId) => {
+  const loadProducts = async (memberId) => {
     try {
-      const { courses, totals_by_course } = await getCourses(`/api/v2/general/courses?user_id=${userId}`)
-      setCourses(courses)
-      setTotalsByCourse(totals_by_course)
+      const productsData = await getProducts(`/crm/members/${memberId}/leads`)
+      setProducts(productsData)
+      console.log('Productos cargados:', productsData)
     } catch (error) {
-      console.error('Error al cargar los datos:', error)
+      console.error('Error al cargar los productos:', error)
     }
   }
 
-  const onChangeCalculateLeads = (e, courseId) => {
-    const value = Math.min(e.target.value, totalsByCourse[courseId]?.total_clients_nc || 0)
-    setTotalLeadsAssigned((prev) => ({ ...prev, [courseId]: value }))
+  const onChangeCalculateLeads = (e, productName) => {
+    const value = Math.min(e.target.value, products.find(p => p.productName === productName)?.totalLeads || 0)
+    setTotalLeadsAssigned((prev) => ({ ...prev, [productName]: value }))
   }
 
   const handleSubmitAssignLeads = async (e) => {
     e.preventDefault()
 
-    const leads_assign = Object.entries(totalLeadsAssigned).map(([courseId, totalLeads]) => ({
-      course_id: courseId,
-      totalLeads: totalLeads,
-      user_id: comercial.id,
-      assigner_name: `${currentUser.first_name} ${currentUser.last_name}`,
+    const leadsAssign = Object.entries(totalLeadsAssigned).map(([productName, totalLeads]) => ({
+      productName,
+      totalLeads,
+      userId: comercial.id,
+      assignerName: `${currentUser.first_name} ${currentUser.last_name}`,
     }))
 
-    await assignLeads(leads_assign, '/api/v1/general/leads/assign_to_user', () => onOpenChange(false))
+    await assignLeads(leadsAssign, '/api/v1/general/leads/assign_to_user', () => onOpenChange(false))
     setTotalLeadsAssigned({})
   }
 
-  if (!comercial) return null
- 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>
-            Asignar Leads al comercial {comercial.first_name} {comercial.last_name}
+            Asignar Leads al comercial {comercial?.fullName}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmitAssignLeads} noValidate>
@@ -78,30 +70,27 @@ const ModalAssignLeads = ({ comercial, listCourses, open, onOpenChange, typeModa
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left p-2">Curso</th>
-                  <th className="text-left p-2">Total</th>
-                  <th className="text-left p-2">Sin Asignar NC</th>
-                  <th className="text-left p-2">Asignar Client</th>
+                  <th className="text-left p-2">Producto</th>
+                  <th className="text-left p-2">Leads Totales</th>
+                  <th className="text-left p-2">Asignar Leads</th>
                 </tr>
               </thead>
               <tbody>
-                {courses &&
-                  courses.map(([courseId, courseName]) => (
-                    <tr key={courseId} className="border-b hover:bg-muted">
-                      <td className="p-2">{courseName}</td>
-                      <td className="p-2">{totalsByCourse[courseId]?.total_clients}</td>
-                      <td className="p-2">{totalsByCourse[courseId]?.total_clients_nc}</td>
-                      <td className="p-2">
-                        <Input
-                          type="number"
-                          min={0}
-                          max={totalsByCourse[courseId]?.total_clients_nc}
-                          value={totalLeadsAssigned[courseId] || 0}
-                          onChange={(e) => onChangeCalculateLeads(e, courseId)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                {products.map((product) => (
+                  <tr key={product.productName} className="border-b hover:bg-muted">
+                    <td className="p-2">{product.productName}</td>
+                    <td className="p-2">{product.totalLeads}</td>
+                    <td className="p-2">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={product.totalLeads}
+                        value={totalLeadsAssigned[product.productName] || 0}
+                        onChange={(e) => onChangeCalculateLeads(e, product.productName)}
+                      />
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
