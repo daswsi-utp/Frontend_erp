@@ -25,6 +25,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        process:
+          "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:from-green-600 hover:to-green-700 dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 text-base font-semibold relative overflow-hidden",
       },
       size: {
         default: "h-9 px-4 py-2",
@@ -65,8 +67,8 @@ const Button = forwardRef(function (
     >
       {((leftSection && loading) ||
         (!leftSection && !rightSection && loading)) && (
-        <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
-      )}
+          <TbLoader2 className="mr-2 h-4 w-4 animate-spin" />
+        )}
       {!loading && leftSection && <div className="mr-2">{leftSection}</div>}
       {children}
       {!loading && rightSection && <div className="ml-2">{rightSection}</div>}

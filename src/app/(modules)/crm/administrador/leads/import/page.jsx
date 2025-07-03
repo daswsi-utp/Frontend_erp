@@ -112,8 +112,8 @@ const LeadsManualImport = () => {
           {realFiles && realFiles.length > 0 && (
             <Button
               size="sm"
-              variant="success"
-              className="float-right mt-4"
+              variant="process"
+              className="float-right"
               onClick={() => processData()}
             >
               Procesar Datos
