@@ -23,8 +23,6 @@ const SellersTable = ({ data: sellersActive, typeSeller, color }) => {
     )
   }, [sellersActive, searchTerm])
 
-  console.log(sellersActive)
-
   const columns = [
     { key: 'index', label: '#', className: 'w-10' },
     { key: 'fullName', label: 'Nombres' },
