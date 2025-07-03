@@ -1,22 +1,48 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import useCrud from "@/hooks/useCrud";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
+
+import useFetchProducts from "@/modules/logistic/hooks/useFetchProducts";
+import useFetchProviders from "@/modules/logistic/hooks/useFetchProviders";
+import useMutationProducts from "@/modules/logistic/hooks/useMutationProducts";
 
 export default function ProductosPanel() {
-  const { getModel, postModel, putModel, deleteModel } = useCrud("");
-  const [productos, setProductos] = useState([]);
-  const [proveedores, setProveedores] = useState([]);
   const [form, setForm] = useState(initialForm());
   const [editando, setEditando] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const { data: productsData, refetch: refetchProducts } = useFetchProducts();
+  const { data: providersData } = useFetchProviders();
+  const mutation = useMutationProducts();
+
+  const productos = productsData?.rows || [];
+  const proveedores = providersData?.rows || [];
 
   function initialForm() {
     return {
@@ -29,50 +55,34 @@ export default function ProductosPanel() {
     };
   }
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [prodData, provData] = await Promise.all([
-        getModel("/logistic/products"),
-        getModel("/logistic/providers"),
-      ]);
-      setProductos(prodData);
-      setProveedores(provData);
-    } catch (error) {
-      console.error("Error cargando datos", error);
-    }
-  };
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const payload = {
-      sku: form.sku,
-      nombre: form.nombre,
-      marca: form.marca,
-      precio: parseFloat(form.precio),
-      proveedor: form.proveedor,
+      action: editando ? "update" : "create",
+      entity: {
+        sku: form.sku,
+        nombre: form.nombre,
+        marca: form.marca,
+        precio: parseFloat(form.precio),
+        proveedor: form.proveedor,
+      },
+      id: form.id,
+      apiPath: editando
+        ? `/logistic/products/${form.id}`
+        : "/logistic/products",
     };
 
-    try {
-      if (editando && form.id) {
-        await putModel(`/logistic/products/${form.id}`, payload);
-      } else {
-        await postModel("/logistic/products", payload);
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        refetchProducts();
+        handleDialogClose();
       }
-
-      handleDialogClose();
-      await loadData();
-    } catch (error) {
-      console.error("Error al guardar el producto", error);
-    }
+    });
   };
 
   const handleEdit = (producto) => {
@@ -88,13 +98,15 @@ export default function ProductosPanel() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteModel(`/logistic/products/${id}`);
-      await loadData();
-    } catch (error) {
-      console.error("Error al eliminar producto", error);
-    }
+  const handleDelete = (id) => {
+    mutation.mutate({
+      action: "delete",
+      id,
+      entity: {},
+      apiPath: `/logistic/products/${id}`,
+    }, {
+      onSuccess: () => refetchProducts()
+    });
   };
 
   const handleDialogClose = () => {
@@ -105,7 +117,7 @@ export default function ProductosPanel() {
 
   const getProveedorNombre = (id) => {
     const prov = proveedores.find((p) => p.id_proveedor === id);
-    return prov ? prov.nombre : "Sin proveedor";
+    return prov?.nombre || "Sin proveedor";
   };
 
   return (
@@ -122,11 +134,8 @@ export default function ProductosPanel() {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <h2 className="text-xl font-semibold">
-                {editando ? "Editar producto" : "Nuevo producto"}
-              </h2>
-
+            <DialogTitle>{editando ? "Editar producto" : "Nuevo producto"}</DialogTitle>
+            <form onSubmit={handleSubmit} className="grid gap-4 mt-4">
               <div>
                 <Label>SKU</Label>
                 <Input name="sku" value={form.sku} onChange={handleChange} required />
@@ -141,13 +150,7 @@ export default function ProductosPanel() {
               </div>
               <div>
                 <Label>Precio</Label>
-                <Input
-                  type="number"
-                  name="precio"
-                  value={form.precio}
-                  onChange={handleChange}
-                  required
-                />
+                <Input type="number" name="precio" value={form.precio} onChange={handleChange} required />
               </div>
               <div>
                 <Label>Proveedor</Label>
@@ -167,7 +170,6 @@ export default function ProductosPanel() {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={handleDialogClose}>
                   Cancelar
