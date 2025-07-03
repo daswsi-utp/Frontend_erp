@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import useCrud from '@/hooks/useCrud'
+import useEntityMutation from '@/hooks/useEntityMutation'
 
 const ProductModal = ({ showModal, handleClose, product }) => {
-  const { getModel: getSalespersons, insertModelWithConfirmation: assignLeads } = useCrud('')
-  
+  const { getModel: getSalespersons} = useCrud('')
+  const { mutateAsync} = useEntityMutation('leads')  
+
   const [salespersons, setSalespersons] = useState([])
   const [loading, setLoading] = useState(false)
   const [bag, setBag] = useState(0)
@@ -30,7 +32,7 @@ const ProductModal = ({ showModal, handleClose, product }) => {
       console.log('Salespersons:', members)
       console.log('Bag (clientes libres):', clients_bag)
 
-      // Inicializa asignaciones en 0
+      
       setAssignments(
         members.reduce((acc, sp) => {
           acc[sp.user_id] = 0
@@ -43,6 +45,20 @@ const ProductModal = ({ showModal, handleClose, product }) => {
     setLoading(false)
   }
 
+  const handleAssignmentChange2 = (salespersonId, value) => {
+    const newValue = parseInt(value, 10)
+    if (newValue < 0) return
+
+    const totalAssigned = Object.values(assignments).reduce((sum, val) => sum + val, 0)
+    const remainingBag = bag - totalAssigned + assignments[salespersonId]
+
+    if (newValue <= remainingBag) {
+      setAssignments((prev) => ({
+        ...prev,
+        [salespersonId]: newValue,
+      }))
+    }
+  }
   const handleAssignmentChange = (salespersonId, value) => {
     const newValue = parseInt(value, 10)
     if (newValue < 0) return
@@ -58,6 +74,7 @@ const ProductModal = ({ showModal, handleClose, product }) => {
     }
   }
 
+
   const totalAssigned = Object.values(assignments).reduce((sum, val) => sum + val, 0)
   const remainingBag = bag - totalAssigned
 
@@ -65,15 +82,17 @@ const ProductModal = ({ showModal, handleClose, product }) => {
     const finalData = Object.entries(assignments).map(([userId, totalAssign]) => ({
       user_id: userId,
       total_assign: totalAssign,
-    }))
-
-    await assignLeads(
-      { data: finalData },
-      `/api/v2/admin/products/${product.code}/assign_leads`,
-      null
-    )
-    handleClose()
-  }
+    }));
+    
+    try {
+      await mutateAsync({action: 'update', entity: finalData, apiPath: `/crm/leads/assign_leads?productCode=${product.code}`});
+      handleClose();
+    } catch (error) {
+      console.error('Error al asignar los leads:', error);
+    }
+  };
+  
+  
 
   return (
     <Dialog open={showModal} onOpenChange={handleClose}>
