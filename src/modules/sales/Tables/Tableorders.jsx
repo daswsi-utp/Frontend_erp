@@ -15,11 +15,13 @@ import { useToast } from "@/components/ui/use-toast";
 import useCrud from "@/hooks/useCrud";
 
 const Tableorders = () => {
+  
   const [search, setSearch] = useState("");
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { getModal } = useCrud;
+  
 
   // Función para cargar ventas desde el backend
   const fetchSales = async () => {

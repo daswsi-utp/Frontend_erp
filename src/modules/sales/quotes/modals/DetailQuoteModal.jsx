@@ -50,7 +50,7 @@ const ProductDetailsModal = ({ open, onClose, products = [], onDeleteProduct,onA
                   {products.map((product) => (
                     <TableRow key={product.id}>
                       <TableCell className="font-medium">
-                        {product.product?.name || `Producto ${product.productId}`}
+                        {product.product?.descripcion || product.productName || `Producto ${product.productId}`}
                       </TableCell>
                       <TableCell className="text-right">{product.amount}</TableCell>
                       <TableCell className="text-right">
