@@ -209,7 +209,6 @@ const LeadsImportTable = (props) => {
 
   const formatearFecha = (fechaOriginal) => {
     if (!fechaOriginal) return "Sin fecha";
-
     let fechaFormateada;
     if (fechaOriginal.includes("/")) {
       const [mes, dia, anho] = fechaOriginal.split("/");
@@ -219,7 +218,6 @@ const LeadsImportTable = (props) => {
     } else {
       return "Formato no reconocido";
     }
-
     const [anho, mes, dia] = fechaFormateada.split("-")
     return `${dia}-${mes}-${anho}`
   }
@@ -269,7 +267,6 @@ const LeadsImportTable = (props) => {
         ? "Sin escoger un producto"
         : event.target.options[event.target.selectedIndex].text
     }))
-
     setFinalData(auxData)
   }
 
@@ -357,7 +354,7 @@ const LeadsImportTable = (props) => {
             <TableBody>
               {finalData.map((client, index) => (
                 <TableRow key={index}>
-                  <TableCell>{client.first_name}</TableCell>
+                  <TableCell>TableCell{client.first_name}</TableCell>
                   <TableCell>{client.last_name}</TableCell>
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.phone}</TableCell>

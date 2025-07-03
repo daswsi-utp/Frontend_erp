@@ -1,57 +1,62 @@
 'use client'
 
-import React from 'react'
-import {
- Table,
- TableBody,
- TableCell,
- TableHead,
- TableHeader,
- TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
+import React, { useState, useMemo } from 'react'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import ProductModal from '@/modules/crm/teams/tables/ProductModal'
+import ProductTable from '@/modules/crm/teams/tables/ProductTable'
+import useFetchProducts from '@/hooks/useFetchProducts'
+import DataTable from '@/components/shared/data_table'
+import useEntityMutation from '@/hooks/useEntityMutation'
+import { useNavigate } from 'react-router-dom'
 
-const ProductTable = ({ products = [], handleOpenModal }) => {
- return (
-  <Table>
-   <TableHeader>
-    <TableRow>
-     <TableHead>#</TableHead>
-     <TableHead>Nombre</TableHead>
-     <TableHead>Código</TableHead>
-     <TableHead>Precio</TableHead>
-     <TableHead>Acciones</TableHead>
-    </TableRow>
-   </TableHeader>
-   <TableBody>
-    {(!products || products.length === 0) ? (
-     <TableRow>
-      <TableCell colSpan={5} className="text-center">
-       No hay productos
-      </TableCell>
-     </TableRow>
-    ) : (
-     products.map((product, index) => (
-      <TableRow key={product.id}>
-       <TableCell>{index + 1}</TableCell>
-       <TableCell>{product.name}</TableCell>
-       <TableCell>{product.code}</TableCell>
-       <TableCell>{product.price}</TableCell>
-       <TableCell>
-        <Button
-         size="sm"
-         variant="outline"
-         onClick={() => handleOpenModal('edit', product)}
-        >
-         Editar
-        </Button>
-       </TableCell>
-      </TableRow>
-     ))
-    )}
-   </TableBody>
-  </Table>
- )
+const TableProducts = () => {
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [search, setSearch] = useState('')
+  const [searchFields, setSearchFields] = useState(['name', 'code'])
+
+  const { data, isLoading, isError, error, refetch } = useFetchProducts({
+    pagination,
+    search,
+    searchFields,
+  })
+
+  const [showModal, setShowModal] = useState(false)
+  const [product, setProduct] = useState(null)
+  const [typeModal, setTypeModal] = useState('')
+
+  const handleClose = () => {
+    setProduct(null)
+    setTypeModal('')
+    setShowModal(false)
+  }
+
+  const handleOpenModal = (typeModal, product) => {
+    setProduct(product)
+    setTypeModal(typeModal)
+    setShowModal(true)
+  }
+
+  useEffect(() => {
+    refetch() // Recargar los datos cuando cambie la paginación o búsqueda
+  }, [pagination, search])
+
+  return (
+    <div>
+      <DataTable
+        columns={columnsWithActions}
+        data={sortedData}
+        fetchData={() => fetchData(pagination)}
+        pagination={pagination}
+        setPagination={setPagination}
+        totalPages={totalPages}
+        search={search}
+        setSearch={setSearch}
+        searchFields={searchFields}
+        setSearchFields={setSearchFields}
+        searchableFields={['name', 'code']}
+      />
+    </div>
+  )
 }
 
-export default ProductTable
+export default TableProducts
