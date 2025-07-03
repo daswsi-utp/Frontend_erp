@@ -19,7 +19,7 @@ const entityTranslations = {
   vacation: "vacacion",
   permission: "permiso",
   quote : "cotización",
-  sale : "venta"
+  sale : "venta",
 
   mail: "correo",
   task: "tarea",

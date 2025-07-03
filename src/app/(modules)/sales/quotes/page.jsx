@@ -171,13 +171,13 @@ const handleAddProducts = async (newProducts) => {
       )
     );
 
-    alert('Productos agregados correctamente');
+   
     return true;
   } catch (error) {
   console.error('Error al agregar productos:', error);
 
   const errorMessage =
-    error.message || // viene del Error lanzado manualmente
+    error.message || 
     'Error desconocido al agregar productos';
 
   alert(`Error: ${errorMessage}`);
