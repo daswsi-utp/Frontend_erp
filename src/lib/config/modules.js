@@ -8,6 +8,7 @@ import {
   FileChartLine,
   FileClock,
   Mails,
+  PackageSearch,
 } from "lucide-react";
 import { ROLES } from '@/lib/config/roles'
 
@@ -156,19 +157,23 @@ export const MODULES_CONFIG = {
     ],
   },
 
-  customers: {
+  logistic: {
     name: "Logistic",
-    path: "/logistic",
+    path: "/logistic/product",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_LOGISTIC],
     icon: BadgeDollarSign,
-    // navItems: [
-    //   {
-    //     title: "Pedidos",
-    //     icon: BadgeDollarSign,
-    //     path: "/sales/orders",
-    //     subItems: [{ title: "Nuevo", path: "/sales/orders/new" }],
-    //   },
-    // ],
+    navItems: [
+      {
+        title: "Gestion de Productos",
+        icon: PackageSearch,
+        path: "/logistic/product",
+        subItems: [
+          { title: "Productos", path: "/logistic/product" },
+
+        ],
+      },
+
+    ],
   },
   planning: {
     name: "Planning",
