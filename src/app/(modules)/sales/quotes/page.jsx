@@ -9,9 +9,12 @@ import ViewQuoteModal  from '@/modules/sales/quotes/modals/ViewQuoteModal';
 import DetailQuoteModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
 import useCrud from '@/hooks/useCrud';
 import ProductDetailsModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
+import useFetchQuote from '@/modules/sales/hoocks/useFetchQuote';
+import useEntityMutation from '@/hooks/useEntityMutation';
 
 
 const SalesPage = () => { 
+  const quoteMutation = useEntityMutation('quote')
   const [quotes, setQuotes] = useState([]);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,11 +23,13 @@ const SalesPage = () => {
   const [openView, setOpenView] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Estado para carga
   const [openProducts, setOpenProducts] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]); 
   const { getModel, insertModel, deleteModel, updateModel } = useCrud();
   const { getModel: getProduct, insertModel: insertProduct, deleteModel: deleteProduct } = useCrud();
+
+  const {data, isLoading} = useFetchQuote();
+
   //DESDE LA BASE DE DATOS
 
   const deleteQuote = async (quote) => {
@@ -49,22 +54,9 @@ const SalesPage = () => {
 
  
  ///////////////CARGAR CUOTAS//////////////
-  const fetchQuotes = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getModel("/sales/quotes");
-      setQuotes(data.map(formatQuote));
-    } catch (error) {
-      console.error("Error al cargar cotizaciones:", error);
-      alert("Error al cargar cotizaciones");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    fetchQuotes();
-  }, []);
+
+  
 ////////////////////////////////////////////////
 
  const handleCreateQuote = async (newQuoteData) => {
@@ -211,7 +203,7 @@ const handleAddProducts = async (newProducts) => {
       ) : (
 
       <QuotesTable 
-        quotes={quotes}
+        quotes={data?.rows || []}
         setSelectedQuote={setSelectedQuote}
         setSelectedFile={setSelectedFile}
         setOpenEdit={setOpenEdit}
