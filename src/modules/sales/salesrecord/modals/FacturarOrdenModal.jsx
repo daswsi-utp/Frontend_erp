@@ -78,22 +78,24 @@ const FacturarOrdenModal = ({ open, onOpenChange, orden }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md p-6 bg-gray-800 text-white rounded-lg shadow-lg">
         <DialogHeader>
-          <DialogTitle>Factura OP-{invoiceData?.id ?? "..."}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">Factura OP-{invoiceData?.id ?? "..."}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          <p><strong>Número de Factura:</strong> {invoiceData ? invoiceData.invoiceNumber : 'Cargando...'}</p>
-          <p><strong>Fecha de Emisión:</strong> {invoiceData ? new Date(invoiceData.issueDate).toLocaleDateString() : 'Cargando...'}</p>
-          <p><strong>Método de Pago:</strong> {invoiceData ? invoiceData.paymentMethod : 'Cargando...'}</p>
-          <p><strong>Total:</strong> ${invoiceData ? invoiceData.totalAmount.toFixed(2) : 'Cargando...'}</p>
-          <p><strong>Subtotal:</strong> ${invoiceData ? invoiceData.subtotal.toFixed(2) : 'Cargando...'}</p>
-          <p><strong>Impuesto:</strong> ${invoiceData ? invoiceData.tax.toFixed(2) : 'Cargando...'}</p>
-          <p><strong>Descuento:</strong> {invoiceData && invoiceData.discount ? `$${invoiceData.discount.toFixed(2)}` : 'N/A'}</p>
-          <h3>Detalles:</h3>
-          <ul>
+          <div className="mb-4">
+            <p className="font-medium"><strong>Número de Factura:</strong> {invoiceData ? invoiceData.invoiceNumber : 'Cargando...'}</p>
+            <p className="font-medium"><strong>Fecha de Emisión:</strong> {invoiceData ? new Date(invoiceData.issueDate).toLocaleDateString() : 'Cargando...'}</p>
+            <p className="font-medium"><strong>Método de Pago:</strong> {invoiceData ? invoiceData.paymentMethod : 'Cargando...'}</p>
+            <p className="font-medium"><strong>Total:</strong> ${invoiceData ? invoiceData.totalAmount.toFixed(2) : 'Cargando...'}</p>
+            <p className="font-medium"><strong>Subtotal:</strong> ${invoiceData ? invoiceData.subtotal.toFixed(2) : 'Cargando...'}</p>
+            <p className="font-medium"><strong>Impuesto:</strong> ${invoiceData ? invoiceData.tax.toFixed(2) : 'Cargando...'}</p>
+            <p className="font-medium"><strong>Descuento:</strong> {invoiceData && invoiceData.discount ? `$${invoiceData.discount.toFixed(2)}` : 'N/A'}</p>
+          </div>
+          <h3 className="font-semibold text-lg mb-2">Detalles:</h3>
+          <ul className="list-disc list-inside">
             {invoiceData ? invoiceData.details.map(detail => (
-              <li key={detail.id}>
+              <li key={detail.id} className="mb-1">
                 {detail.productName || "Producto desconocido"} - Cantidad: {detail.quantity}, Precio Unitario: ${detail.unitPrice.toFixed(2)}, Total: ${detail.totalLine.toFixed(2)}
               </li>
             )) : 'Cargando...'}
@@ -104,7 +106,7 @@ const FacturarOrdenModal = ({ open, onOpenChange, orden }) => {
             Cerrar
           </Button>
           <Button
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleDownload}
             disabled={loading}
           >

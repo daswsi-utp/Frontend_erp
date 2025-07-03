@@ -6,11 +6,11 @@ import NewQuoteModal from '@/modules/sales/quotes/modals/NewQuoteModal';
 import EditQuoteModal from '@/modules/sales/quotes/modals/EditQuoteModal';
 import DeleteQuoteModal from '@/modules/sales/quotes/modals/DeleteQuoteModal';
 import ViewQuoteModal  from '@/modules/sales/quotes/modals/ViewQuoteModal';
-import DetailQuoteModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
 import useCrud from '@/hooks/useCrud';
 import ProductDetailsModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
 import useFetchQuote from '@/modules/sales/hoocks/useFetchQuote';
 import useEntityMutation from '@/hooks/useEntityMutation';
+import { update } from 'lodash';
 
 
 const SalesPage = () => { 
@@ -30,16 +30,29 @@ const SalesPage = () => {
 
   const {data, isLoading} = useFetchQuote();
 
+   useEffect(() => {
+    if (data) {
+      setQuotes(data.rows.map(formatQuote));
+    }
+  }, [data])
+
   //DESDE LA BASE DE DATOS
 
-  const deleteQuote = async (quote) => {
-      try {
-        await deleteModel (`/sales/quotes/${quote.id}`);
-        await fetchQuotes ();
-      } catch (error) {
-        console.error(error)       
-      }
+  
+  
+ const deleteQuote = async (quote) =>{
+    try {
+      quoteMutation.mutate({
+        action: 'delete',
+        id: quote.id,
+        entity: {},
+        apiPath: `/sales/quotes/${quote.id}`
+      })
+    } catch (error) {
+      console.error("Error during delete quote", error)
+    }
   }
+  
 
   const formatQuote = (quote) => ({
     id: quote.id,
@@ -52,24 +65,24 @@ const SalesPage = () => {
     details: quote.details || []
   });
 
- 
- ///////////////CARGAR CUOTAS//////////////
 
 
-  
-////////////////////////////////////////////////
-
- const handleCreateQuote = async (newQuoteData) => {
-    try {
-      const createdQuote = await insertModel(newQuoteData, "/sales/quotes");
-      setQuotes([...quotes, formatQuote(createdQuote)]);
-      setOpenNew(false);
-      alert('Cotización creada exitosamente');
-    } catch (error) {
-      console.error("Error al crear cotización:", error);
-      alert(`Error al crear cotización: ${error.message}`);
-    }
+  const handleCreateQuote = async (newQuoteData) => {
+    quoteMutation.mutate({
+      action: 'create',
+      entity: newQuoteData,
+      apiPath: '/sales/quotes'
+    }, {
+      onSuccess: (createdQuote) => {
+        setQuotes(prevQuotes => [...prevQuotes, formatQuote(createdQuote)]);
+        setOpenNew(false);
+      }
+    });
   };
+
+
+
+
 
 const handleShowProducts = (quote) => {
   // Verificación de seguridad
@@ -176,16 +189,26 @@ const handleAddProducts = async (newProducts) => {
 
 //EDITAR CUOTA//////////////////
  const handleEditQuote = async (updatedQuote) => {
-    try {
-      const data = await updateModel(updatedQuote, `/sales/quotes/${updatedQuote.id}`);
-      setQuotes(quotes.map(q => q.id === data.id ? formatQuote(data) : q));
-      setOpenEdit(false);
-      alert('Cotización actualizada correctamente');
-    } catch (error) {
-      console.error('Error al actualizar cotización:', error);
-      alert(error.message);
-    }
-  };
+  try {
+    const data = await updateModel(updatedQuote, `/sales/quotes/${updatedQuote.id}`);
+    
+    // Actualiza el estado de quotes con la cotización editada
+    setQuotes(prevQuotes => 
+      prevQuotes.map(q => q.id === data.id ? formatQuote(data) : q)
+    );
+    
+    setOpenEdit(false);
+    alert('Cotización actualizada correctamente');
+  } catch (error) {
+    console.error('Error al actualizar cotización:', error);
+    alert(error.message);
+  }
+};
+
+
+   
+
+
 ///////////////
   return (
     <div className="p-6 space-y-6">
@@ -203,7 +226,7 @@ const handleAddProducts = async (newProducts) => {
       ) : (
 
       <QuotesTable 
-        quotes={data?.rows || []}
+         quotes={(data?.rows || []).map(formatQuote)}
         setSelectedQuote={setSelectedQuote}
         setSelectedFile={setSelectedFile}
         setOpenEdit={setOpenEdit}

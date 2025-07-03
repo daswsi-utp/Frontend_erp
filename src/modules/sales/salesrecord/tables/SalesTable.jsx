@@ -15,7 +15,11 @@ import { useToast } from "@/components/ui/use-toast";
 import useCrud from "@/hooks/useCrud";
 import FacturarOrdenModal from "../modals/FacturarOrdenModal";
 
+import useFetchSale from "../../hoocks/useFetchSale";
+
 const Tableorders = () => {
+
+  const {data, isLoading} = useFetchSale
   const [search, setSearch] = useState("");
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -119,7 +123,7 @@ const Tableorders = () => {
                   {sale.deliveryAddress || 'N/A'}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button variant="outline" size="sm">Detalles</Button>
+                  
                   <Button 
                     variant="secondary" 
                     size="sm"

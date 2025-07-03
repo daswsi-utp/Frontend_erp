@@ -17,8 +17,8 @@ const entityTranslations = {
   contract: "contrato",
   vacation: "vacacion",
   permission: "permiso",
-  quote : "cotización"
-
+  quote : "cotización",
+  sale : "venta"
 
 }
 
