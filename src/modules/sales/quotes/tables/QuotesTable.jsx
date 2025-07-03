@@ -78,6 +78,11 @@ const QuotesTable = ({
     return idString.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+   // Función para verificar si la cotización está aprobada
+  const isApproved = (quote) => {
+    return quote.state === 'APPROVED';
+  };
+
   return (
     <div className="relative w-full max-w-[100vw] overflow-hidden space-y-4">
       <div className="flex justify-between items-center">
@@ -120,7 +125,6 @@ const QuotesTable = ({
                     <TableCell>{quote.observation || '-'}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -128,20 +132,24 @@ const QuotesTable = ({
                             setSelectedQuote(quote);
                             setOpenEdit(true);
                           }}
+                          disabled={isApproved(quote)}
+                          className={isApproved(quote) ? 'opacity-50 cursor-not-allowed' : ''}
                         >
                           <FileEdit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline" 
                           size="sm"
-                          onClick={() => onShowProducts(quote)}                   
+                          onClick={() => onShowProducts(quote)}
                         >
                           <Package className="h-4 w-4" />
                         </Button>
                         <Button 
                           variant="destructive" 
                           size="sm"
-                          onClick={() => deleteQuote(quote)}
+                          onClick={() => !isApproved(quote) && deleteQuote(quote)}
+                          disabled={isApproved(quote)}
+                          className={isApproved(quote) ? 'opacity-50 cursor-not-allowed' : ''}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
