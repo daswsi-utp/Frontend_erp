@@ -129,45 +129,45 @@ const DataTable = ({ columns, data, fetchData, pagination, setPagination, search
         </Table>
       </div>
       <div className="h-2" />
-      <div className="flex items-center gap-2">
-        <button
-          className="border rounded p-1"
+      <div className="flex items-center gap-2 flex-wrap sm:justify-start justify-center">
+      <button
+          className="border rounded p-1 sm:w-auto w-full"
           onClick={() => table.setPageIndex(0)}
           disabled={!table.getCanPreviousPage()}
         >
           <CgChevronDoubleLeft />
         </button>
         <button
-          className="border rounded p-1"
+          className="border rounded p-1 sm:w-auto w-full"
           onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 }))}
           disabled={pagination.pageIndex === 0}
         >
           <CgChevronLeft />
         </button>
         <button
-          className="border rounded p-1"
+          className="border rounded p-1 sm:w-auto w-full"
           onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 }))}
           disabled={pagination.pageIndex >= totalPages - 1}
         >
           <CgChevronRight />
         </button>
         <button
-          className="border rounded p-1"
+          className="border rounded p-1 sm:w-auto w-full"
           onClick={() => setPagination((prev) => ({ ...prev, pageIndex: totalPages - 1 }))}
           disabled={pagination.pageIndex >= totalPages - 1}
         >
           <CgChevronDoubleRight />
         </button>
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1 sm:w-auto w-full">
           <div>Página</div>
           <strong>
             {pagination.pageIndex + 1} de {totalPages}
           </strong>
         </span>
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1 sm:w-auto w-full">
           | Ir a la Página:
           <Input
-            className="border p-1 rounded w-16 ms-2"
+            className="border p-1 sm:w-auto w-full rounded w-16 ms-2"
             type="number"
             defaultValue={pagination.pageIndex + 1}
             onChange={(e) => {
@@ -182,7 +182,7 @@ const DataTable = ({ columns, data, fetchData, pagination, setPagination, search
             table.setPageSize(Number(value));
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] sm:w-auto">
             <SelectValue placeholder="Select a size" />
           </SelectTrigger>
           <SelectContent>

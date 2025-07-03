@@ -45,20 +45,7 @@ const ProductModal = ({ showModal, handleClose, product }) => {
     setLoading(false)
   }
 
-  const handleAssignmentChange2 = (salespersonId, value) => {
-    const newValue = parseInt(value, 10)
-    if (newValue < 0) return
 
-    const totalAssigned = Object.values(assignments).reduce((sum, val) => sum + val, 0)
-    const remainingBag = bag - totalAssigned + assignments[salespersonId]
-
-    if (newValue <= remainingBag) {
-      setAssignments((prev) => ({
-        ...prev,
-        [salespersonId]: newValue,
-      }))
-    }
-  }
   const handleAssignmentChange = (salespersonId, value) => {
     const newValue = parseInt(value, 10)
     if (newValue < 0) return
@@ -96,8 +83,8 @@ const ProductModal = ({ showModal, handleClose, product }) => {
 
   return (
     <Dialog open={showModal} onOpenChange={handleClose}>
-      <DialogContent className="max-w-6xl">
-        <DialogHeader>
+      <DialogContent className="w-full sm:max-w-6xl md:max-w-4xl lg:max-w-3xl xl:max-w-2xl">
+      <DialogHeader>
           <DialogTitle>Asignar Leads para {product.name}</DialogTitle>
         </DialogHeader>
 
