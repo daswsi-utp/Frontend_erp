@@ -17,7 +17,9 @@ const entityTranslations = {
   contract: "contrato",
   vacation: "vacacion",
   permission: "permiso",
-  mail: "correo"
+  mail: "correo",
+  product: "producto",
+  provider: "proveedor"
 }
 
 const useEntityMutation = (entityName) => {
