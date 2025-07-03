@@ -16,6 +16,7 @@ const FacturarOrdenModal = ({ open, onOpenChange, orden }) => {
   const { getModel } = useCrud();
   const [loading, setLoading] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
+  const [downloading, setDownloading] = useState(false); 
 
   useEffect(() => {
     const fetchInvoiceData = async () => {
@@ -40,16 +41,18 @@ const FacturarOrdenModal = ({ open, onOpenChange, orden }) => {
     fetchInvoiceData();
   }, [open, orden?.id, getModel, toast]);
 
-  const handleDownload = () => {
-    if (!invoiceData) {
-      toast({
-        title: "Error",
-        description: "No hay datos de factura para descargar.",
-        variant: "destructive",
-      });
-      return;
-    }
+const handleDownload = async () => {
+  if (!invoiceData) {
+    toast({
+      title: "Error",
+      description: "No hay datos de factura para descargar.",
+      variant: "destructive",
+    });
+    return;
+  }
 
+  setDownloading(true); 
+  try {
     const doc = new jsPDF();
     doc.setFontSize(12);
     doc.text(`Factura OP-${invoiceData.id}`, 10, 10);
@@ -64,17 +67,35 @@ const FacturarOrdenModal = ({ open, onOpenChange, orden }) => {
 
     let y = 100;
     invoiceData.details.forEach(detail => {
-      doc.text(`${detail.productName || "Producto desconocido"} - Cantidad: ${detail.quantity}, Precio Unitario: $${detail.unitPrice.toFixed(2)}, Total: $${detail.totalLine.toFixed(2)}`, 10, y);
+      doc.text(
+        `${detail.productName || "Producto desconocido"} - Cantidad: ${detail.quantity}, Precio Unitario: $${detail.unitPrice.toFixed(2)}, Total: $${detail.totalLine.toFixed(2)}`,
+        10,
+        y
+      );
       y += 10;
     });
 
     doc.save(`Factura_${invoiceData.invoiceNumber}.pdf`);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     toast({
       title: "Descargando factura...",
       description: `Factura #${invoiceData.invoiceNumber} descargada correctamente.`,
       variant: "success",
     });
-  };
+  } catch (error) {
+    console.error("Error al generar PDF:", error);
+    toast({
+      title: "Error al generar PDF",
+      description: error?.message || "Ocurrió un error al generar la factura.",
+      variant: "destructive",
+    });
+  } finally {
+    setDownloading(false); 
+  }
+};
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -106,12 +127,13 @@ const FacturarOrdenModal = ({ open, onOpenChange, orden }) => {
             Cerrar
           </Button>
           <Button
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={handleDownload}
-            disabled={loading}
-          >
-            Descargar
-          </Button>
+  className="bg-blue-600 hover:bg-blue-700 text-white"
+  onClick={handleDownload}
+  disabled={!invoiceData || downloading}
+>
+  {downloading ? "Generando..." : "Descargar"}
+</Button>
+
         </div>
       </DialogContent>
     </Dialog>

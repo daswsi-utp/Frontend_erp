@@ -188,22 +188,25 @@ const handleAddProducts = async (newProducts) => {
 /////////
 
 //EDITAR CUOTA//////////////////
- const handleEditQuote = async (updatedQuote) => {
-  try {
-    const data = await updateModel(updatedQuote, `/sales/quotes/${updatedQuote.id}`);
-    
-    // Actualiza el estado de quotes con la cotización editada
-    setQuotes(prevQuotes => 
-      prevQuotes.map(q => q.id === data.id ? formatQuote(data) : q)
-    );
-    
-    setOpenEdit(false);
-    alert('Cotización actualizada correctamente');
-  } catch (error) {
-    console.error('Error al actualizar cotización:', error);
-    alert(error.message);
-  }
-};
+// Manejo de actualización de cotización
+  const handleUpdateQuote = async (updatedQuoteData) => {
+    quoteMutation.mutate({
+      action: 'update',
+      id: selectedQuote.id,
+      entity: updatedQuoteData,
+      apiPath: `/sales/quotes/${selectedQuote.id}`
+    }, {
+      onSuccess: (updatedQuote) => {
+        setQuotes(prevQuotes => 
+          prevQuotes.map(quote => 
+            quote.id === selectedQuote.id ? formatQuote(updatedQuote) : quote
+          )
+        );
+        setOpenEdit(false);
+        setSelectedQuote(null);
+      }
+    });
+  };
 
 
    
@@ -246,7 +249,7 @@ const handleAddProducts = async (newProducts) => {
       open={openEdit}
       onClose={() => setOpenEdit(false)}
       quote={selectedQuote}
-      onSave={handleEditQuote} // Usa la nueva función
+      onSave={handleUpdateQuote} // Usa la nueva función
 />
 
       <DeleteQuoteModal
