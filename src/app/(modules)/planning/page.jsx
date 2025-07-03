@@ -7,6 +7,8 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from 'next/navigation'
 import useCrud from "@/hooks/useCrud"
 import { useEffect, useState } from "react"
+import useEntityMutation from "@/hooks/useEntityMutation";
+import useFetchPlans from "@/modules/planning/hooks/useFetchPlans";
 
 const Planning = () => {
 
@@ -21,35 +23,37 @@ const Planning = () => {
     "from-teal-500 to-teal-700"
   ];
 
-
+  const planningMutation = useEntityMutation('plan')
+  const { data, isLoading} = useFetchPlans()
   const router = useRouter()
-  const { getModel, deleteModel } = useCrud("/planning/plan")
-
-  const [planes, setPlanes] = useState([])
-
-  const fetchPlanes = async () => {
-    try {
-      const data = await getModel()
-      setPlanes(data)
-    } catch (error) {
-      console.error("error cargando planes");
-    }
-  }
-
-  useEffect(() => {
-    fetchPlanes()
-  }, []);
 
   const handleCardClick = (id) => {
     router.push(`/planning/schedule/${id}`);
   };
 
-  const handleDelete = async (id) => {
+  const deletePlan = async (id) =>{
     try {
-      await deleteModel(`/planning/plan/delete/${id}`)
-      fetchPlanes()
+      planningMutation.mutate({
+        action: 'delete',
+        id: id,
+        entity: {},
+        apiPath: `/planning/plan/delete/${id}`
+      })
     } catch (error) {
-      console.error("Error during delete planning", error)
+      console.error("Error during delete plan", error)
+    }
+  }
+
+  const updatePlan = async (id, plan) => {
+    try {
+      planningMutation.mutate({
+        action: 'update',
+        id: id,
+        entity: plan,
+        apiPath: `/planning/plan/update/${id}`
+      })
+    } catch (error) {
+      console.error("Error during update plan", error)
     }
   }
 
@@ -57,26 +61,29 @@ const Planning = () => {
     <div className="p-6">
       <div className="flex gap-4 items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Plannings</h1>
-        <SimpleFormPlanning onSuccess={fetchPlanes} />
+        <SimpleFormPlanning />
       </div>
 
-      {planes.length === 0 ? (
+      {isLoading ? (
+        <p className="text-center text-gray-500">Cargando planes...</p>
+      ) : !data || data.rowCount === 0 ? (
         <div className="w-full text-center text-gray-500 dark:text-gray-400 mt-10">
           <p className="text-lg">No hay planes creados aún.</p>
         </div>
       ) : (
         <div className="flex flex-wrap gap-6">
-          {planes.map((plan, index) => (
+          {Array.isArray(data?.rows) &&
+  data.rows.map((plan, index) => (
             <Card
-              key={plan.plan_id}
+              key={`plan-${plan.plan_id ?? `temp-${index}`}`}
               className={`p-6 w-full sm:w-[48%] lg:w-[31%] h-auto rounded-xl shadow-md transition-all duration-300 
                           hover:scale-105 hover:shadow-lg cursor-pointer group bg-gradient-to-r  ${colorClasses[index % colorClasses.length]}`}
               onClick={() => handleCardClick(plan.plan_id)}
             >
-              <CardTitle className="flex justify-between items-center mb-4">
-                <h1 className="text-xl font-semibold group-hover:text-white">{plan.plan_name}</h1>
+              <CardTitle className="flex justify-between items-center mb-4 text-white/90">
+                <h1 className="text-xl font-semibold">{plan.plan_name}</h1>
                 <div onClick={(e) => e.stopPropagation()}>
-                  <SimpleDropDown plan={plan} onDelete={() => handleDelete(plan.plan_id)} onUpdate={fetchPlanes} />
+                  <SimpleDropDown plan={plan} onDelete={() => deletePlan(plan.plan_id)} onUpdate={(id, updatedData) => updatePlan(id, updatedData)}/>
                 </div>
               </CardTitle>
               <CardDescription className="text-white/90">

@@ -3,25 +3,39 @@ import ScrollAreaSelectTasks from "./scroll-area-SelectTasks"
 import { Button } from "./shared/button"
 import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogContent } from "./ui/dialog"
 import useCrud from "@/hooks/useCrud"
+import useEntityMutation from "@/hooks/useEntityMutation"
 
-const DeleteTaskForm = ({ onTaskUpdate }) => {
+const DeleteTaskForm = ({ onTaskUpdate, tasks }) => {
   const [selectedTaskIds, setSelectedTaskIds] = useState(new Set())
   const [reloadTrigger, setReloadTrigger] = useState(false) // ← NUEVO
   const { deleteModel } = useCrud("/planning/task")
 
+  const taskMutation = useEntityMutation('task')
+  
+  const deleteTask = async (id) =>{
+    try {
+      taskMutation.mutate({
+        action: 'delete',
+        id: id,
+        entity: {},
+        apiPath: `/planning/task/delete/${id}`
+      })
+    } catch (error) {
+      console.error("Error during delete task", error)
+    }
+  }
+  
   const handleDelete = async (e) => {
     e.preventDefault()
     try {
       for (const id of selectedTaskIds) {
-        await deleteModel(`/planning/task/delete/${id}`)
+        await deleteTask(id)
       }
-      alert("Tareas eliminadas correctamente")
       setSelectedTaskIds(new Set())
-      setReloadTrigger(prev => !prev) // ← CAMBIA trigger para recargar tareas
+      setReloadTrigger(prev => !prev)
       if (onTaskUpdate) onTaskUpdate();
     } catch (error) {
       console.error("Error al eliminar tareas:", error)
-      alert("Error al eliminar tareas")
     }
   }
 
@@ -38,7 +52,8 @@ const DeleteTaskForm = ({ onTaskUpdate }) => {
           <ScrollAreaSelectTasks
             selectedTaskIds={selectedTaskIds}
             setSelectedTaskIds={setSelectedTaskIds}
-            reloadTrigger={reloadTrigger} // ← PASAMOS trigger
+            reloadTrigger={reloadTrigger}
+            tasks={tasks}
           />
           <Button type="submit" className="mt-2" disabled={selectedTaskIds.size === 0}>
             Eliminar
