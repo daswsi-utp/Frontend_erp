@@ -1,18 +1,19 @@
 'use client';
 
+import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { DialogTitle } from "@/components/ui/dialog";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import useCrud from "@/hooks/useCrud";
-import React, { useEffect, useState } from "react";
+
+import useFetchProviders from "@/modules/logistic/hooks/useFetchProviders";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 export default function ProveedoresPanel() {
-  const { getModel, deleteModel, postModel, putModel } = useCrud("");
-  const [providers, setProviders] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editando, setEditando] = useState(false);
 
@@ -25,36 +26,31 @@ export default function ProveedoresPanel() {
     direccion: "",
   });
 
-  const fetchProviders = async () => {
-    try {
-      const data = await getModel("/logistic/providers");
-      setProviders(data);
-    } catch (error) {
-      console.error("Error cargando proveedores", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProviders();
-  }, []);
+  const { data: providersData, refetch } = useFetchProviders();
+  const mutation = useEntityMutation('providers');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      if (editando) {
-        await putModel(`/logistic/providers/${form.id_proveedor}`, form);
-      } else {
-        await postModel("/logistic/providers", form);
+
+    const payload = {
+      action: editando ? 'update' : 'create',
+      entity: form,
+      id: form.id_proveedor,
+      apiPath: editando
+        ? `/logistic/providers/${form.id_proveedor}`
+        : '/logistic/providers',
+    };
+
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        refetch();
+        handleDialogClose();
       }
-      await fetchProviders();
-      handleDialogClose();
-    } catch (error) {
-      console.error("Error al guardar proveedor", error);
-    }
+    });
   };
 
   const handleEdit = (proveedor) => {
@@ -63,13 +59,15 @@ export default function ProveedoresPanel() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteModel(`/logistic/providers/${id}`);
-      await fetchProviders();
-    } catch (error) {
-      console.error("Error al eliminar proveedor", error);
-    }
+  const handleDelete = (id) => {
+    mutation.mutate({
+      action: 'delete',
+      id,
+      entity: {},
+      apiPath: `/logistic/providers/${id}`,
+    }, {
+      onSuccess: () => refetch()
+    });
   };
 
   const handleDialogClose = () => {
@@ -91,20 +89,15 @@ export default function ProveedoresPanel() {
         <CardTitle>🏢 Gestión de Proveedores</CardTitle>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                handleDialogClose();
-                setDialogOpen(true);
-              }}
-            >
+            <Button onClick={() => { handleDialogClose(); setDialogOpen(true); }}>
               + Nuevo proveedor
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <h2 className="text-xl font-semibold">
-                {editando ? "Editar proveedor" : "Nuevo proveedor"}
-              </h2>
+            <DialogTitle className="text-xl font-semibold">
+              {editando ? "Editar proveedor" : "Nuevo proveedor"}
+            </DialogTitle>
+            <form onSubmit={handleSubmit} className="grid gap-4 mt-2">
               <div>
                 <Label>Nombre</Label>
                 <Input name="nombre" value={form.nombre} onChange={handleChange} required />
@@ -135,6 +128,7 @@ export default function ProveedoresPanel() {
           </DialogContent>
         </Dialog>
       </CardHeader>
+
       <CardContent>
         <Table>
           <TableHeader>
@@ -148,7 +142,7 @@ export default function ProveedoresPanel() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {providers.map((p) => (
+            {providersData?.rows.map((p) => (
               <TableRow key={p.id_proveedor}>
                 <TableCell>{p.nombre}</TableCell>
                 <TableCell>{p.contacto}</TableCell>
@@ -156,14 +150,8 @@ export default function ProveedoresPanel() {
                 <TableCell>{p.email}</TableCell>
                 <TableCell>{p.direccion}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="sm" onClick={() => handleEdit(p)}>
-                    Editar
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(p.id_proveedor)}
-                  >
+                  <Button size="sm" onClick={() => handleEdit(p)}>Editar</Button>
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id_proveedor)}>
                     Eliminar
                   </Button>
                 </TableCell>
