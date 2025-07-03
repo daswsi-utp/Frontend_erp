@@ -19,7 +19,7 @@ import {
 import lookup from "country-code-lookup";
 import Switch from "react-switch";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectLabel } from "@/components/ui/select";
-import useCrud1 from "@/hooks/useCrud1";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 
 const LeadsImportTable = (props) => {
@@ -30,7 +30,7 @@ const LeadsImportTable = (props) => {
   const [selected, setSelected] = useState("");
   const [validated, setValidated] = useState(false);
   const [qualityLead, setQualityLead] = useState(false);
-  const { insertModel2: insertLeads } = useCrud1("");
+  const mutation = useEntityMutation('leads')
 
   const methods = useForm();
 
@@ -44,9 +44,69 @@ const LeadsImportTable = (props) => {
     return null;
   };
 
+
+
   const handleInsertLeads = async () => {
-    const finalDataPost = { data: finalData };
-    await insertLeads(finalDataPost, "/api/v1/crm/leads/insert_leads", layoutCallback);
+    try {
+      const leadsToInsert = finalData.map(client => ({
+        first_name: client.first_name,
+        last_name: client.last_name,
+        phone: formatPhoneNumber(client.phone, client.country_code),
+        whatsapp: formatPhoneNumber(client.whatsapp, client.country_code),
+        productId: Number(client.product_id),
+        memberId: 6, 
+        clientStateId: 1,
+        is_quality: client.quality_lead === "is_quality",
+        reasonId: 1,
+        arrivalMeanId: 1,
+        email: client.email,
+        country: client.country,
+        country_code: client.country_code,
+        city: client.city || "Sin definir",
+        jobTitle: client.jobTitle || "Sin definir",
+        notes: client.notes || "Sin notas",
+        birth_date: client.birth_date || null,
+      }));
+  
+  
+      const payload = {
+        data: leadsToInsert
+      };
+  
+      await mutation.mutateAsync({
+        action: 'create',
+        entity: payload, 
+        apiPath: "/crm/clients/insert-leads"
+      });
+  
+    } catch (error) {
+      console.error("Error al crear los leads:", error.response?.data || error);
+    } layoutCallback();
+  }
+  
+  
+  const formatPhoneNumber = (phone, countryCode) => {
+    if (!phone || phone === "Sin definir") return phone;
+    
+    const cleaned = phone.replace(/\D/g, '');
+    
+    let dialCode = "+51"; 
+    if (countryCode) {
+      const country = lookup.byIso(countryCode);
+      if (country && country.dial) {
+        dialCode = `+${country.dial.replace(/\D/g, '')}`;
+      }
+    }
+    
+    if (cleaned.startsWith(dialCode.replace('+', ''))) {
+      return `+${cleaned}`;
+    }
+    
+    if (/^\+?\d+$/.test(phone)) {
+      return phone.startsWith('+') ? phone : `+${phone}`;
+    }
+    
+    return `${dialCode}${cleaned}`;
   };
 
   const middlewareInsertLeads = async (event) => {
@@ -178,10 +238,10 @@ const LeadsImportTable = (props) => {
         email: client.email || "Sin email",
         product_name: "Sin escoger un producto",
         product_id: selected,
-        adset_name: client.adset_name,
+        notes: client.adset_name,
         education_level: client.education_level,
-        birth_date: formatearFecha(client.birth_date),
-        company_position: client.company_position,
+        birth_date: null,
+        jobTitle: client.company_position,
         company: client.company,
         created_time: client.created_time,
         form_name: client.form_name,
@@ -260,8 +320,9 @@ const LeadsImportTable = (props) => {
                   name="product_id"
                   onChange={handleChange}
                   required
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                  value={selected}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                  focus:outline-none focus:ring-primary focus:border-primary sm:text-sm
+                  text-gray-900 bg-white"                  value={selected}
                 >
                   <option value="">Seleccione una opción</option>
                   {productsAvailable.map((product, index) => (
@@ -302,7 +363,6 @@ const LeadsImportTable = (props) => {
                   <TableCell>{client.phone}</TableCell>
                   <TableCell>{client.whatsapp}</TableCell>
                   <TableCell>{client.country}</TableCell>
-                  <TableCell>{client.city}</TableCell>
                   <TableCell>{client.product_name}</TableCell>
                   <TableCell>{client.product_id}</TableCell>
                 </TableRow>

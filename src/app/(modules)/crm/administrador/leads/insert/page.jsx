@@ -52,7 +52,6 @@ const InsertManual = () => {
         apiPath: '/crm/clients'     
 
       })
-      console.log(data)
       methods.reset();
       setShowForm(false);
     } catch (error) {
