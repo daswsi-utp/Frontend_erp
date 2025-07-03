@@ -13,46 +13,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import useCrud from "@/hooks/useCrud";
+import FacturarOrdenModal from "../modals/FacturarOrdenModal";
 
 const Tableorders = () => {
   const [search, setSearch] = useState("");
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-    const { getModel } = useCrud();
-  
+  const { getModel } = useCrud();
 
-  // Función para cargar ventas desde el backend
- const fetchSales = async () => {
-  try {
-    setLoading(true);
-    const response = await getModel('/sales/transactions');
-    
-    // Aquí se guarda la respuesta en el estado
-    setSales(response);
+  const fetchSales = async () => {
+    try {
+      setLoading(true);
+      const response = await getModel('/sales/transactions');
+      setSales(response);
+      console.log("Ventas cargadas:", response);
+    } catch (error) {
+      console.error("Error fetching sales:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar las ventas",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    console.log("Ventas cargadas:", response);
-    
-  } catch (error) {
-    console.error("Error fetching sales:", error);
-    toast({
-      title: "Error",
-      description: "No se pudieron cargar las ventas",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  // Cargar ventas al montar el componente
   useEffect(() => {
     fetchSales();
   }, []);
 
-  // Función para traducir estados al español
   const translateStatus = (status) => {
     const statusMap = {
       'PACKAGED': 'Empacado',
@@ -62,6 +56,15 @@ const Tableorders = () => {
     };
     return statusMap[status] || status;
   };
+
+  const handleOpenInvoiceModal = (sale) => {
+  setSelectedOrder({
+    id: sale.id,
+    cliente: sale.quote?.clientName || 'Cliente no especificado',
+    quoteId: sale.quote?.id // <<--- Añade esto
+  });
+  setIsModalOpen(true);
+};
 
   const filteredSales = sales.filter((sale) =>
     (sale.quote?.clientName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -74,8 +77,6 @@ const Tableorders = () => {
 
   return (
     <div className="space-y-6">
-     
-
       <Input
         placeholder="Buscar por cliente o ID de venta..."
         value={search}
@@ -119,7 +120,13 @@ const Tableorders = () => {
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button variant="outline" size="sm">Detalles</Button>
-                  <Button variant="secondary" size="sm">Factura</Button>
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    onClick={() => handleOpenInvoiceModal(sale)}
+                  >
+                    Factura
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
@@ -132,6 +139,12 @@ const Tableorders = () => {
           )}
         </TableBody>
       </Table>
+
+      <FacturarOrdenModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        orden={selectedOrder}
+      />
     </div>
   );
 };

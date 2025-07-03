@@ -257,8 +257,7 @@ const handleAddProducts = async (newProducts) => {
         quote={selectedQuote}
         file={selectedFile}
       />
-
-
+    
     </div>
   );
 };
