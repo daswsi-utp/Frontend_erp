@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -9,16 +9,7 @@ import InventoryForm from "./inventoryForm";
 import useCrud from "@/hooks/useCrud";
 
 export default function InventoryPanel() {
-  const {
-    getModel: getProducts,
-    insertModel: insertProduct,
-    updateModel: updateProduct,
-    deleteModel: deleteProduct,
-  } = useCrud("/logistic/products");
-
-  const { getModel: getInventory } = useCrud("/logistic/inventory");
-  const { getModel: getProviders } = useCrud("/logistic/providers");
-  const { getModel: getBranches } = useCrud("/logistic/branches");
+  const { getModel, postModel, putModel, deleteModel } = useCrud("");
 
   const [inventarios, setInventarios] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -34,9 +25,9 @@ export default function InventoryPanel() {
   const loadData = async () => {
     try {
       const [inventoryData, providersData, branchesData] = await Promise.all([
-        getInventory(),
-        getProviders(),
-        getBranches(),
+        getModel("/logistic/inventory"),
+        getModel("/logistic/providers"),
+        getModel("/logistic/branches"),
       ]);
 
       setInventarios(inventoryData);
@@ -91,7 +82,7 @@ export default function InventoryPanel() {
 
   const handleDelete = async (item) => {
     try {
-      await deleteProduct(`/${item.id}`);
+      await deleteModel(`/logistic/products/${item.id}`);
       loadData();
     } catch (error) {
       console.error("Error al eliminar el producto", error);
@@ -101,9 +92,9 @@ export default function InventoryPanel() {
   const handleSubmit = async (item) => {
     try {
       if (item.id) {
-        await updateProduct(item, `/${item.id}`);
+        await putModel(`/logistic/products/${item.id}`, item);
       } else {
-        await insertProduct(item);
+        await postModel("/logistic/products", item);
       }
       setModalOpen(false);
       loadData();

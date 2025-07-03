@@ -1,80 +1,86 @@
 'use client';
 
+import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { DialogTitle } from "@/components/ui/dialog";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import useCrud from "@/hooks/useCrud";
-import React, { useEffect, useState } from "react";
+
+import useFetchProviders from "@/modules/logistic/hooks/useFetchProviders";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 export default function ProveedoresPanel() {
-  const {getModel} = useCrud("")
-  const [providers, setProviders] = useState({});
-
-  const fetchProviders = async () =>{
-    try {
-      const data = await getModel( "/logistic/providers");
-      setProviders(data);
-    } catch (error) {
-      console.error("error cargando empleados");
-    }
-  }
-
-  useEffect(() => {
-    fetchProviders();
-  }, []);
-  const {
-    items: proveedores = [],
-    currentItem: form,
-    editing: editando,
-    addItem,
-    updateItem,
-    deleteItem,
-    startEdit,
-    cancelEdit,
-    setCurrentItem,
-  } = useCrud("/logistic/providers");
-
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editando, setEditando] = useState(false);
 
-  function initialForm() {
-    return {
+  const [form, setForm] = useState({
+    id_proveedor: null,
+    nombre: "",
+    contacto: "",
+    telefono: "",
+    email: "",
+    direccion: "",
+  });
+
+  const { data: providersData, refetch } = useFetchProviders();
+  const mutation = useEntityMutation('providers');
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const payload = {
+      action: editando ? 'update' : 'create',
+      entity: form,
+      id: form.id_proveedor,
+      apiPath: editando
+        ? `/logistic/providers/${form.id_proveedor}`
+        : '/logistic/providers',
+    };
+
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        refetch();
+        handleDialogClose();
+      }
+    });
+  };
+
+  const handleEdit = (proveedor) => {
+    setForm(proveedor);
+    setEditando(true);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (id) => {
+    mutation.mutate({
+      action: 'delete',
+      id,
+      entity: {},
+      apiPath: `/logistic/providers/${id}`,
+    }, {
+      onSuccess: () => refetch()
+    });
+  };
+
+  const handleDialogClose = () => {
+    setForm({
       id_proveedor: null,
       nombre: "",
       contacto: "",
       telefono: "",
       email: "",
       direccion: "",
-    };
-  }
-
-  const handleChange = (e) => {
-    setCurrentItem({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (editando) {
-      updateItem(form);
-    } else {
-      addItem(form);
-    }
-
-    setCurrentItem(initialForm());
-    cancelEdit();
+    });
+    setEditando(false);
     setDialogOpen(false);
-  };
-
-  const handleEdit = (proveedor) => {
-    startEdit(proveedor);
-    setDialogOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    deleteItem(id);
   };
 
   return (
@@ -83,43 +89,37 @@ export default function ProveedoresPanel() {
         <CardTitle>🏢 Gestión de Proveedores</CardTitle>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setCurrentItem(initialForm());
-                cancelEdit();
-                setDialogOpen(true); // se asegura que el diálogo se abra
-              }}
-            >
+            <Button onClick={() => { handleDialogClose(); setDialogOpen(true); }}>
               + Nuevo proveedor
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <h2 className="text-xl font-semibold">
-                {editando ? "Editar proveedor" : "Nuevo proveedor"}
-              </h2>
+            <DialogTitle className="text-xl font-semibold">
+              {editando ? "Editar proveedor" : "Nuevo proveedor"}
+            </DialogTitle>
+            <form onSubmit={handleSubmit} className="grid gap-4 mt-2">
               <div>
                 <Label>Nombre</Label>
-                <Input name="nombre" value={form?.nombre || ""} onChange={handleChange} required />
+                <Input name="nombre" value={form.nombre} onChange={handleChange} required />
               </div>
               <div>
                 <Label>Contacto</Label>
-                <Input name="contacto" value={form?.contacto || ""} onChange={handleChange} />
+                <Input name="contacto" value={form.contacto} onChange={handleChange} />
               </div>
               <div>
                 <Label>Teléfono</Label>
-                <Input name="telefono" value={form?.telefono || ""} onChange={handleChange} />
+                <Input name="telefono" value={form.telefono} onChange={handleChange} />
               </div>
               <div>
                 <Label>Email</Label>
-                <Input type="email" name="email" value={form?.email || ""} onChange={handleChange} />
+                <Input type="email" name="email" value={form.email} onChange={handleChange} />
               </div>
               <div>
                 <Label>Dirección</Label>
-                <Textarea name="direccion" value={form?.direccion || ""} onChange={handleChange} />
+                <Textarea name="direccion" value={form.direccion} onChange={handleChange} />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={handleDialogClose}>
                   Cancelar
                 </Button>
                 <Button type="submit">{editando ? "Actualizar" : "Guardar"}</Button>
@@ -128,6 +128,7 @@ export default function ProveedoresPanel() {
           </DialogContent>
         </Dialog>
       </CardHeader>
+
       <CardContent>
         <Table>
           <TableHeader>
@@ -141,7 +142,7 @@ export default function ProveedoresPanel() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {providers?.map((p) => (
+            {providersData?.rows.map((p) => (
               <TableRow key={p.id_proveedor}>
                 <TableCell>{p.nombre}</TableCell>
                 <TableCell>{p.contacto}</TableCell>
@@ -150,7 +151,9 @@ export default function ProveedoresPanel() {
                 <TableCell>{p.direccion}</TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button size="sm" onClick={() => handleEdit(p)}>Editar</Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id_proveedor)}>Eliminar</Button>
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id_proveedor)}>
+                    Eliminar
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

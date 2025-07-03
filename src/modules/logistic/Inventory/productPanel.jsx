@@ -1,30 +1,48 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import useCrud from "@/hooks/useCrud";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
+
+import useFetchProducts from "@/modules/logistic/hooks/useFetchProducts";
+import useFetchProviders from "@/modules/logistic/hooks/useFetchProviders";
+import useMutationProducts from "@/modules/logistic/hooks/useMutationProducts";
 
 export default function ProductosPanel() {
-  const {
-    getModel: getProductos,
-    insertModel: insertProducto,
-    updateModel: updateProducto,
-    deleteModel: deleteProducto,
-  } = useCrud("/logistic/products");
-
-  const { getModel: getProveedores } = useCrud("/logistic/providers");
-
-  const [productos, setProductos] = useState([]);
-  const [proveedores, setProveedores] = useState([]);
   const [form, setForm] = useState(initialForm());
   const [editando, setEditando] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const { data: productsData, refetch: refetchProducts } = useFetchProducts();
+  const { data: providersData } = useFetchProviders();
+  const mutation = useMutationProducts();
+
+  const productos = productsData?.rows || [];
+  const proveedores = providersData?.rows || [];
 
   function initialForm() {
     return {
@@ -37,52 +55,34 @@ export default function ProductosPanel() {
     };
   }
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [prodData, provData] = await Promise.all([
-        getProductos(),
-        getProveedores(),
-      ]);
-      setProductos(prodData);
-      setProveedores(provData);
-    } catch (error) {
-      console.error("Error cargando datos", error);
-    }
-  };
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const payload = {
-      sku: form.sku,
-      nombre: form.nombre,
-      marca: form.marca,
-      precio: parseFloat(form.precio),
-      proveedor: form.proveedor,
+      action: editando ? "update" : "create",
+      entity: {
+        sku: form.sku,
+        nombre: form.nombre,
+        marca: form.marca,
+        precio: parseFloat(form.precio),
+        proveedor: form.proveedor,
+      },
+      id: form.id,
+      apiPath: editando
+        ? `/logistic/products/${form.id}`
+        : "/logistic/products",
     };
 
-    try {
-      if (editando && form.id) {
-        await updateProducto(payload, `/${form.id}`);
-      } else {
-        await insertProducto(payload);
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        refetchProducts();
+        handleDialogClose();
       }
-
-      setDialogOpen(false);
-      setForm(initialForm());
-      setEditando(false);
-      loadData();
-    } catch (error) {
-      console.error("Error al guardar el producto", error);
-    }
+    });
   };
 
   const handleEdit = (producto) => {
@@ -98,18 +98,26 @@ export default function ProductosPanel() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteProducto(`/${id}`);
-      loadData();
-    } catch (error) {
-      console.error("Error al eliminar", error);
-    }
+  const handleDelete = (id) => {
+    mutation.mutate({
+      action: "delete",
+      id,
+      entity: {},
+      apiPath: `/logistic/products/${id}`,
+    }, {
+      onSuccess: () => refetchProducts()
+    });
+  };
+
+  const handleDialogClose = () => {
+    setForm(initialForm());
+    setEditando(false);
+    setDialogOpen(false);
   };
 
   const getProveedorNombre = (id) => {
     const prov = proveedores.find((p) => p.id_proveedor === id);
-    return prov ? prov.nombre : "Sin proveedor";
+    return prov?.nombre || "Sin proveedor";
   };
 
   return (
@@ -118,14 +126,16 @@ export default function ProductosPanel() {
         <CardTitle>📦 Gestión de Productos</CardTitle>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>+ Nuevo producto</Button>
+            <Button onClick={() => {
+              handleDialogClose();
+              setDialogOpen(true);
+            }}>
+              + Nuevo producto
+            </Button>
           </DialogTrigger>
           <DialogContent>
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <h2 className="text-xl font-semibold">
-                {editando ? "Editar producto" : "Nuevo producto"}
-              </h2>
-
+            <DialogTitle>{editando ? "Editar producto" : "Nuevo producto"}</DialogTitle>
+            <form onSubmit={handleSubmit} className="grid gap-4 mt-4">
               <div>
                 <Label>SKU</Label>
                 <Input name="sku" value={form.sku} onChange={handleChange} required />
@@ -144,7 +154,10 @@ export default function ProductosPanel() {
               </div>
               <div>
                 <Label>Proveedor</Label>
-                <Select value={form.proveedor} onValueChange={(v) => setForm({ ...form, proveedor: v })}>
+                <Select
+                  value={form.proveedor}
+                  onValueChange={(v) => setForm({ ...form, proveedor: v })}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona un proveedor" />
                   </SelectTrigger>
@@ -157,9 +170,8 @@ export default function ProductosPanel() {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={handleDialogClose}>
                   Cancelar
                 </Button>
                 <Button type="submit">{editando ? "Actualizar" : "Guardar"}</Button>
