@@ -5,36 +5,25 @@ import useEntityMutation from '@/hooks/useEntityMutation'
 import { useNavigate } from 'react-router-dom'
 
 const TableProducts = ({ handleOpenModal, data, fetchData, pagination, setPagination, setProduct, setTypeModal, totalPages, search, setSearch, searchFields, setSearchFields }) => {
-  const { mutateAsync } = useEntityMutation('products') 
+  const { mutateAsync } = useEntityMutation('products')
   // const navigate = useNavigate()
-
-  const handleDelete = async (id) => {
-    try {
-      await mutateAsync(
-        { action: 'delete', apiPath: `/api/v1/admin/products/${id}` },
-      )
-    } catch (error) {
-      console.error('Error al eliminar el producto:', error)
-    }
-  }
-
-  const handleUpdate = (product) => {
-    setProduct(product)
-    setTypeModal('edit')
-    handleOpenModal('edit', product)
-  }
+ 
 
   const handleShow = (product) => {
     setProduct(product)
-    setTypeModal('show')
-    handleOpenModal('show', product)
+    setTypeModal('show')  // Tipo de modal para ver el producto
+    handleOpenModal('show', product)  // Abrir el modal de ver producto
   }
 
-  const handleAddToCart = (product) => {
-    console.log('Producto agregado al carrito:', product)
+  const handleProduct = (product) => {
+    setProduct(product)
+    setTypeModal('edit')  // Tipo de modal para editar el producto
+    handleOpenModal('edit', product)  // Abrir el modal de editar producto
   }
 
-  const columnsWithActions = useMemo(() => columns(handleDelete, handleUpdate, handleShow, handleAddToCart), [handleDelete, handleUpdate, handleShow, handleAddToCart])
+
+ 
+  const columnsWithActions = useMemo(() => columns( handleShow,handleProduct), [ handleShow, handleProduct])
 
   const sortedData = useMemo(() => {
     if (!data) return []

@@ -7,6 +7,8 @@ import { TbPlus } from 'react-icons/tb'
 import TableProducts from '@/modules/crm/teams/tables/ProductTable'
 import useFetchProducts from '@/modules/crm/teams/hooks/useFetchProducts'
 import ProductModal from '@/modules/crm/teams/tables/ProductModal'
+import ModalShowProduct from '@/modules/crm/teams/modals/ModalShowProduct'
+
 
 const Products = () => {
   const [typeModal, setTypeModal] = useState('')
@@ -47,13 +49,6 @@ const Products = () => {
           <CardTitle>Listado de Productos</CardTitle>
         </CardHeader>
         <CardContent className="px-4">
-          {/* <Button
-            variant="outline"
-            onClick={() => handleOpenModal('new')}
-            className="bg-green-300 text-black hover:bg-green-600 justify-start"
-          >
-            <TbPlus /> Crear Producto
-          </Button> */}
 
           <TableProducts
             handleOpenModal={handleOpenModal}
@@ -61,6 +56,8 @@ const Products = () => {
             data={fetchProducts?.rows || []} 
             pagination={pagination}
             setPagination={setPagination}
+            setProduct={setProduct}
+            setTypeModal={setTypeModal}
             search={search}
             setSearch={setSearch}
             searchFields={searchFields}
@@ -70,7 +67,15 @@ const Products = () => {
         </CardContent>
       </Card>
 
-      {isModalOpen && product && (
+      {typeModal === 'show' && (
+        <ModalShowProduct
+          showModal={isModalOpen}
+          handleClose={handleCloseModal}
+          product={product}
+        />
+      )}
+
+      {typeModal === 'edit' && (
         <ProductModal
           showModal={isModalOpen}
           typeModal={typeModal}

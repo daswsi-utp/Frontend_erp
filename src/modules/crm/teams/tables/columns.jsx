@@ -3,7 +3,7 @@ import { TbEye, TbTrash, TbEdit } from "react-icons/tb"
 import GeneralTooltip from '@/components/shared/generalTooltip'
 import { Badge } from '@/components/ui/badge'
 
-const columns = (handleDelete, handleUpdate, handleShow, handleAddToCart) => [
+const columns = (handleShow, handleProduct) => [
   {
     header: 'No.',  // Numeración
     cell: ({ row }) => (
@@ -54,42 +54,28 @@ const columns = (handleDelete, handleUpdate, handleShow, handleAddToCart) => [
     header: 'Acciones',
     cell: ({ row }) => (
       <div className="space-x-1 grid grid-cols-2 gap-3">
+
+
+        <GeneralTooltip
+          content={`Leads producto ${row?.original.name}`}
+          triggerContent={
+            <span className="bg-yellow-600 text-white rounded-full p-1 cursor-pointer">
+              <TbEye size={20} />
+            </span>
+          }
+          onClick={() => handleProduct(row?.original)}
+        />
+
         <GeneralTooltip
           content={`Ver el producto ${row?.original.name}`}
           triggerContent={
             <span className="bg-blue-600 text-white rounded-full p-1 cursor-pointer">
-              <TbEye size={25} />
+              <TbEdit size={25} />
             </span>
           }
           onClick={() => handleShow(row?.original)}
         />
-        <GeneralTooltip
-          content={`Eliminar el producto ${row?.original.name}`}
-          triggerContent={
-            <span className="bg-red-600 text-white rounded-full p-1 cursor-pointer">
-              <TbTrash size={25} />
-            </span>
-          }
-          onClick={() => handleDelete(row?.original.id)}
-        />
-        <GeneralTooltip
-          content={`Editar el producto ${row?.original.name}`}
-          triggerContent={
-            <span className="bg-yellow-600 text-white rounded-full p-1 cursor-pointer">
-              <TbEdit size={25} />
-            </span>
-          }
-          onClick={() => handleUpdate(row?.original)}
-        />
-        <GeneralTooltip
-          content={`Agregar al carrito ${row?.original.name}`}
-          triggerContent={
-            <span className="bg-green-600 text-white rounded-full p-1 cursor-pointer">
-              <TbEye size={25} />
-            </span>
-          }
-          onClick={() => handleAddToCart(row?.original)}
-        />
+
       </div>
     ),
   },
