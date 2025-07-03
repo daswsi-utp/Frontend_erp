@@ -33,7 +33,7 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
         id: quote.id || 0,
         expirationDate: quote.expirationDate ? quote.expirationDate.split('T')[0] : '',
         state: quote.state || 'PENDING',
-        typePayment: quote.typePayment || '',
+        typePayment: quote.typePayment || paymentMethods[0].id,
         observation: quote.observation || ''
       });
     }
@@ -114,7 +114,9 @@ const EditQuoteModal = ({ open, onClose, quote, onSave }) => {
               onValueChange={(value) => handleSelectChange('typePayment', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccione método" />
+                <SelectValue placeholder={formData.typePayment 
+                  ? paymentMethods.find(m => m.id === formData.typePayment)?.name 
+                  : "Seleccione método"} />
               </SelectTrigger>
               <SelectContent>
                 {paymentMethods.map(method => (

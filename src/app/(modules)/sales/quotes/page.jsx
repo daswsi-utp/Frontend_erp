@@ -6,12 +6,15 @@ import NewQuoteModal from '@/modules/sales/quotes/modals/NewQuoteModal';
 import EditQuoteModal from '@/modules/sales/quotes/modals/EditQuoteModal';
 import DeleteQuoteModal from '@/modules/sales/quotes/modals/DeleteQuoteModal';
 import ViewQuoteModal  from '@/modules/sales/quotes/modals/ViewQuoteModal';
-import DetailQuoteModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
 import useCrud from '@/hooks/useCrud';
 import ProductDetailsModal from '@/modules/sales/quotes/modals/DetailQuoteModal';
+import useFetchQuote from '@/modules/sales/hoocks/useFetchQuote';
+import useEntityMutation from '@/hooks/useEntityMutation';
+import { update } from 'lodash';
 
 
 const SalesPage = () => { 
+  const quoteMutation = useEntityMutation('quote')
   const [quotes, setQuotes] = useState([]);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,21 +23,36 @@ const SalesPage = () => {
   const [openView, setOpenView] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Estado para carga
   const [openProducts, setOpenProducts] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]); 
   const { getModel, insertModel, deleteModel, updateModel } = useCrud();
   const { getModel: getProduct, insertModel: insertProduct, deleteModel: deleteProduct } = useCrud();
+
+  const {data, isLoading} = useFetchQuote();
+
+   useEffect(() => {
+    if (data) {
+      setQuotes(data.rows.map(formatQuote));
+    }
+  }, [data])
+
   //DESDE LA BASE DE DATOS
 
-  const deleteQuote = async (quote) => {
-      try {
-        await deleteModel (`/sales/quotes/${quote.id}`);
-        await fetchQuotes ();
-      } catch (error) {
-        console.error(error)       
-      }
+  
+  
+ const deleteQuote = async (quote) =>{
+    try {
+      quoteMutation.mutate({
+        action: 'delete',
+        id: quote.id,
+        entity: {},
+        apiPath: `/sales/quotes/${quote.id}`
+      })
+    } catch (error) {
+      console.error("Error during delete quote", error)
+    }
   }
+  
 
   const formatQuote = (quote) => ({
     id: quote.id,
@@ -47,37 +65,24 @@ const SalesPage = () => {
     details: quote.details || []
   });
 
- 
- ///////////////CARGAR CUOTAS//////////////
-  const fetchQuotes = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getModel("/sales/quotes");
-      setQuotes(data.map(formatQuote));
-    } catch (error) {
-      console.error("Error al cargar cotizaciones:", error);
-      alert("Error al cargar cotizaciones");
-    } finally {
-      setIsLoading(false);
-    }
+
+
+  const handleCreateQuote = async (newQuoteData) => {
+    quoteMutation.mutate({
+      action: 'create',
+      entity: newQuoteData,
+      apiPath: '/sales/quotes'
+    }, {
+      onSuccess: (createdQuote) => {
+        setQuotes(prevQuotes => [...prevQuotes, formatQuote(createdQuote)]);
+        setOpenNew(false);
+      }
+    });
   };
 
-  useEffect(() => {
-    fetchQuotes();
-  }, []);
-////////////////////////////////////////////////
 
- const handleCreateQuote = async (newQuoteData) => {
-    try {
-      const createdQuote = await insertModel(newQuoteData, "/sales/quotes");
-      setQuotes([...quotes, formatQuote(createdQuote)]);
-      setOpenNew(false);
-      alert('Cotización creada exitosamente');
-    } catch (error) {
-      console.error("Error al crear cotización:", error);
-      alert(`Error al crear cotización: ${error.message}`);
-    }
-  };
+
+
 
 const handleShowProducts = (quote) => {
   // Verificación de seguridad
@@ -183,17 +188,30 @@ const handleAddProducts = async (newProducts) => {
 /////////
 
 //EDITAR CUOTA//////////////////
- const handleEditQuote = async (updatedQuote) => {
-    try {
-      const data = await updateModel(updatedQuote, `/sales/quotes/${updatedQuote.id}`);
-      setQuotes(quotes.map(q => q.id === data.id ? formatQuote(data) : q));
-      setOpenEdit(false);
-      alert('Cotización actualizada correctamente');
-    } catch (error) {
-      console.error('Error al actualizar cotización:', error);
-      alert(error.message);
-    }
+// Manejo de actualización de cotización
+  const handleUpdateQuote = async (updatedQuoteData) => {
+    quoteMutation.mutate({
+      action: 'update',
+      id: selectedQuote.id,
+      entity: updatedQuoteData,
+      apiPath: `/sales/quotes/${selectedQuote.id}`
+    }, {
+      onSuccess: (updatedQuote) => {
+        setQuotes(prevQuotes => 
+          prevQuotes.map(quote => 
+            quote.id === selectedQuote.id ? formatQuote(updatedQuote) : quote
+          )
+        );
+        setOpenEdit(false);
+        setSelectedQuote(null);
+      }
+    });
   };
+
+
+   
+
+
 ///////////////
   return (
     <div className="p-6 space-y-6">
@@ -211,7 +229,7 @@ const handleAddProducts = async (newProducts) => {
       ) : (
 
       <QuotesTable 
-        quotes={quotes}
+         quotes={(data?.rows || []).map(formatQuote)}
         setSelectedQuote={setSelectedQuote}
         setSelectedFile={setSelectedFile}
         setOpenEdit={setOpenEdit}
@@ -231,7 +249,7 @@ const handleAddProducts = async (newProducts) => {
       open={openEdit}
       onClose={() => setOpenEdit(false)}
       quote={selectedQuote}
-      onSave={handleEditQuote} // Usa la nueva función
+      onSave={handleUpdateQuote} // Usa la nueva función
 />
 
       <DeleteQuoteModal
@@ -257,8 +275,7 @@ const handleAddProducts = async (newProducts) => {
         quote={selectedQuote}
         file={selectedFile}
       />
-
-
+    
     </div>
   );
 };

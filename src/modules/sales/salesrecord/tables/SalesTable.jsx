@@ -12,47 +12,55 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import useCrud from "@/hooks/useCrud";
+import FacturarOrdenModal from "../modals/FacturarOrdenModal";
+import useFetchSale from "../../hoocks/useFetchSale";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 const Tableorders = () => {
+  const { data, isLoading } = useFetchSale();
   const [search, setSearch] = useState("");
   const [sales, setSales] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const { toast } = useToast();
-
-    const { getModel } = useCrud();
   
+  // Inicializar la mutación para ventas
+  const saleMutation = useEntityMutation('sale');
 
-  // Función para cargar ventas desde el backend
- const fetchSales = async () => {
+  // Actualizar el estado de ventas cuando los datos cambian
+  useEffect(() => {
+    if (data) {
+      setSales(data.rows);
+    }
+  }, [data]);
+
+  // Función para manejar la facturación
+ const handleInvoice = async (invoiceData) => {
   try {
-    setLoading(true);
-    const response = await getModel('/sales/transactions');
-    
-    // Aquí se guarda la respuesta en el estado
-    setSales(response);
+    await saleMutation.mutateAsync({
+      action: 'custom',
+      entity: invoiceData,
+      apiPath: '/sales/invoice'
+    });
 
-    console.log("Ventas cargadas:", response);
-    
-  } catch (error) {
-    console.error("Error fetching sales:", error);
     toast({
-      title: "Error",
-      description: "No se pudieron cargar las ventas",
+      title: "Factura generada",
+      description: "La factura se ha generado correctamente",
+      variant: "success",
+    });
+
+    await refetch(); // 🔁 Vuelve a cargar las ventas automáticamente
+    setIsModalOpen(false);
+  } catch (error) {
+    toast({
+      title: "Error al facturar",
+      description: error.message || "Ocurrió un error al generar la factura",
       variant: "destructive",
     });
-  } finally {
-    setLoading(false);
   }
 };
 
 
-  // Cargar ventas al montar el componente
-  useEffect(() => {
-    fetchSales();
-  }, []);
-
-  // Función para traducir estados al español
   const translateStatus = (status) => {
     const statusMap = {
       'PACKAGED': 'Empacado',
@@ -63,19 +71,26 @@ const Tableorders = () => {
     return statusMap[status] || status;
   };
 
+  const handleOpenInvoiceModal = (sale) => {
+    setSelectedOrder({
+      id: sale.id,
+      cliente: sale.quote?.clientName || 'Cliente no especificado',
+      quoteId: sale.quote?.id
+    });
+    setIsModalOpen(true);
+  };
+
   const filteredSales = sales.filter((sale) =>
     (sale.quote?.clientName?.toLowerCase().includes(search.toLowerCase()) ||
     sale.id?.toString().toLowerCase().includes(search.toLowerCase()))
   );
 
-  if (loading) {
+  if (isLoading) {
     return <div className="flex justify-center p-8">Cargando ventas...</div>;
   }
 
   return (
     <div className="space-y-6">
-     
-
       <Input
         placeholder="Buscar por cliente o ID de venta..."
         value={search}
@@ -118,8 +133,14 @@ const Tableorders = () => {
                   {sale.deliveryAddress || 'N/A'}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button variant="outline" size="sm">Detalles</Button>
-                  <Button variant="secondary" size="sm">Factura</Button>
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    onClick={() => handleOpenInvoiceModal(sale)}
+                    disabled={saleMutation.isPending}
+                  >
+                    {saleMutation.isPending ? "Procesando..." : "Factura"}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
@@ -132,6 +153,14 @@ const Tableorders = () => {
           )}
         </TableBody>
       </Table>
+
+      <FacturarOrdenModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        orden={selectedOrder}
+        onInvoiceSubmit={handleInvoice}
+        isLoading={saleMutation.isPending}
+      />
     </div>
   );
 };

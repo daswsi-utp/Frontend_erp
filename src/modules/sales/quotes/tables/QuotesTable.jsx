@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Package, ShoppingBag, Tag } from 'lucide-react';
 
 const formatDate = (dateStr) => {
+  if (!dateStr) return '-';
   return new Intl.DateTimeFormat("es-ES", {
     day: "2-digit",
     month: "2-digit",
@@ -26,10 +27,10 @@ const QuotesTable = ({
   onShowProducts
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-   const [openProductModal, setOpenProductModal] = useState(false);
+  const [openProductModal, setOpenProductModal] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
-   const columns = [
+  const columns = [
     { key: 'id', label: 'ID', className: 'w-20' },
     { key: 'issueDate', label: 'Fecha Creación', className: 'w-40' },
     { key: 'expirationDate', label: 'Fecha Expiración', className: 'w-40' },
@@ -38,7 +39,7 @@ const QuotesTable = ({
     { key: 'paymentMethod', label: 'Método Pago', className: 'w-32' },
     { key: 'observation', label: 'Observaciones', className: 'w-32' },
     { key: 'options', label: 'Opciones', className: 'w-40' }
-  ];;
+  ];
 
   const statusColorVariants = {
     PENDING: 'bg-yellow-100 text-yellow-800',
@@ -47,13 +48,12 @@ const QuotesTable = ({
     EXPIRED: 'bg-gray-100 text-gray-800'
   };
 
- const formatCurrency = (amount) => {
+  const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN'
     }).format(amount || 0);
   };
-
 
   const formatDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return '-';
@@ -67,8 +67,15 @@ const QuotesTable = ({
     });
   };
 
-   const filteredQuotes = quotes.filter(quote => {
-    return quote.id.toString().includes(searchTerm.toLowerCase());
+  // Función segura para obtener el ID como string
+  const getSafeId = (quote) => {
+    if (!quote || quote.id === undefined || quote.id === null) return '';
+    return quote.id.toString();
+  };
+
+  const filteredQuotes = quotes.filter(quote => {
+    const idString = getSafeId(quote);
+    return idString.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   return (
@@ -97,30 +104,23 @@ const QuotesTable = ({
             <TableBody>
               {filteredQuotes.length > 0 ? (
                 filteredQuotes.map((quote) => (
-                  <TableRow key={quote.id}>
-                    <TableCell className="font-medium">COT-{quote.id.toString().padStart(4, '0')}</TableCell>
+                  <TableRow key={quote.id || Math.random()}>
+                    <TableCell className="font-medium">
+                      {quote.id ? `COT-${getSafeId(quote).padStart(4, '0')}` : 'N/A'}
+                    </TableCell>
                     <TableCell>{formatDateTime(quote.issueDate)}</TableCell>
                     <TableCell>{formatDateTime(quote.expirationDate)}</TableCell>
                     <TableCell>
                       <Badge className={`${statusColorVariants[quote.state] || 'bg-gray-100 text-gray-800'} text-xs capitalize`}>
-                        {quote.state.toLowerCase()}
+                        {quote.state ? quote.state.toLowerCase() : 'desconocido'}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatCurrency(quote.totalAmount)}</TableCell>
-                    <TableCell>{quote.paymentMethod}</TableCell>
-                    <TableCell>{quote.observation}</TableCell>
+                    <TableCell>{quote.paymentMethod || '-'}</TableCell>
+                    <TableCell>{quote.observation || '-'}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => {
-                            setSelectedQuote(quote);
-                            setOpenView(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                        
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -132,24 +132,19 @@ const QuotesTable = ({
                           <FileEdit className="h-4 w-4" />
                         </Button>
                         <Button
-                         variant="outline" 
-                         size="sm"
-                         onClick={() => onShowProducts(quote)}                   
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => onShowProducts(quote)}                   
                         >
-                          <Package className="h-4 w-4" />  {/* Icono de caja/paquete */}                       
-                          </Button>
-                        
+                          <Package className="h-4 w-4" />
+                        </Button>
                         <Button 
                           variant="destructive" 
                           size="sm"
-                          onClick={() => {
-                            deleteQuote(quote);
-                            
-                          }}
+                          onClick={() => deleteQuote(quote)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                        
                       </div>
                     </TableCell>
                   </TableRow>
