@@ -42,14 +42,14 @@ const Employees = () => {
             setOpenEdit={setOpenEdit}
             deleteEmployee={deleteEmployee}
           />
-          <EditEmployeeModal
-            open={openEdit}
-            onOpenChange={setOpenEdit}
-            employee={selectedEmployee}
-            onEmployeeChange={setSelectedEmployee}
-          />
         </CardContent>
       </Card>
+      <EditEmployeeModal
+        open={openEdit}
+        onOpenChange={setOpenEdit}
+        employee={selectedEmployee}
+        onEmployeeChange={setSelectedEmployee}
+      />
     </>
   );
 };
