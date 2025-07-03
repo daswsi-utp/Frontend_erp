@@ -3,6 +3,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { ToastAction } from '@/components/shared/toast'
 import useCrud from '@/hooks/useCrud'
 import { AlertCircle, Info, CheckCircle } from 'lucide-react'
+import { FaTasks } from 'react-icons/fa'
 
 
 const entityTranslations = {
@@ -20,6 +21,10 @@ const entityTranslations = {
   quote : "cotización",
   sale : "venta"
 
+  mail: "correo",
+  task: "tarea",
+  plan: "plan",
+  participant: "participante"
 }
 
 const useEntityMutation = (entityName) => {

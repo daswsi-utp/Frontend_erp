@@ -26,10 +26,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import useCrud from "@/hooks/useCrud"
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 
 export function SimpleDropDown({ plan, onDelete, onUpdate }) {
 
+  const planningMutation = useEntityMutation('plan')
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [date, setDate] = useState();
@@ -43,27 +45,19 @@ export function SimpleDropDown({ plan, onDelete, onUpdate }) {
 
   const { updateModel } = useCrud("/planning/plan");
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+const handleUpdate = async (e) => {
+  e.preventDefault();
 
-    const payload = {
-      plan_name: name,
-      plan_description: description,
-      plan_start_date: startDate,
-      plan_end_date: endDate,
-    };
-
-    console.log("PLAN ID:", plan.id);
-    console.log("Payload:", payload);
-
-    try {
-      await updateModel(payload, `/planning/plan/update/${plan.plan_id}`);
-      setIsEditDialogOpen(false);
-      onUpdate?.(); 
-    } catch (err) {
-      console.error("Error al actualizar el plan", err);
-    }
+  const updatedPlan = {
+    plan_name: name,
+    plan_description: description,
+    plan_start_date: startDate,
+    plan_end_date: endDate,
   };
+
+  onUpdate?.(plan.plan_id, updatedPlan);
+  setIsEditDialogOpen(false);
+};
 
   
   return (
@@ -150,7 +144,7 @@ export function SimpleDropDown({ plan, onDelete, onUpdate }) {
             <AlertDialogAction
               onClick={() => {
                 setIsDeleteAlertOpen(false);
-                onDelete?.();
+                onDelete?.(plan.plan_id);
               }}
             >
               Borrar

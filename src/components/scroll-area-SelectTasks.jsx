@@ -5,23 +5,8 @@ import { Separator } from "./ui/separator"
 import { Card, CardContent } from "./ui/card"
 import useCrud from "@/hooks/useCrud"
 
-const ScrollAreaSelectTasks = ({ selectedTaskIds, setSelectedTaskIds, reloadTrigger }) => {
-  const [tasks, setTasks] = useState([])
-  const { getModel } = useCrud("/planning/task")
-
-  const fetchTasks = async () => {
-    try {
-      const data = await getModel()
-      setTasks(data)
-    } catch (error) {
-      console.error("Error al cargar tareas:", error)
-    }
-  }
-
-  useEffect(() => {
-    fetchTasks()
-  }, [reloadTrigger]) // ← Se recarga cada vez que `reloadTrigger` cambia
-
+const ScrollAreaSelectTasks = ({ selectedTaskIds, setSelectedTaskIds, reloadTrigger, tasks }) => {
+ 
   const toggleSelect = (id) => {
     setSelectedTaskIds(prev => {
       const newSelected = new Set(prev)
@@ -39,7 +24,7 @@ const ScrollAreaSelectTasks = ({ selectedTaskIds, setSelectedTaskIds, reloadTrig
       <div className="p-4">
         <h4 className="mb-4 text-sm font-medium leading-none">Seleccione las tareas</h4>
         {tasks.map((task) => (
-          <div key={task.task_id}>
+          <div key={`${task.task_id}-${task.task_name}`}>
             <Card>
               <CardContent className="flex gap-5 align-middle items-center">
                 <Checkbox

@@ -14,17 +14,11 @@ import { ROLES } from '@/lib/config/roles'
 
 export const MODULES_CONFIG = {
   rrhh: {
-    name: "Recursos Humanos",
-    path: "/rrhh",
+    name: "RRHH",
+    path: "/rrhh/employees",
     icon: UsersRound,
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_RRHH],
     navItems: [
-      {
-        title: "Dashboard",
-        icon: LayoutDashboard,
-        path: "/rrhh",
-        exact: true,
-      },
       {
         title: "Gestión de Empleados",
         icon: UsersRound,
@@ -197,17 +191,11 @@ export const MODULES_CONFIG = {
   },
 
   manufacture: {
-    name: "Manufactura",
-    path: "/manufacture",
+    name: "Noticias",
+    path: "/manufacture/mail/send",
     allowedRoles: [ROLES.ADMIN, ROLES.ADMIN_MANUFACTURE],
     icon: Mails,
     navItems: [
-      {
-        title: "Dashboard",
-        icon: LayoutDashboard,
-        path: "/rrhh",
-        exact: true,
-      },
       {
         title: "Enviar Correo",
         icon: FileChartLine,

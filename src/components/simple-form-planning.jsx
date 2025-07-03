@@ -9,38 +9,34 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react"
 import useCrud from "@/hooks/useCrud"
+import useEntityMutation from "@/hooks/useEntityMutation";
 
-const SimpleFormPlanning = ({ onSuccess }) => {
+const SimpleFormPlanning = () => {
 
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("")
+    const planningMutation = useEntityMutation('plan')
 
-    const { insertModel } = useCrud("/planning/plan/create")
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
 
-        try {
-            await insertModel({
-                plan_name: name,
-                plan_description: description,
-                plan_start_date: startDate,
-                plan_end_date: endDate
-            })
+        planningMutation.mutate({
+            action: 'create',
+            entity: {
+            plan_name: name,
+            plan_description: description,
+            plan_start_date: startDate,
+            plan_end_date: endDate
+            },
+            apiPath: '/planning/plan/create'
+        })
 
-            setName("")
-            setDescription("")
-            setStartDate("")
-            setEndDate("")
-
-
-            if (onSuccess) onSuccess()
-
-        } catch (err) {
-            console.error("Error al crear plan", err)
-        }
+        setName("")
+        setDescription("")
+        setStartDate("")
+        setEndDate("")
     }
 
 
