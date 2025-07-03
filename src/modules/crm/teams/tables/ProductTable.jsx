@@ -1,44 +1,45 @@
-'use client'
-
-import React, { useState, useMemo } from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import ProductModal from '@/modules/crm/teams/tables/ProductModal'
-import ProductTable from '@/modules/crm/teams/tables/ProductTable'
-import useFetchProducts from '@/hooks/useFetchProducts'
+import React, { useMemo } from 'react'
 import DataTable from '@/components/shared/data_table'
+import columns from './columns'
 import useEntityMutation from '@/hooks/useEntityMutation'
 import { useNavigate } from 'react-router-dom'
 
-const TableProducts = () => {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
-  const [search, setSearch] = useState('')
-  const [searchFields, setSearchFields] = useState(['name', 'code'])
+const TableProducts = ({ handleOpenModal, data, fetchData, pagination, setPagination, setProduct, setTypeModal, totalPages, search, setSearch, searchFields, setSearchFields }) => {
+  const { mutateAsync } = useEntityMutation('products') 
+  // const navigate = useNavigate()
 
-  const { data, isLoading, isError, error, refetch } = useFetchProducts({
-    pagination,
-    search,
-    searchFields,
-  })
-
-  const [showModal, setShowModal] = useState(false)
-  const [product, setProduct] = useState(null)
-  const [typeModal, setTypeModal] = useState('')
-
-  const handleClose = () => {
-    setProduct(null)
-    setTypeModal('')
-    setShowModal(false)
+  const handleDelete = async (id) => {
+    try {
+      await mutateAsync(
+        { action: 'delete', apiPath: `/api/v1/admin/products/${id}` },
+      )
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error)
+    }
   }
 
-  const handleOpenModal = (typeModal, product) => {
+  const handleUpdate = (product) => {
     setProduct(product)
-    setTypeModal(typeModal)
-    setShowModal(true)
+    setTypeModal('edit')
+    handleOpenModal('edit', product)
   }
 
-  useEffect(() => {
-    refetch() // Recargar los datos cuando cambie la paginación o búsqueda
-  }, [pagination, search])
+  const handleShow = (product) => {
+    setProduct(product)
+    setTypeModal('show')
+    handleOpenModal('show', product)
+  }
+
+  const handleAddToCart = (product) => {
+    console.log('Producto agregado al carrito:', product)
+  }
+
+  const columnsWithActions = useMemo(() => columns(handleDelete, handleUpdate, handleShow, handleAddToCart), [handleDelete, handleUpdate, handleShow, handleAddToCart])
+
+  const sortedData = useMemo(() => {
+    if (!data) return []
+    return data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) 
+  }, [data])
 
   return (
     <div>
