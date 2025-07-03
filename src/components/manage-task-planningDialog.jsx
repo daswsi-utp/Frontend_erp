@@ -3,7 +3,7 @@ import { Button } from "./ui/button"
 import CreateTaskForm from "./create-task-form"
 import DeleteTaskForm from "./delete-task.form"
 
-const ManageTasks = ({ onTaskUpdate }) => {
+const ManageTasks = ({ onTaskUpdate, planId , tasks, participants}) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -13,8 +13,8 @@ const ManageTasks = ({ onTaskUpdate }) => {
         <DialogHeader>
           <DialogTitle>Manejo Tareas</DialogTitle>
         </DialogHeader>
-        <CreateTaskForm onTaskUpdate={onTaskUpdate} />
-        <DeleteTaskForm onTaskUpdate={onTaskUpdate} />
+        <CreateTaskForm planId={planId} onTaskUpdate={onTaskUpdate} participants={participants} />
+        <DeleteTaskForm onTaskUpdate={onTaskUpdate} tasks={tasks} />
       </DialogContent>
     </Dialog>
   );

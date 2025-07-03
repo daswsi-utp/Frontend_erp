@@ -15,7 +15,7 @@ const useCrud = (endpoint) => {
     try {
       const response = await axios.get(`${backend_host}${_endpoint}`)
       const url = `${backend_host}${_endpoint}`;
-      console.log("URL para la solicitud GET:", url); 
+      console.trace("Solicitud GET ejecutada en:", url);
 
       return response.data
     } catch (error) {
