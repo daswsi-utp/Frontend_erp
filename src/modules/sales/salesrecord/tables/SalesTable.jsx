@@ -35,29 +35,31 @@ const Tableorders = () => {
   }, [data]);
 
   // Función para manejar la facturación
-  const handleInvoice = async (invoiceData) => {
-    try {
-      await saleMutation.mutateAsync({
-        action: 'custom',
-        entity: invoiceData,
-        apiPath: '/sales/invoice'
-      });
-      
-      toast({
-        title: "Factura generada",
-        description: "La factura se ha generado correctamente",
-        variant: "success",
-      });
-      
-      setIsModalOpen(false);
-    } catch (error) {
-      toast({
-        title: "Error al facturar",
-        description: error.message || "Ocurrió un error al generar la factura",
-        variant: "destructive",
-      });
-    }
-  };
+ const handleInvoice = async (invoiceData) => {
+  try {
+    await saleMutation.mutateAsync({
+      action: 'custom',
+      entity: invoiceData,
+      apiPath: '/sales/invoice'
+    });
+
+    toast({
+      title: "Factura generada",
+      description: "La factura se ha generado correctamente",
+      variant: "success",
+    });
+
+    await refetch(); // 🔁 Vuelve a cargar las ventas automáticamente
+    setIsModalOpen(false);
+  } catch (error) {
+    toast({
+      title: "Error al facturar",
+      description: error.message || "Ocurrió un error al generar la factura",
+      variant: "destructive",
+    });
+  }
+};
+
 
   const translateStatus = (status) => {
     const statusMap = {

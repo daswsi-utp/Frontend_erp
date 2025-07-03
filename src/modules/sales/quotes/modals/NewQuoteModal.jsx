@@ -6,13 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState, useEffect } from "react";
 import useCrud from "@/hooks/useCrud";
 
-// Datos de ejemplo (deberías reemplazarlos con llamadas a tu API)
-const sampleProducts = [
-  { id: 101, name: "Producto A", price: 150 },
-  { id: 102, name: "Producto B", price: 300 },
-  { id: 103, name: "Producto C", price: 450 }
-];
-
+// Mantenemos estas constantes ya que no dependen de la API
 const sampleClients = [
   { id: 1, name: "Cliente X" },
   { id: 2, name: "Cliente Y" },
@@ -32,7 +26,6 @@ const quoteStates = [
 ];
 
 const NewQuoteModal = ({ open, onClose, onSave }) => {
-
   const { getModel } = useCrud();
 
   const [form, setForm] = useState({
@@ -45,109 +38,121 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
     observation: ""
   });
 
-  
-  const [employees, setEmployees] = useState([]); 
-
-  const [products, setProducts] = useState([
-    { productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }
+  const [employees, setEmployees] = useState([]);
+  const [products, setProducts] = useState([]); // Estado para almacenar productos de la API
+  const [quoteProducts, setQuoteProducts] = useState([
+    { productId: "", productName: "",amount: 1, prize: 0, discount: 0, tax: 18 }
   ]);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFormChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleProductChange = (index, field, value) => {
-    const newProducts = [...products];
+    const newProducts = [...quoteProducts];
     newProducts[index][field] = field === 'amount' || field === 'prize' || field === 'discount' || field === 'tax' 
       ? parseFloat(value) || 0 
       : value;
     
     // Actualizar precio si se selecciona un producto nuevo
     if (field === 'productId') {
-      const selectedProduct = sampleProducts.find(p => p.id.toString() === value);
+      const selectedProduct = products.find(p => p.id && p.id.toString() === value);
       if (selectedProduct) {
-        newProducts[index].prize = selectedProduct.price;
+        newProducts[index].prize = selectedProduct.precio || 0;
+        newProducts[index].productName = selectedProduct.descripcion || '';
       }
     }
     
-    setProducts(newProducts);
+    setQuoteProducts(newProducts);
   };
 
   const addProductRow = () => {
-    setProducts([...products, { productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
+    setQuoteProducts([...quoteProducts, { productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
   };
 
   const removeProductRow = (index) => {
-    if (products.length > 1) {
-      const newProducts = [...products];
+    if (quoteProducts.length > 1) {
+      const newProducts = [...quoteProducts];
       newProducts.splice(index, 1);
-      setProducts(newProducts);
+      setQuoteProducts(newProducts);
     }
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async () => {
-      
-    
-     const expirationDate = new Date(form.expirationDate);
-  if (isNaN(expirationDate.getTime())) {
-    alert('La fecha de vencimiento no es válida');
-    return;
-  }
+    const expirationDate = new Date(form.expirationDate);
+    if (isNaN(expirationDate.getTime())) {
+      alert('La fecha de vencimiento no es válida');
+      return;
+    }
     
     setIsSubmitting(true);
       
-     try{
-    const quoteData = {
-      issueDate: form.issueDate,
-      expirationDate: new Date(form.expirationDate).toISOString(),
-      state: form.state,
-      clientId: Number(form.clientId),
-      employeeId: Number(form.employeeId),
-      typePayment: form.typePayment,
-      observation: form.observation,
-      details: products.map(p => ({
-        productId: Number(p.productId),
-        amount: p.amount,
-        prize: p.prize,
-        discount: p.discount,
-        tax: p.tax
-      }))
-    };
-    
-    onSave(quoteData);
-    // Reset form
-    setForm({
-      clientId: "",
-      employeeId: "",
-      issueDate: new Date().toISOString(),
-      expirationDate: "",
-      state: "PENDING",
-      typePayment: "",
-      observation: ""
-    });
-    setProducts([{ productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
-  }catch (error) {
-    console.error("Error al guardar:", error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      const quoteData = {
+        issueDate: form.issueDate,
+        expirationDate: new Date(form.expirationDate).toISOString(),
+        state: form.state,
+        clientId: Number(form.clientId),
+        employeeId: Number(form.employeeId),
+        typePayment: form.typePayment,
+        observation: form.observation,
+        details: quoteProducts.map(p => ({
+          productId: Number(p.productId),
+           productName: p.productName,
+          amount: p.amount,
+          prize: p.prize,
+          discount: p.discount,
+          tax: p.tax
+        }))
+      };
+      
+      onSave(quoteData);
+      // Reset form
+      setForm({
+        clientId: "",
+        employeeId: "",
+        issueDate: new Date().toISOString(),
+        expirationDate: "",
+        state: "PENDING",
+        typePayment: "",
+        observation: ""
+      });
+      setQuoteProducts([{ productId: "", amount: 1, prize: 0, discount: 0, tax: 18 }]);
+    } catch (error) {
+      console.error("Error al guardar:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-   useEffect(() => {
-    const fetchVendedores = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const response = await getModel('/rrhh/employee/position/VENDEDOR');
-        setEmployees(response);
+        // Cargar vendedores
+        const vendedores = await getModel('/rrhh/employee/position/VENDEDOR');
+        setEmployees(vendedores || []);
+        
+        // Cargar productos
+        const productos = await getModel('/logistic/products');
+        setProducts(productos || []);
       } catch (error) {
-        console.error("Error fetching employees:", error);
+        console.error("Error fetching data:", error);
+        setEmployees([]);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (open) {
-      fetchVendedores();
+      fetchData();
     }
-  }, [open]);
+  }, [open, getModel]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -270,7 +275,7 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
           <div className="mt-6">
             <h3 className="font-medium mb-2">Detalles de Productos</h3>
             
-            {products.map((product, index) => (
+            {quoteProducts.map((product, index) => (
               <div key={index} className="grid grid-cols-12 gap-2 mb-3 items-end">
                 <div className="col-span-5">
                   <label className="block text-sm font-medium mb-1">Producto</label>
@@ -282,9 +287,9 @@ const NewQuoteModal = ({ open, onClose, onSave }) => {
                       <SelectValue placeholder="Seleccione producto" />
                     </SelectTrigger>
                     <SelectContent>
-                      {sampleProducts.map(product => (
+                      {products.map(product => (
                         <SelectItem key={product.id} value={product.id.toString()}>
-                          {product.name} - ${product.price}
+                          {product.descripcion} - ${product.precio}
                         </SelectItem>
                       ))}
                     </SelectContent>
