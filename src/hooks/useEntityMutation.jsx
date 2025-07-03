@@ -10,11 +10,17 @@ const entityTranslations = {
   contract: "contrato",
   leads: "lead",
   clients: "cliente",
-  area: "área"
+  area: "área",
+  employee: "empleado",
+  department: "departamento",
+  role: "role",
+  contract: "contrato",
+  vacation: "vacacion",
+  permission: "permiso"
 }
 
 const useEntityMutation = (entityName) => {
-  const { insertModel, updateModel, deleteModel } = useCrud()
+  const { insertModel, updateModel, deleteModel, insertMultipartModel } = useCrud()
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
@@ -56,6 +62,8 @@ const useEntityMutation = (entityName) => {
           return await insertModel(payloadToSend, apiPath)
         case 'custom_update':
           return await updateModel(payloadToSend, apiPath)
+        case 'create_multipart':
+          return await insertMultipartModel(entity.data, entity.file, apiPath)
         default:
           throw new Error('Invalid action')
       }

@@ -7,29 +7,17 @@ import { Input } from "@/components/ui/input";
 import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { FileText, TreePalm  } from "lucide-react";
-import useCrud from "@/hooks/useCrud";
+import useFetchEmployees from "../../hooks/useFetchEmployee";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 
-const VacationEdit=({ open, onOpenChange, vacation, onVacationChange, fetchVacations })=> {
+const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
   if (!vacation) return null;
 
-  const {getModel, updateModel} = useCrud()
+  const vacationMutation = useEntityMutation('vacation')
+  const { data: employees } = useFetchEmployees()
   
   const [formData, setFormData] = useState({ ...vacation });
-  const [employees, setEmployees] = useState([]);
-
-  const fetchEmployees = async () =>{
-    try {
-      const data = await getModel("/rrhh/employee");
-      setEmployees(data);
-    } catch (error) {
-      console.error("Error during recovery employees", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
 
   const handleChange = (field, value) => {
     const updated = { ...formData, [field]: value };
@@ -42,8 +30,11 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange, fetchVacat
   const handleSave = async () => {
     try {
       console.log("Datos actualizados:", formData);
-      await updateModel(formData, "/rrhh/vacation");
-      fetchVacations();
+      vacationMutation.mutate({
+        action: 'update',
+        entity: formData,
+        apiPath: '/rrhh/vacation'
+      })
       onOpenChange(false);
     } catch (error) {
       console.error("Error during update vacation", error)
@@ -70,7 +61,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange, fetchVacat
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(employees.map((employee)=>(
+                    {(employees?.rows.map((employee)=>(
                       <SelectItem key={employee.id} value={employee.id}>{employee.firstName} {employee.lastName}</SelectItem>
                     )))}
                   </SelectContent>
