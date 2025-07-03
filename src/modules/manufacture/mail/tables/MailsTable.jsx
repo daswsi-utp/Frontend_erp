@@ -58,8 +58,8 @@ const MailsTable = ({ data, setSelectedMail, setOpenSee }) => {
               </TableHeader>
               <TableBody>
               {filteredEmails.length > 0 ? (
-                filteredEmails.map((mail) => (
-                  <TableRow key={mail.id}>
+                filteredEmails.map((mail, index) => (
+                  <TableRow key={index}>
                     <TableCell>{mail.id}</TableCell>
                     <TableCell>{mail.subject}</TableCell>
                     <TableCell>{mail.to.join(" - ")}</TableCell>
