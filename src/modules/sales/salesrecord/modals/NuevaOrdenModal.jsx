@@ -86,30 +86,25 @@ const NuevaOrdenModal = () => {
     return;
   }
 
-  // Usamos la mutación para crear la venta
-  saleMutation.mutate(
-    {
-      action: 'create',
-      entity: {
-        deliveryAddress: formData.deliveryAddress,
-        quoteId: formData.quoteId,
-      },
-      apiPath: `/sales/transactions/from-quote/${formData.quoteId}`,
+saleMutation.mutate(
+  {
+    action: 'create',
+    entity: formData.deliveryAddress, // Texto plano: "Avenida Hunter"
+    apiPath: `/sales/transactions/from-quote/${formData.quoteId}`,
+    headers: {
+      'Content-Type': 'text/plain',
     },
-    {
-      onSuccess: async () => {
-        // Reset form
-        setFormData({
-          quoteId: '',
-          deliveryAddress: ''
-        });
-        // Actualizar la lista de ventas
-        const updatedSales = await getModel('/sales/transactions');
-        setSales(updatedSales);
-        setIsOpen(false);
-      },
-    }
-  );
+  },
+  {
+    onSuccess: async () => {
+      setFormData({ quoteId: '', deliveryAddress: '' });
+      const updatedSales = await getModel('/sales/transactions');
+      setSales(updatedSales);
+      setIsOpen(false);
+    },
+  }
+);
+
 };
 
 
