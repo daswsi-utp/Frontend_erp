@@ -1,4 +1,5 @@
 'use client';
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,12 +21,16 @@ import {
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import useCrud from "@/hooks/useCrud";
+import useEntityMutation from "@/hooks/useEntityMutation";
 
 const NuevaOrdenModal = () => {
   const [quotes, setQuotes] = useState([]);
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false); 
+
+  const saleMutation = useEntityMutation('sale')
   
   // Usamos useCrud para las operaciones
   const { getModel, insertModel } = useCrud();
@@ -58,59 +63,58 @@ const NuevaOrdenModal = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      // Validación básica
-      if (!formData.quoteId || !formData.deliveryAddress) {
-        throw new Error('Por favor complete todos los campos');
-      }
+  e.preventDefault();
 
-      // Verificar si la cotización ya fue usada
-      const isUsed = sales.some(sale => sale.quote?.id === parseInt(formData.quoteId));
-      if (isUsed) {
-        throw new Error("Esta cotización ya fue utilizada. Seleccione otra.");
-      }
+  // Validación básica
+  if (!formData.quoteId || !formData.deliveryAddress) {
+    toast({
+      title: "❌ Error",
+      description: "Por favor complete todos los campos",
+      variant: "destructive",
+    });
+    return;
+  }
 
-      // Usamos insertModel para crear la venta
-      const createdSale = await insertModel(
-  formData.deliveryAddress,
-  `/sales/transactions/from-quote/${formData.quoteId}`,
-  'text/plain' // ← importante si estás usando fetch o axios
-);
+  // Verificar si la cotización ya fue usada
+  const isUsed = sales.some(sale => sale.quote?.id === parseInt(formData.quoteId));
+  if (isUsed) {
+    toast({
+      title: "❌ Error",
+      description: "Esta cotización ya fue utilizada. Seleccione otra.",
+      variant: "destructive",
+    });
+    return;
+  }
 
-
-      // Actualizar lista de ventas
-      const updatedSales = await getModel('/sales/transactions');
-      setSales(updatedSales);
-
-      toast({
-        title: "✅ Venta creada",
-        description: `Venta #${createdSale.id} registrada.`,
-      });
-
-      // Reset form
-      setFormData({
-        quoteId: '',
-        deliveryAddress: ''
-      });
-
-    } catch (error) {
-      toast({
-        title: "❌ Error",
-        description: error.message.includes("500") 
-          ? "Error interno del servidor" 
-          : error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  // Usamos la mutación para crear la venta
+  saleMutation.mutate(
+    {
+      action: 'create',
+      entity: {
+        deliveryAddress: formData.deliveryAddress,
+        quoteId: formData.quoteId,
+      },
+      apiPath: `/sales/transactions/from-quote/${formData.quoteId}`,
+    },
+    {
+      onSuccess: async () => {
+        // Reset form
+        setFormData({
+          quoteId: '',
+          deliveryAddress: ''
+        });
+        // Actualizar la lista de ventas
+        const updatedSales = await getModel('/sales/transactions');
+        setSales(updatedSales);
+        setIsOpen(false);
+      },
     }
-  };
+  );
+};
+
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <PlusCircle className="mr-2 h-4 w-4" />
