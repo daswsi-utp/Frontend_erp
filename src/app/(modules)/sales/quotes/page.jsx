@@ -128,7 +128,6 @@ const handleDeleteProduct = async (productId) => {
       })
     );
 
-    alert("Producto eliminado correctamente");
   } catch (error) {
     console.error(error);
     alert(error.message);

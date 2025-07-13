@@ -12,9 +12,6 @@ const ProductDetailsModal = ({ open, onClose, products = [], onDeleteProduct,onA
 
 
   const handleDelete = async (productId) => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este producto?");
-    if (!confirmDelete) return;
-
     try {
       await onDeleteProduct(productId);
     } catch (error) {

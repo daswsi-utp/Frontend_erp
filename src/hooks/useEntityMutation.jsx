@@ -26,7 +26,9 @@ const entityTranslations = {
   mail: "correo",
   task: "tarea",
   plan: "plan",
-  participant: "participante"
+  participant: "participante",
+  detailQuote: "detalle cotización"
+
 }
 
 const useEntityMutation = (entityName) => {
