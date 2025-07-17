@@ -131,6 +131,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
                   <Input
                     value={item.value}
                     type={item.type || "text"}
+                    readOnly={item.field === "email"}
                     onChange={e => handleChange(item.field, e.target.value)}
                   />
                 </div>

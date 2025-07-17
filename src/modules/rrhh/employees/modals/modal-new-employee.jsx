@@ -25,6 +25,14 @@ const NewEmployee=({})=> {
   const { data: roles} = useFetchRoles();
   const { toast } = useToast()
 
+  useEffect(() => {
+    const { firstName, lastName } = formData;
+    if (firstName && lastName) {
+      const email = `${firstName.trim().toLowerCase()}.${lastName.trim().toLowerCase()}@erp.pinwino.pe`;
+      setFormData(prev => ({ ...prev, email }));
+    }
+  }, [formData.firstName, formData.lastName]);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -39,7 +47,6 @@ const NewEmployee=({})=> {
     if (!isOnlyLetters(formData.lastName)) errors.push("Apellido solo debe contener letras.");
     if (!isValidDNI(formData.dni)) errors.push("DNI inválido.");
     if (!isValidPhone(formData.phone)) errors.push("Teléfono inválido.");
-    if (!isNonEmpty(formData.email)) errors.push("Correo no debe estar vacío.");
     if (!isValidDate(formData.birthDate)) errors.push("Fecha de nacimiento inválida.");
     if (!formData.gender) errors.push("Debe seleccionar género.");
     if (!formData.department?.id) errors.push("Debe seleccionar un departamento.");
@@ -124,7 +131,10 @@ const NewEmployee=({})=> {
                   <label className="text-sm font-medium mb-1">{item.label}</label>
                   <Input
                     type={item.type || "text"}
+                    value={formData[item.field] || ""}
                     onChange={e => handleChange(item.field, e.target.value)}
+                    readOnly={item.field === "email"}
+                    className="mb-1"
                   />
                 </div>
               ))}
