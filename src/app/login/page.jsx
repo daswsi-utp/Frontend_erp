@@ -56,23 +56,7 @@ const Login = () => {
               setCredentials={setCredentials}
               loginUser={loginUser}
             />
-            <p className='px-8 text-center text-sm text-muted-foreground'>
-              Al hacer clic, usted acepta{' '}
-              <a
-                href='/terms'
-                className='underline underline-offset-4 hover:text-primary'
-              >
-                los Términos de Servicio
-              </a>{' '}
-              y{' '}
-              <a
-                href='/privacy'
-                className='underline underline-offset-4 hover:text-primary'
-              >
-                las Políticas de Privacidad
-              </a>
-              .
-            </p>
+
           </div>
         </div>
       </div>
