@@ -9,16 +9,24 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Ambulance   } from "lucide-react";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
+import {isValidDate} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 
 const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPermissions })=> {
-  if (!permision) return null;
 
   const permissionMutation = useEntityMutation('permission')
   const { data: employees } = useFetchEmployees()
-  
+  const { toast } = useToast()
   const [formData, setFormData] = useState({ ...permision });
 
+  useEffect(() => {
+      if (permision && permision.id !== formData.id) {
+        setFormData({ ...permision });
+      }
+    }, [permision]);
+  
   const handleChange = (field, value) => {
     const updated = { ...formData, [field]: value };
     setFormData(updated);
@@ -27,7 +35,34 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPe
     }
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isValidDate(formData.requestAt)) errors.push("Fecha de solicitud inválida.");
+    if (!isValidDate(formData.startDate)) errors.push("Fecha de inicio inválida.");
+    if (!isValidDate(formData.endDate)) errors.push("Fecha de fin inválida.");
+    if (!formData.state) errors.push("Debe seleccionar un estado.");
+    if (!formData.type) errors.push("Debe seleccionar un tipo de permiso.");
+    if (!formData.employee?.id) errors.push("Debe seleccionar un empleado.");
+
+    return errors;
+  };
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       console.log("Datos actualizados:", formData);
       permissionMutation.mutate({
@@ -56,7 +91,7 @@ const PermisionEdit=({ open, onOpenChange, permision, onPermisionChange, fetchPe
             <div className="flex flex-col gap-4 col-span-2">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Empleado</label>
-                <Select value={formData.employee.id} onValueChange={val => handleChange('employee', { id: val })}>
+                <Select value={formData.employee?.id} onValueChange={val => handleChange('employee', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>

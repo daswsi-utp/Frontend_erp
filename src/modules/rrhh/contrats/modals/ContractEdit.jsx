@@ -9,6 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { FileText } from "lucide-react";
 
 
+
 const ContractEdit=({ open, onOpenChange, contract, onContractChange })=> {
   if (!contract) return null;
 

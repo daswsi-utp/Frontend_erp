@@ -9,15 +9,22 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { FileText, TreePalm  } from "lucide-react";
 import useFetchEmployees from "../../hooks/useFetchEmployee";
 import useEntityMutation from "@/hooks/useEntityMutation";
-
+import {isValidDate} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
-  if (!vacation) return null;
 
   const vacationMutation = useEntityMutation('vacation')
   const { data: employees } = useFetchEmployees()
-  
   const [formData, setFormData] = useState({ ...vacation });
+  const { toast } = useToast()
+
+  useEffect(() => {
+      if (vacation && vacation.id !== formData.id) {
+        setFormData({ ...vacation });
+      }
+    }, [vacation]);
 
   const handleChange = (field, value) => {
     const updated = { ...formData, [field]: value };
@@ -27,7 +34,33 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
     }
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isValidDate(formData.requestAt)) errors.push("Fecha de solicitud inválida.");
+    if (!isValidDate(formData.startDate)) errors.push("Fecha de inicio inválida.");
+    if (!isValidDate(formData.endDate)) errors.push("Fecha de fin inválida.");
+    if (!formData.state) errors.push("Debe seleccionar un estado.");
+    if (!formData.employee?.id) errors.push("Debe seleccionar un empleado.");
+
+    return errors;
+  };
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       console.log("Datos actualizados:", formData);
       vacationMutation.mutate({
@@ -56,7 +89,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
             <div className="flex flex-col gap-4 col-span-2">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Empleado</label>
-                <Select value={formData.employee.id} onValueChange={val => handleChange('employee', { id: val })}>
+                <Select value={formData.employee?.id} onValueChange={val => handleChange('employee', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
@@ -70,7 +103,7 @@ const VacationEdit=({ open, onOpenChange, vacation, onVacationChange })=> {
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Dias tomados</label>
-                <Input value={vacation.daysTaken} type="text"/>
+                <Input value={vacation?.daysTaken} type="text" readOnly/>
               </div>
             </div>
             <TreePalm size={180} className="text-primary" />

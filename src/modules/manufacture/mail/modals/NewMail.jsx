@@ -13,6 +13,9 @@ import TiptapEditor from "@/components/tiptap";
 import useFetchDepartments from "@/modules/rrhh/hooks/useFetchDepartments";
 import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
 import useEntityMutation from "@/hooks/useEntityMutation";
+import {isNonEmpty} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 
 const NewMail=({})=> {
@@ -27,6 +30,7 @@ const NewMail=({})=> {
   const [mailType, setMailType] = useState("GLOBAL");
   const [destinatarios, setDestinatarios] = useState([]);
   const [readyForMail, setReadyForMail] = useState(false);
+  const { toast } = useToast()
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -68,7 +72,30 @@ const NewMail=({})=> {
     setDestinatarios([]);
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isNonEmpty(formData.body) || formData.body.length < 5) {
+      errors.push("Cuerpo del correo es obligatorio y debe tener al menos 5 caracteres.");
+    }
+    return errors;
+  };
+
   const handleSave = async () =>{
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       const dataToSend = {
         ...formData,

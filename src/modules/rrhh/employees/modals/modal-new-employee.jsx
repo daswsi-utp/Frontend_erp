@@ -12,6 +12,10 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchDepartments from "../../hooks/useFetchDepartments";
 import useFetchRoles from "../../hooks/useFetchRoles";
+import {isOnlyLetters, isValidDNI, isOnlyNumbers, isValidPhone, isNonEmpty, isValidDate} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
+
 
 const NewEmployee=({})=> {
 
@@ -19,6 +23,15 @@ const NewEmployee=({})=> {
   const [formData, setFormData] = useState({ state: 'ACTIVO' });
   const { data: departments } = useFetchDepartments();
   const { data: roles} = useFetchRoles();
+  const { toast } = useToast()
+
+  useEffect(() => {
+    const { firstName, lastName } = formData;
+    if (firstName && lastName) {
+      const email = `${firstName.trim().toLowerCase()}.${lastName.trim().toLowerCase()}@erp.pinwino.pe`;
+      setFormData(prev => ({ ...prev, email }));
+    }
+  }, [formData.firstName, formData.lastName]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -27,7 +40,47 @@ const NewEmployee=({})=> {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isOnlyLetters(formData.firstName)) errors.push("Nombre solo debe contener letras.");
+    if (!isOnlyLetters(formData.lastName)) errors.push("Apellido solo debe contener letras.");
+    if (!isValidDNI(formData.dni)) errors.push("DNI inválido.");
+    if (!isValidPhone(formData.phone)) errors.push("Teléfono inválido.");
+    if (!isValidDate(formData.birthDate)) errors.push("Fecha de nacimiento inválida.");
+    if (!formData.gender) errors.push("Debe seleccionar género.");
+    if (!formData.department?.id) errors.push("Debe seleccionar un departamento.");
+    if (!formData.role?.id) errors.push("Debe seleccionar un rol.");
+    if (!formData.position) errors.push("Debe seleccionar una posición.");
+    if (!formData.state) errors.push("Debe seleccionar estado.");
+    if (!isNonEmpty(formData.address) || formData.address.length < 5) {
+      errors.push("Dirección es obligatoria y debe tener al menos 5 caracteres.");
+    }
+    if (!isOnlyLetters(formData.emergencyContactName)) {
+      errors.push("Nombre del contacto de emergencia solo debe contener letras.");
+    }
+    if (!isValidPhone(formData.emergencyContactPhone)) {
+      errors.push("Teléfono de emergencia inválido.");
+    }
+
+    return errors;
+  };
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       console.log("Datos guardados:", formData);
       employeeMutation.mutate({
@@ -39,6 +92,7 @@ const NewEmployee=({})=> {
       console.error("Error during create new employe", error)
     }
   };
+
 
   return (
     <Dialog>
@@ -77,7 +131,10 @@ const NewEmployee=({})=> {
                   <label className="text-sm font-medium mb-1">{item.label}</label>
                   <Input
                     type={item.type || "text"}
+                    value={formData[item.field] || ""}
                     onChange={e => handleChange(item.field, e.target.value)}
+                    readOnly={item.field === "email"}
+                    className="mb-1"
                   />
                 </div>
               ))}
