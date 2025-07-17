@@ -94,7 +94,7 @@ const VacationsTable = ({ vacations, setSelectedVacation, setOpenEdit, deleteVac
                 <TableBody>
                 {filteredVacations.length > 0 ? (
                   filteredVacations.map((vacation) => (
-                    <TableRow key={vacation.id || vacation.index}>
+                    <TableRow key={vacation.id || null}>
                         <TableCell>{vacation.id}</TableCell>
                         <TableCell>{vacation.employee.firstName} {vacation.employee.lastName}</TableCell>
                         <TableCell>
@@ -126,7 +126,7 @@ const VacationsTable = ({ vacations, setSelectedVacation, setOpenEdit, deleteVac
                     </TableRow>
                     ))
                   ) : (
-                    <TableRow>
+                    <TableRow key={null}>
                       <TableCell colSpan={columns.length} className="h-24 text-center">
                         No se encontraron resultados
                       </TableCell>

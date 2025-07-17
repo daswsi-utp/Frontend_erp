@@ -12,18 +12,23 @@ import { positions } from "../data/positions";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchDepartments from "../../hooks/useFetchDepartments";
 import useFetchRoles from "../../hooks/useFetchRoles";
+import {isOnlyLetters, isValidDNI, isOnlyNumbers, isValidPhone, isNonEmpty, isValidDate} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) =>{
-  if (!employee) return null;
 
   const employeeMutation = useEntityMutation('employee')
   const [formData, setFormData] = useState(employee ?? {});
   const { data: departments } = useFetchDepartments();
   const { data: roles} = useFetchRoles();
+  const { toast } = useToast()
 
-  if (employee && employee.id !== formData.id) {
-    setFormData({ ...employee });
-  }
+  useEffect(() => {
+    if (employee && employee.id !== formData.id) {
+      setFormData({ ...employee });
+    }
+  }, [employee]);
 
   const handleChange = (field, value) => {
     const updated = { ...formData, [field]: value };
@@ -33,7 +38,48 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
     }
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isOnlyLetters(formData.firstName)) errors.push("Nombre solo debe contener letras.");
+    if (!isOnlyLetters(formData.lastName)) errors.push("Apellido solo debe contener letras.");
+    if (!isValidDNI(formData.dni)) errors.push("DNI inválido.");
+    if (!isValidPhone(formData.phone)) errors.push("Teléfono inválido.");
+    if (!isNonEmpty(formData.email)) errors.push("Correo no debe estar vacío.");
+    if (!isValidDate(formData.birthDate)) errors.push("Fecha de nacimiento inválida.");
+    if (!formData.gender) errors.push("Debe seleccionar género.");
+    if (!formData.department?.id) errors.push("Debe seleccionar un departamento.");
+    if (!formData.role?.id) errors.push("Debe seleccionar un rol.");
+    if (!formData.position) errors.push("Debe seleccionar una posición.");
+    if (!formData.state) errors.push("Debe seleccionar estado.");
+    if (!isNonEmpty(formData.address) || formData.address.length < 5) {
+      errors.push("Dirección es obligatoria y debe tener al menos 5 caracteres.");
+    }
+    if (!isOnlyLetters(formData.emergencyContactName)) {
+      errors.push("Nombre del contacto de emergencia solo debe contener letras.");
+    }
+    if (!isValidPhone(formData.emergencyContactPhone)) {
+      errors.push("Teléfono de emergencia inválido.");
+    }
+
+    return errors;
+  };
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       console.log("Datos actualizados:", formData);
       employeeMutation.mutate({
@@ -107,7 +153,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
               {/* Departamento */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Departamento</label>
-                <Select defaultValue={formData.department.id} onValueChange={val => handleChange('department', { id: val })}>
+                <Select defaultValue={formData.department?.id} onValueChange={val => handleChange('department', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>
@@ -122,7 +168,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
               {/* Role */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">Role</label>
-                <Select defaultValue={formData.role.id}  onValueChange={val => handleChange('role', { id: val })}>
+                <Select defaultValue={formData.role?.id}  onValueChange={val => handleChange('role', { id: val })}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccione" />
                   </SelectTrigger>

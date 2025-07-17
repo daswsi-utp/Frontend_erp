@@ -7,12 +7,16 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import useEntityMutation from "@/hooks/useEntityMutation";
+import {isOnlyLetters} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 
 const NewDepartment=({ })=> {
 
   const departmentMutation = useEntityMutation('department')
   const [formData, setFormData] = useState({ state: 'ACTIVO' });
+  const { toast } = useToast()
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -21,7 +25,30 @@ const NewDepartment=({ })=> {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isOnlyLetters(formData.name)) errors.push("Nombre solo debe contener letras.");
+    if (!isOnlyLetters(formData.code)) errors.push("Codigo solo debe contener letras.");
+
+    return errors;
+  };
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
      console.log("Datos guardados:", formData);
      departmentMutation.mutate({

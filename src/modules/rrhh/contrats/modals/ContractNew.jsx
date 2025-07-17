@@ -11,12 +11,16 @@ import useCrud from "@/hooks/useCrud";
 import { DialogClose } from "@radix-ui/react-dialog";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
+import {isNonEmpty, isValidDate} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 const ContractNew=({ fetchContracts })=> {
 
   const contractMutation = useEntityMutation('contract');
   const { data: employees } = useFetchEmployees()
   const [formData, setFormData] = useState({});
+  const { toast } = useToast()
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -25,29 +29,54 @@ const ContractNew=({ fetchContracts })=> {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!formData.employee?.id) {errors.push("Debe seleccionar un empleado.");}
+    if (!isNonEmpty(formData.type)) {errors.push("Debe seleccionar el tipo de contrato.");}
+    if (!isValidDate(formData.startDate)) {errors.push("Debe ingresar una fecha de inicio válida.");}
+    if (!isValidDate(formData.endDate)) {errors.push("Debe ingresar una fecha de fin válida.");}
+    if (!isNonEmpty(formData.state)) {errors.push("Debe seleccionar un estado.");}
+    if (!formData.contractFile) {errors.push("Debe adjuntar un archivo de contrato.");}
+    return errors;
+  };
+
   const handleSave = async () => {
-  try {
-    const file = formData.contractFile;
-    const contractData = {
-      employee: formData.employee,
-      type: formData.type,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      state: formData.state
-    };
-    contractMutation.mutate({
-      action: 'create_multipart',
-      entity: {
-        data: { ...contractData },
-        file: file
-      },
-      apiPath: '/rrhh/contract'
-    })
-    console.log("Contrato creado:", response);
-  } catch (error) {
-    console.error("Error al guardar contrato:", error);
-  }
-};
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
+    try {
+      const file = formData.contractFile;
+      const contractData = {
+        employee: formData.employee,
+        type: formData.type,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        state: formData.state
+      };
+      contractMutation.mutate({
+        action: 'create_multipart',
+        entity: {
+          data: { ...contractData },
+          file: file
+        },
+        apiPath: '/rrhh/contract'
+      })
+    } catch (error) {
+      console.error("Error al guardar contrato:", error);
+    }
+  };
 
   return (
     <Dialog>
@@ -86,7 +115,6 @@ const ContractNew=({ fetchContracts })=> {
                     <SelectValue placeholder="Seleccione"/>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="INDEFINIDO">INDEFINIDO</SelectItem>
                     <SelectItem value="DETERMINADO">DETERMINADO</SelectItem>
                     <SelectItem value="SERVICIO">SERVICIO</SelectItem>
                     <SelectItem value="TEMPORAL">TEMPORAL</SelectItem>

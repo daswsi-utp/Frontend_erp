@@ -96,7 +96,7 @@ const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit, delete
                 <TableBody>
                 {filteredPermisions.length > 0 ? (
                   filteredPermisions.map((permision) => (
-                    <TableRow key={permision.id || permision.index}>
+                    <TableRow key={permision.id || null}>
                         <TableCell>{permision.id}</TableCell>
                         <TableCell>{permision.employee.firstName} {permision.employee.lastName}</TableCell>
                         <TableCell>
@@ -132,7 +132,7 @@ const PermisionsTable = ({ permisions, setSelectedPermision, setOpenEdit, delete
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
+                      <TableCell key={null} colSpan={columns.length} className="h-24 text-center">
                         No se encontraron resultados
                       </TableCell>
                     </TableRow>

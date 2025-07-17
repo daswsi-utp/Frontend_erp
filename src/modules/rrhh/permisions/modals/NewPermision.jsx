@@ -10,12 +10,16 @@ import { Ambulance   } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchEmployees from "@/modules/rrhh/hooks/useFetchEmployee";
+import {isValidDate} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 const PermisionNew=({ })=> {
 
   const permissionMutation = useEntityMutation('permission')
   const { data: employees } = useFetchEmployees()
   const [formData, setFormData] = useState({});
+  const { toast } = useToast()
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -24,7 +28,34 @@ const PermisionNew=({ })=> {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isValidDate(formData.requestAt)) errors.push("Fecha de solicitud inválida.");
+    if (!isValidDate(formData.startDate)) errors.push("Fecha de inicio inválida.");
+    if (!isValidDate(formData.endDate)) errors.push("Fecha de fin inválida.");
+    if (!formData.state) errors.push("Debe seleccionar un estado.");
+    if (!formData.type) errors.push("Debe seleccionar un tipo de permiso.");
+    if (!formData.employee?.id) errors.push("Debe seleccionar un empleado.");
+
+    return errors;
+  };
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       console.log("Datos guardados:", formData);
       permissionMutation.mutate({

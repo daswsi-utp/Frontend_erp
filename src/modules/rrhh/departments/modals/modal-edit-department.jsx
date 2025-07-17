@@ -4,18 +4,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // usando Select de shadcn/ui
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useEntityMutation from "@/hooks/useEntityMutation";
+import {isOnlyLetters} from "@/utils/validators";
+import { useToast } from '@/components/ui/use-toast'
+import { AlertCircle } from 'lucide-react'
 
 const EditModal=({ open, onOpenChange, onItemChange, item })=> {
-  if (!item) return null;
 
   const departmentMutation = useEntityMutation('department')
   const [formData, setFormData] = useState({ ...item });
+  const { toast } = useToast()
 
-  if (item && item.id !== formData.id) {
-    setFormData({ ...item });
-  }
+  useEffect(() => {
+      if (item && item.id !== formData.id) {
+        setFormData({ ...item });
+      }
+    }, [item]);
 
   const handleChange = (field, value) => {
     const updated = { ...formData, [field]: value };
@@ -25,7 +30,31 @@ const EditModal=({ open, onOpenChange, onItemChange, item })=> {
     }
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isOnlyLetters(formData.name)) errors.push("Nombre solo debe contener letras.");
+    if (!isOnlyLetters(formData.code)) errors.push("Codigo solo debe contener letras.");
+
+    return errors;
+  };
+
+
   const handleSave = async () => {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast({
+        title: "Error de validación",
+        description: (
+          <ul className="list-disc pl-4">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        ),
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      })
+      return;
+    }
     try {
       console.log("Datos actualizados:", formData);
       departmentMutation.mutate({

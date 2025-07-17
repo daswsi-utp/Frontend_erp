@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { Trash2, SquarePen, Search, ShieldCheck } from 'lucide-react'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import useCrud from "@/hooks/useCrud";
 import axios from "axios"
 import useEntityMutation from '@/hooks/useEntityMutation'
 
@@ -16,7 +15,6 @@ import useEntityMutation from '@/hooks/useEntityMutation'
 const EmployeesTable = ({ data, isLoading, setSelectedEmployee, setOpenEdit, deleteEmployee }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchState, setSearchState] = useState('')
-  const {getModel, insertModel, updateModel} = useCrud()
   const employeeMutation = useEntityMutation('employee')
   
   const filteredEmployees = useMemo(() => {
@@ -134,7 +132,7 @@ const EmployeesTable = ({ data, isLoading, setSelectedEmployee, setOpenEdit, del
               <TableBody>
               {filteredEmployees.length > 0 ? (
                 filteredEmployees.map((employee) => (
-                  <TableRow key={employee.id}>
+                  <TableRow key={employee.id || null}>
                     <TableCell>{employee.id}</TableCell>
                     <TableCell>{employee.firstName}</TableCell>
                     <TableCell>{employee.lastName}</TableCell>
