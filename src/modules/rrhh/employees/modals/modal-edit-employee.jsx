@@ -12,7 +12,7 @@ import { positions } from "../data/positions";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchDepartments from "../../hooks/useFetchDepartments";
 import useFetchRoles from "../../hooks/useFetchRoles";
-import {isOnlyLetters, isValidDNI, isOnlyNumbers, isValidPhone, isNonEmpty, isValidDate} from "@/utils/validators";
+import {isOnlyLetters, isValidDNI, isValidEmail, isValidPhone, isNonEmpty, isValidDate} from "@/utils/validators";
 import { useToast } from '@/components/ui/use-toast'
 import { AlertCircle } from 'lucide-react'
 
@@ -47,6 +47,7 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
     if (!isValidPhone(formData.phone)) errors.push("Teléfono inválido.");
     if (!isNonEmpty(formData.email)) errors.push("Correo no debe estar vacío.");
     if (!isValidDate(formData.birthDate)) errors.push("Fecha de nacimiento inválida.");
+    if (!isValidEmail(formData.email)) errors.push("Correo electronico inválido.");
     if (!formData.gender) errors.push("Debe seleccionar género.");
     if (!formData.department?.id) errors.push("Debe seleccionar un departamento.");
     if (!formData.role?.id) errors.push("Debe seleccionar un rol.");
@@ -131,7 +132,6 @@ const EditEmployeeModal = ({ open, onOpenChange, employee, onEmployeeChange  }) 
                   <Input
                     value={item.value}
                     type={item.type || "text"}
-                    readOnly={item.field === "email"}
                     onChange={e => handleChange(item.field, e.target.value)}
                   />
                 </div>

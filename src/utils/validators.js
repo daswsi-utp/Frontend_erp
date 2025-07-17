@@ -21,3 +21,7 @@ export const isNonEmpty = (value) => {
 export const isValidDate = (value) => {
   return !isNaN(Date.parse(value));
 };
+
+export const isValidEmail = (value) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value?.trim());
+};

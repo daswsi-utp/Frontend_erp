@@ -12,7 +12,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import useEntityMutation from "@/hooks/useEntityMutation";
 import useFetchDepartments from "../../hooks/useFetchDepartments";
 import useFetchRoles from "../../hooks/useFetchRoles";
-import {isOnlyLetters, isValidDNI, isOnlyNumbers, isValidPhone, isNonEmpty, isValidDate} from "@/utils/validators";
+import {isOnlyLetters, isValidDNI, isValidEmail, isValidPhone, isNonEmpty, isValidDate} from "@/utils/validators";
 import { useToast } from '@/components/ui/use-toast'
 import { AlertCircle } from 'lucide-react'
 
@@ -24,14 +24,6 @@ const NewEmployee=({})=> {
   const { data: departments } = useFetchDepartments();
   const { data: roles} = useFetchRoles();
   const { toast } = useToast()
-
-  useEffect(() => {
-    const { firstName, lastName } = formData;
-    if (firstName && lastName) {
-      const email = `${firstName.trim().toLowerCase()}.${lastName.trim().toLowerCase()}@erp.pinwino.pe`;
-      setFormData(prev => ({ ...prev, email }));
-    }
-  }, [formData.firstName, formData.lastName]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -48,6 +40,7 @@ const NewEmployee=({})=> {
     if (!isValidDNI(formData.dni)) errors.push("DNI inválido.");
     if (!isValidPhone(formData.phone)) errors.push("Teléfono inválido.");
     if (!isValidDate(formData.birthDate)) errors.push("Fecha de nacimiento inválida.");
+    if (!isValidEmail(formData.email)) errors.push("Correo electronico inválido.");
     if (!formData.gender) errors.push("Debe seleccionar género.");
     if (!formData.department?.id) errors.push("Debe seleccionar un departamento.");
     if (!formData.role?.id) errors.push("Debe seleccionar un rol.");
@@ -133,7 +126,6 @@ const NewEmployee=({})=> {
                     type={item.type || "text"}
                     value={formData[item.field] || ""}
                     onChange={e => handleChange(item.field, e.target.value)}
-                    readOnly={item.field === "email"}
                     className="mb-1"
                   />
                 </div>
